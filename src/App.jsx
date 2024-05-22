@@ -1,10 +1,9 @@
-import Home from '@/pages/Home';
+import AppRouting from './config/routes/AppRouting';
 
 const App = () => {
   return (
     <div className='flex font-bold'>
-      App
-      <Home />
+      <AppRouting />
     </div>
   );
 };
