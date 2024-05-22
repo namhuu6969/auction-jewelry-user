@@ -2,7 +2,7 @@ import Home from '@/pages/Home';
 
 const App = () => {
   return (
-    <div>
+    <div className='flex font-bold'>
       App
       <Home />
     </div>
