@@ -1,4 +1,5 @@
 import { Layout } from 'antd';
+import AppFooter from './AppFooter';
 const { Header, Footer, Content } = Layout;
 const headerStyle = {
   textAlign: 'center',
@@ -15,15 +16,17 @@ const contentStyle = {
 };
 const footerStyle = {
   textAlign: 'center',
-  color: '#fff',
-  backgroundColor: '#4096ff',
+  color: '#000',
+  backgroundColor: '#fff',
 };
 export const AppLayout = ({ components }) => {
   return (
     <Layout>
       <Header style={headerStyle}>Header</Header>
       <Content style={contentStyle}>{components}</Content>
-      <Footer style={footerStyle}>Footer</Footer>
+      <Footer style={footerStyle}>
+        <AppFooter />
+      </Footer>
     </Layout>
   );
 };
