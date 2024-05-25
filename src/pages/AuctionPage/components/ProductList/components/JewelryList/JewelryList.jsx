@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Breadcum from '@components/ui/Breadcum';
 import Carousel from '@components/ui/carousel/Carousel';
+import { useDispatch, useSelector } from 'react-redux';
+import { setListAuction } from '@core/store/AuctionListStore/auctionList';
 const { Title } = Typography;
 const breadcumLink = [
   {
@@ -17,7 +19,8 @@ const breadcumLink = [
 ];
 export const JewelryList = () => {
   const [loading, setLoading] = useState(false);
-  const [auctionData, setAuctionData] = useState([]);
+  const auctionData = useSelector(((state) => state.auctionList.auctionListData)) 
+  const dispatch = useDispatch()
   const [category, setCategory] = useState([]);
   const endpoint =
     'https://664e0a97fafad45dfaded0e5.mockapi.io/api/v1/auction-list';
@@ -28,7 +31,7 @@ export const JewelryList = () => {
       try {
         setLoading(true);
         const response = await axios.get(endpoint);
-        setAuctionData(response.data);
+        dispatch(setListAuction(response.data))
       } catch (error) {
         console.error(error);
       }
@@ -40,11 +43,12 @@ export const JewelryList = () => {
     };
     fetchData();
     fetchCtr();
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className='container mx-auto my-5'>
       <div>
+        {console.log(auctionData)}
         <Breadcum linkBreadcum={breadcumLink} />
         <Divider className='border-black' />
         <div className='container'>
