@@ -1,13 +1,14 @@
 import { Layout } from 'antd';
 import AppFooter from './AppFooter';
+import AppHeader from './AppHeader';
 const { Header, Footer, Content } = Layout;
 const headerStyle = {
   textAlign: 'center',
   color: '#fff',
-  height: 64,
+  height: 140,
   paddingInline: 48,
   lineHeight: '64px',
-  backgroundColor: '#4096ff',
+  backgroundColor: '#fff',
 };
 const contentStyle = {
   textAlign: 'center',
@@ -22,7 +23,9 @@ const footerStyle = {
 export const AppLayout = ({ components }) => {
   return (
     <Layout>
-      <Header style={headerStyle}>Header</Header>
+      <Header style={headerStyle}>
+        <AppHeader />
+      </Header>
       <Content style={contentStyle}>{components}</Content>
       <Footer style={footerStyle}>
         <AppFooter />
