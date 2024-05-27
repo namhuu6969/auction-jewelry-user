@@ -19,7 +19,7 @@ const navLink = [
 
 const AppHeader = () => {
   return (
-    <Flex className='px-16 h-full' vertical gap={'0.8rem'}>
+    <Flex className='mx-28 h-full' vertical gap={'0.8rem'}>
       <Flex align='center' justify='end'>
         <Flex className='' justify='space-between'>
           {services.map((item) => (
@@ -33,14 +33,14 @@ const AppHeader = () => {
           ))}
         </Flex>
       </Flex>
-      <Flex justify='space-between' className='h-20'>
-        <Flex className='w-2/4' justify='center' align='center'>
+      <Flex justify='space-between' className='h-20 '>
+        <Flex flex={0.4} justify='start' align='center'>
           <Title style={{ marginBottom: '0' }} className='w-3/5 font-serif' level={4}>
             JEWELRY AUCTION
           </Title>
           <Input placeholder='Search...' />
         </Flex>
-        <Flex flex={0.8} justify='space-around' align='center'>
+        <Flex flex={0.3} justify='space-around' align='center'>
           {navLink.map((item) => (
             <p
               style={{ lineHeight: '0rem' }}

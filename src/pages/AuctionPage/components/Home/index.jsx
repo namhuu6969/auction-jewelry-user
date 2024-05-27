@@ -3,11 +3,16 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Carousel from '@components/ui/carousel/Carousel';
+import CardNews from '../../../../components/ui/CardNews';
 const { Title } = Typography;
+
+const endpoint = 'https://664e0a97fafad45dfaded0e5.mockapi.io/api/v1/auction-list';
+const endpointApiNews = 'https://65487df3dd8ebcd4ab22f4d0.mockapi.io/news';
+
 export const Home = () => {
   const [loading, setLoading] = useState(false);
   const [auctionData, setAuctionData] = useState([]);
-  const endpoint = 'https://664e0a97fafad45dfaded0e5.mockapi.io/api/v1/auction-list';
+  const [newsData, setNewsData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -19,6 +24,19 @@ export const Home = () => {
       }
       setLoading(false);
     };
+
+    const fetchDataAPI = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(endpointApiNews);
+        setNewsData(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+      setLoading(false);
+    };
+
+    fetchDataAPI();
     fetchData();
   }, []);
 
@@ -55,17 +73,22 @@ export const Home = () => {
             </Title>
           </Flex>
 
-          <div className='grid grid-cols-12 gap-5'>
-            <div className='col-span-3 '>
-              <div className='p-40 bg-black'></div>
-            </div>
-            <div className='col-span-6'>
-              <div className='p-40 bg-black'></div>
-            </div>
-            <div className='col-span-3 grid gap-10'>
-              <div className='p-16 row-span-1 bg-black'></div>
-              <div className='p-16 row-span-1 bg-black'></div>
-            </div>
+          <div className='container mx-auto'>
+            <Flex justify='space-between'>
+              {newsData.map((item, index) => {
+                if (index < 4) {
+                  return (
+                    <CardNews
+                      key={`${item.title} + ${index}`}
+                      imageUrl='https://loremflickr.com/320/240'
+                      title={item.title}
+                      description={item.description}
+                      price={item.price}
+                    />
+                  );
+                }
+              })}
+            </Flex>
           </div>
         </Skeleton>
       </div>
