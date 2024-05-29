@@ -20,4 +20,7 @@ export default defineConfig({
       '@layout': fileURLToPath(new URL('./src/core/layout', import.meta.url)),
     },
   },
+  server: {
+    port: 4176,
+  },
 });

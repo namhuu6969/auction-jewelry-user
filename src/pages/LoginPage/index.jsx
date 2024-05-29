@@ -7,7 +7,7 @@ export const Login = () => {
   return (
     <Flex vertical>
       <Flex
-        className='w-full z-10 bg-white py-5 lg:px-[100px] p-10 gap-10'
+        className='w-full z-10 bg-white py-5 fixed top-0 lg:px-[100px] p-10 gap-10'
         justify='left'
         align='center'
       >
@@ -24,7 +24,7 @@ export const Login = () => {
           Login
         </Title>
       </Flex>
-      <div className='w-[100vw] h-[91dvh] flex justify-center items-center relative overflow-hidden'>
+      <div className='w-[100vw] h-[100vh] flex justify-center items-center relative overflow-hidden'>
         <img
           src='https://i.pinimg.com/originals/ff/9c/20/ff9c204f62b65141a988cde3c7b1484f.jpg'
           className='absolute top-0 left-0 z-1 w-full h-screen'
@@ -62,7 +62,7 @@ export const Login = () => {
                     message: 'Please input your username!',
                   },
                 ]}
-                className='!m-0'
+                className='!m-0 h-[50px]'
               >
                 <Input className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black' />
               </Form.Item>
@@ -76,7 +76,7 @@ export const Login = () => {
                     message: 'Please input your password!',
                   },
                 ]}
-                className='!m-0'
+                className='!m-0 h-[50px]'
               >
                 <Input.Password className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black' />
               </Form.Item>
