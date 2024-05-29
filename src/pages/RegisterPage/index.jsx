@@ -1,26 +1,46 @@
-import {
-  Button,
-  DatePicker,
-  Flex,
-  Form,
-  Input,
-  InputNumber,
-  Typography,
-} from 'antd';
+import { Button, DatePicker, Flex, Form, Input, Typography, notification } from 'antd';
 import { Link } from 'react-router-dom';
+import Verify from './components/Verify';
+import { useState } from 'react';
+import { authApi } from '../../services/api/auth/auth';
 const { Title } = Typography;
 
 export const Register = () => {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
+  console.log(api)
+  const openNotification = (placement, description, message) => {
+    notification.error({
+      message: message,
+      description: description,
+      placement,
+      duration: 5,
+    });
+  };
   const disabledDate = (current) => {
     return current && current > new Date();
   };
-  const handleSubmit = (values) => {
-    console.log(values);
+  const handleSubmit = async (values) => {
+    try {
+      setLoading(true);
+      const response = await authApi.signUpApi(values);
+      if (response.data) {
+        setOpen(true);
+      }
+    } catch (err) {
+      openNotification('top', err.response.data.message, 'Sign up failed')
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <Flex vertical className='overflow-hidden'>
+      {contextHolder}
+      {open && <Verify open={open} setOpen={setOpen}/>}
       <Flex
-        className='w-full z-10 bg-white py-5 lg:px-[100px] px-10 gap-5'
+        className='w-full z-10 bg-white py-5 lg:px-[100px] px-10 gap-5 fixed top-0'
         justify='left'
         align='center'
       >
@@ -37,7 +57,7 @@ export const Register = () => {
           Sign up
         </Title>
       </Flex>
-      <div className='w-[100vw] h-[91dvh] lg:py-5 flex justify-center items-center relative'>
+      <div className='w-[100vw] h-[100vh] lg:py-5 flex justify-center items-center relative'>
         <img
           src='https://i.pinimg.com/originals/ff/9c/20/ff9c204f62b65141a988cde3c7b1484f.jpg'
           className='absolute top-0 left-0 z-1 w-full h-screen'
@@ -48,9 +68,8 @@ export const Register = () => {
             src='https://sahirajewelrydesign.com/cdn/shop/products/tara-clover-necklace-sahira-jewelry-design-290449_grande.jpg?v=1648775322'
           />
           <Flex
-            gap={20}
             vertical
-            className='relative bg-white rounded lg:w-full lg:px-5 lg:py-4 px-2 w-full'
+            className='relative bg-white rounded lg:w-[700px] lg:px-5 lg:py-4 px-2 w-full'
           >
             <Title level={3} className='!my-5 !font-serif'>
               Sign up your account
@@ -71,14 +90,14 @@ export const Register = () => {
                 {/* Full name */}
                 <Form.Item
                   label='Fullname'
-                  name='fullname'
+                  name='fullName'
                   rules={[
                     {
                       required: true,
                       message: 'Please input your username!',
                     },
                   ]}
-                  className='!m-0'
+                  className='lg:h-[50px]'
                 >
                   <Input className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black' />
                 </Form.Item>
@@ -92,7 +111,7 @@ export const Register = () => {
                       message: 'Please input your password!',
                     },
                   ]}
-                  className='!m-0'
+                  className='lg:h-[50px]'
                 >
                   <Input
                     type='email'
@@ -108,13 +127,16 @@ export const Register = () => {
                       required: true,
                       message: 'Please input your password!',
                     },
+                    {
+                      pattern: /^\d{10}$/,
+                      message: 'Must be number and 10 digits',
+                    },
                   ]}
-                  className='!m-0'
+                  className='lg:h-[50px]'
                 >
-                  <InputNumber
-                    controls={false}
-                    type='number'
-                    min={0}
+                  <Input
+                    type='tel'
+                    placeholder='Must be number and 10 digits'
                     className='rounded-none w-full border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
                   />
                 </Form.Item>
@@ -128,7 +150,7 @@ export const Register = () => {
                       message: 'Please input your Date of birth!',
                     },
                   ]}
-                  className='!m-0'
+                  className='lg:h-[50px]'
                 >
                   <DatePicker
                     format={'DD/MM/YYYY'}
@@ -142,10 +164,10 @@ export const Register = () => {
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your password!',
+                      message: 'Please input your address!',
                     },
                   ]}
-                  className='!m-0 col-span-2'
+                  className='lg:h-[50px] col-span-2'
                 >
                   <Input
                     type='text'
@@ -159,18 +181,26 @@ export const Register = () => {
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your username!',
+                      message: 'Please input your password!',
+                    },
+                    {
+                      min: 6,
+                      message: 'Password must be >= 6',
                     },
                   ]}
-                  className='!m-0'
+                  className='lg:h-[50px]'
                 >
-                  <Input.Password className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black' />
+                  <Input.Password
+                    placeholder='Must >= 6'
+                    className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
+                  />
                 </Form.Item>
                 {/* Cnfirmed Password */}
                 <Form.Item
-                  name='confirm'
+                  name='confirmPassword'
                   label='Confirm Password'
                   dependencies={['password']}
+                  className='lg:h-[50px]'
                   hasFeedback
                   rules={[
                     {
@@ -196,17 +226,18 @@ export const Register = () => {
               </div>
 
               {/* Submit */}
-              <Form.Item className='w-full !m-0'>
+              <Form.Item className='w-60 mx-auto lg:mt-10'>
                 <Button
                   className='w-full bg-[#946257] font-serif hover:!bg-[#946257] hover:!shadow-none'
                   type='primary'
                   htmlType='submit'
+                  loading={loading}
                 >
                   Sign up
                 </Button>
               </Form.Item>
             </Form>
-            <Link to={'/login'} className='text-center'>
+            <Link to={'/login'} className='!w-fit mx-auto'>
               I already have account
             </Link>
           </Flex>
