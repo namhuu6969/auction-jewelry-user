@@ -2,11 +2,12 @@ import { Button, Flex } from 'antd';
 import { Typography } from 'antd';
 const { Title } = Typography;
 import { Input } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const services = [
   { title: 'Support', link: '/support' },
   { title: 'Services', link: '/support' },
-  { title: 'About', link: '/support' },
+  { title: 'About', link: '/about' },
   { title: 'License', link: '/support' },
   { title: 'Language', link: '/support', icon: <icon /> },
 ];
@@ -18,6 +19,11 @@ const navLink = [
 ];
 
 const AppHeader = () => {
+  const navigate = useNavigate();
+
+  const handleNavigation = (link) => {
+    navigate(link);
+  };
   return (
     <Flex className='mx-28 h-full' vertical gap={'0.8rem'}>
       <Flex align='center' justify='end'>
@@ -25,6 +31,7 @@ const AppHeader = () => {
           {services.map((item) => (
             <p
               style={{ lineHeight: '1.8rem' }}
+              onClick={() => handleNavigation(item.link)}
               className='font-serif font-thin text-black text-lg mx-2'
               key={`${item.title} + ${item.link}`}
             >
@@ -35,7 +42,12 @@ const AppHeader = () => {
       </Flex>
       <Flex justify='space-between' className='h-20 '>
         <Flex flex={0.4} justify='start' align='center'>
-          <Title style={{ marginBottom: '0' }} className='w-3/5 font-serif' level={4}>
+          <Title
+            onClick={() => handleNavigation('/')}
+            style={{ marginBottom: '0' }}
+            className='w-3/5 font-serif'
+            level={4}
+          >
             JEWELRY AUCTION
           </Title>
           <Input placeholder='Search...' />
@@ -43,6 +55,7 @@ const AppHeader = () => {
         <Flex flex={0.3} justify='space-around' align='center'>
           {navLink.map((item) => (
             <p
+              onClick={() => handleNavigation(item.link)}
               style={{ lineHeight: '0rem' }}
               className='font-serif font-thin text-black text-lg mx-2 line-height-none'
               key={`${item.title} + ${item.link}`}
