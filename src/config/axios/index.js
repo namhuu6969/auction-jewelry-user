@@ -2,7 +2,7 @@ import axios from 'axios';
 // import { setTokens } from '@/core/store/auth/authenticate';
 
 const api = axios.create({
-  baseURL: 'http://anataarisa.hopto.org:8080/api/v1',
+  baseURL: 'http://localhost:8080/api/v1/',
 });
 
 // const refreshTokenAPI = () => {
