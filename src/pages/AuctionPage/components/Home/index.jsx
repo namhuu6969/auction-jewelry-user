@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Carousel from '@components/ui/carousel/Carousel';
 import CardNews from '../../../../components/ui/CardNews';
+import CardContent from '../../../../components/ui/Card';
 const { Title } = Typography;
 
 const endpoint = 'https://664e0a97fafad45dfaded0e5.mockapi.io/api/v1/auction-list';
@@ -55,7 +56,12 @@ export const Home = () => {
               </Link>
             </Title>
           </Flex>
-          <Carousel data={auctionData} numberOfSilde={4} status={'inProgress'} />
+          <Carousel
+            data={auctionData}
+            numberOfSilde={4}
+            status={'inProgress'}
+            component={CardContent}
+          />
         </Skeleton>
       </div>
       <Divider />
@@ -75,19 +81,7 @@ export const Home = () => {
 
           <div className='container mx-auto'>
             <Flex justify='space-between'>
-              {newsData.map((item, index) => {
-                if (index < 4) {
-                  return (
-                    <CardNews
-                      key={`${item.title} + ${index}`}
-                      imageUrl='https://loremflickr.com/320/240'
-                      title={item.title}
-                      description={item.description}
-                      price={item.price}
-                    />
-                  );
-                }
-              })}
+              <Carousel data={newsData} numberOfSilde={4} component={CardNews} />
             </Flex>
           </div>
         </Skeleton>
@@ -113,11 +107,7 @@ export const Home = () => {
               </div>
             </div>
             <div className='w-1/2 h-[400px]'>
-              <img
-                src='public/images/brand.jpg'
-                className='object-cover h-full w-full	'
-                alt='sadas'
-              />
+              <img src='/images/brand.jpg' className='object-cover h-full w-full	' alt='sadas' />
             </div>
           </div>
         </Skeleton>
