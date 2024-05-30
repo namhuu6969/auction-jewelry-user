@@ -32,7 +32,7 @@ const AppHeader = () => {
             <p
               style={{ lineHeight: '1.8rem' }}
               onClick={() => handleNavigation(item.link)}
-              className='font-serif font-thin text-black text-lg mx-2'
+              className='font-serif font-thin text-black text-lg mx-2 hover:cursor-pointer'
               key={`${item.title} + ${item.link}`}
             >
               {item.title}
