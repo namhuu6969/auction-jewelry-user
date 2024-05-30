@@ -1,0 +1,11 @@
+.carousel-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  transition: border 0.3s ease;
+}
+
+.carousel-image.selected {
+  border: 1px solid black;
+  padding: 5px
+}

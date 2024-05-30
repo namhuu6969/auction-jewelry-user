@@ -58,7 +58,7 @@ export const Home = () => {
               <div className='ml-1 mt-2 mb-4 border-solid border-b-2 border-[#000] w-[120px]' />
             </Title>
             <Title level={5}>
-              <Link to={'/'} className='font-serif !text-[#000] !underline'>
+              <Link to={'/jewelry'} className='font-serif !text-[#000] !underline'>
                 View all
               </Link>
             </Title>
