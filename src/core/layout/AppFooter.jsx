@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 const { Title } = Typography;
 const AppFooter = () => {
   return (
-    <Flex className='container mx-auto items-center justify-between'>
-      <Title level={2} className='font-serif'>
+    <Flex className='container  mx-auto items-center justify-between'>
+      <Title level={2} className='font-serif !font-medium'>
         <Link className='!text-[#000]' to={'/jewelry'}>
-          Auction Jewelry
+          JEWELRY AUCTION
         </Link>
       </Title>
       <Flex gap={100}>

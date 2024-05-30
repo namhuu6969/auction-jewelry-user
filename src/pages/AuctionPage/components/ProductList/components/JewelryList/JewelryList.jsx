@@ -1,5 +1,5 @@
 import { Button, Divider, Flex, Skeleton, Typography } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Breadcum from '@components/ui/Breadcum';
@@ -22,6 +22,7 @@ export const JewelryList = () => {
   const [loading, setLoading] = useState(false);
   const auctionData = useSelector((state) => state.auctionList.auctionListData);
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const [category, setCategory] = useState([]);
   const endpoint =
     'https://664e0a97fafad45dfaded0e5.mockapi.io/api/v1/auction-list';
@@ -84,6 +85,7 @@ export const JewelryList = () => {
               data={auctionData.filter((item) => item.category === 2)}
               numberOfSilde={4}
               component={CardContent}
+              onClick = {(e) => navigate(`detail/${e.id}`)}
             />
           </Skeleton>
         </div>
@@ -104,6 +106,7 @@ export const JewelryList = () => {
               data={auctionData.filter((item) => item.status === 'inProgress')}
               numberOfSilde={4}
               component={CardContent}
+              onClick = {(e) => navigate(`detail/${e.id}`)}
             />
           </Skeleton>
         </div>

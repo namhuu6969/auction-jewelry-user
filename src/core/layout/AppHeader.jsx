@@ -62,7 +62,11 @@ const AppHeader = () => {
             <p style={{ lineHeight: '2rem' }}>13:31:10 PM</p>
             <p style={{ lineHeight: '0.4rem' }}>Thurday, 16/5/2024</p>
           </Flex>
-          <Button className='font-serif' type='primary'>
+          <Button
+            className='font-serif bg-[#946257]'
+            type='primary'
+            onClick={() => navigate('/login')}
+          >
             Login
           </Button>
         </Flex>
