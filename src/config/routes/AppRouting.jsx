@@ -7,6 +7,7 @@ import { Login } from '@pages/LoginPage';
 import { Register } from '@pages/RegisterPage';
 import { About } from '@pages/AuctionPage/components/About';
 import { PagesNotFound } from '@pages/PagesNotFound/PagesNotFound';
+import { Categories } from '@pages/AuctionPage/components/Categories';
 
 const AppRouting = () => {
   return (
@@ -14,8 +15,9 @@ const AppRouting = () => {
       <Route path='/login' element={<Login />} />
       <Route path='/register' element={<Register />} />
       <Route exact path='/' element={<AuctionPage />}>
-        <Route path='' element={<Home />}></Route>
-        <Route path='about' element={<About />}></Route>
+        <Route path='' element={<Home />} />
+        <Route path='about' element={<About />} />
+        <Route path='auction' element={<Categories />} />
         <Route path='jewelry' element={<ProductList />}>
           <Route path='' element={<JewelryList />} />
         </Route>
