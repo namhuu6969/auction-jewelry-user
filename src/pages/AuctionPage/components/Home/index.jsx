@@ -45,7 +45,7 @@ export const Home = () => {
 
   return (
     <div className='container mx-auto my-5'>
-      <div className='container mt-5'>
+      <div className='container my-5'>
         <CarouselAntd arrows autoplay>
           <ImageBrandCard />
         </CarouselAntd>
@@ -81,7 +81,7 @@ export const Home = () => {
               <div className='mt-2 mb-4 border-b-2 border-black w-30' />
             </Title>
             <Title level={5}>
-              <Link to={'/'} className='font-serif text-black underline'>
+              <Link to={'/'} className='font-serif !text-black !underline'>
                 View all
               </Link>
             </Title>
