@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Carousel from '@components/ui/carousel/Carousel';
-import CardNews from '../../../../components/ui/CardNews';
-import CardContent from '../../../../components/ui/Card';
+import { Carousel as CarouselAntd } from 'antd';
+import CardNews from '@components/ui/CardNews';
+import CardContent from '@components/ui/Card';
+import { ImageBrandCard } from '@components/ui/ImageBrandCard/ImageBrandCard';
 const { Title } = Typography;
 
 const endpoint = 'https://664e0a97fafad45dfaded0e5.mockapi.io/api/v1/auction-list';
@@ -43,6 +45,11 @@ export const Home = () => {
 
   return (
     <div className='container mx-auto my-5'>
+      <div className='container mt-5'>
+        <CarouselAntd arrows autoplay>
+          <ImageBrandCard />
+        </CarouselAntd>
+      </div>
       <div className='container'>
         <Skeleton loading={loading}>
           <Flex className='justify-between'>
@@ -65,6 +72,7 @@ export const Home = () => {
         </Skeleton>
       </div>
       <Divider />
+
       <div className='container mt-5'>
         <Skeleton loading={loading}>
           <Flex className='justify-between'>
