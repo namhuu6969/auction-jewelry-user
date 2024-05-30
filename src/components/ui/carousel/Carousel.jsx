@@ -5,7 +5,12 @@ import 'swiper/css/pagination';
 import { Navigation } from 'swiper/modules';
 import './carousel.css';
 
-const Carousel = ({ data = [], numberOfSilde = 1, component: Component }) => {
+const Carousel = ({
+  data = [],
+  numberOfSilde = 1,
+  component: Component,
+  onClick = () => {},
+}) => {
   return (
     <Swiper
       slidesPerView={numberOfSilde}
@@ -16,6 +21,7 @@ const Carousel = ({ data = [], numberOfSilde = 1, component: Component }) => {
     >
       {data.map((element) => (
         <SwiperSlide
+          onClick={() => onClick(element)}
           key={element.id}
           className='!h-full !flex object-cover justify-center items-center text-center text-xl bg-white'
         >

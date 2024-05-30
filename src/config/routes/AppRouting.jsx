@@ -5,6 +5,7 @@ import { ProductList } from '@pages/AuctionPage/components/ProductList';
 import { JewelryList } from '@pages/AuctionPage/components/ProductList/components/JewelryList/JewelryList';
 import { Login } from '@pages/LoginPage';
 import { Register } from '@pages/RegisterPage';
+import { JewelryDetail } from '@pages/AuctionPage/components/ProductList/components/JewelryDetail';
 
 const AppRouting = () => {
   return (
@@ -15,6 +16,7 @@ const AppRouting = () => {
         <Route path='' element={<Home />}></Route>
         <Route path='jewelry' element={<ProductList />}>
           <Route path='' element={<JewelryList />} />
+          <Route path='detail/:id' element={<JewelryDetail />}/>
         </Route>
       </Route>
     </Routes>
