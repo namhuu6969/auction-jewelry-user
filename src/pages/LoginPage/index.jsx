@@ -1,9 +1,46 @@
-import { Button, Checkbox, Divider, Flex, Form, Input, Typography } from 'antd';
+import {
+  Button,
+  Divider,
+  Flex,
+  Form,
+  Input,
+  Typography,
+  notification,
+} from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
+import { authApi } from '../../services/api/auth/authApi';
+import { useDispatch } from 'react-redux';
+import { setToken } from '../../core/store/Auth/auth';
+import { useState } from 'react';
 const { Title } = Typography;
 
 export const Login = () => {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const openNotification = (placement, description, message) => {
+    notification.error({
+      message: message,
+      description: description,
+      placement,
+      duration: 5,
+    });
+  };
+  const handleLogin = async (values) => {
+    try {
+      setLoading(true);
+      const response = await authApi.signInApi(values);
+      const { accessToken, refreshToken, fullName } = response.data;
+      dispatch(setToken({ accessToken, refreshToken, fullName }));
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+      const msg = error.response.data.message;
+      openNotification('top', msg, 'Sign in failed');
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <Flex vertical>
       <Flex
@@ -52,19 +89,23 @@ export const Login = () => {
               autoComplete='off'
               layout='vertical'
               className='flex gap-10 flex-col !font-sans'
+              onFinish={handleLogin}
             >
               <Form.Item
-                label='Username'
-                name='username'
+                label='Email'
+                name='email'
                 rules={[
                   {
                     required: true,
-                    message: 'Please input your username!',
+                    message: 'Please input your email!',
                   },
                 ]}
                 className='!m-0 h-[50px]'
               >
-                <Input className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black' />
+                <Input
+                  type='email'
+                  className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
+                />
               </Form.Item>
 
               <Form.Item
@@ -81,14 +122,13 @@ export const Login = () => {
                 <Input.Password className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black' />
               </Form.Item>
 
-              <Form.Item
+              {/* <Form.Item
                 name='remember'
                 className='!m-0'
                 valuePropName='checked'
               >
                 <Checkbox>Remember me</Checkbox>
-              </Form.Item>
-
+              </Form.Item> */}
               <Link
                 className='hover:text-blue-600 text-blue-600 underline'
                 to={'/'}
@@ -98,6 +138,7 @@ export const Login = () => {
 
               <Form.Item className='w-full !m-0'>
                 <Button
+                  loading={loading}
                   className='w-full bg-[#946257] font-serif hover:!bg-[#946257] hover:!shadow-none'
                   type='primary'
                   htmlType='submit'
@@ -107,6 +148,9 @@ export const Login = () => {
               </Form.Item>
             </Form>
             <Divider className='!border-solid !border-[#B5B5B5]'>or</Divider>
+            <Title className='text-center font-sans' level={5}>
+              You don&apos;t have account?{' '}
+            </Title>
             <Button
               className='w-full bg-[#946257] font-serif hover:!bg-[#946257] hover:!shadow-none'
               type='primary'
