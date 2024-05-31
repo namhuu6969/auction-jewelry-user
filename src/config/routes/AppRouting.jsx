@@ -6,19 +6,25 @@ import { JewelryList } from '@pages/AuctionPage/components/ProductList/component
 import { Login } from '@pages/LoginPage';
 import { Register } from '@pages/RegisterPage';
 import { JewelryDetail } from '@pages/AuctionPage/components/ProductList/components/JewelryDetail';
+import { About } from '@pages/AuctionPage/components/About';
+import { PagesNotFound } from '@pages/PagesNotFound/PagesNotFound';
+import { Category } from '@pages/AuctionPage/components/Category';
 
 const AppRouting = () => {
   return (
     <Routes>
       <Route path='/login' element={<Login />} />
-      <Route path='/register' element={<Register />}/>
-      <Route path='/' element={<AuctionPage />}>
-        <Route path='' element={<Home />}></Route>
+      <Route path='/register' element={<Register />} />
+      <Route exact path='/' element={<AuctionPage />}>
+        <Route path='' element={<Home />} />
+        <Route path='about' element={<About />} />
+        <Route path='auction' element={<Category />} />
         <Route path='jewelry' element={<ProductList />}>
           <Route path='' element={<JewelryList />} />
-          <Route path='detail/:id' element={<JewelryDetail />}/>
+          <Route path='detail/:id' element={<JewelryDetail />} />
         </Route>
       </Route>
+      <Route path='*' element={<PagesNotFound />} />
     </Routes>
   );
 };

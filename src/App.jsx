@@ -2,7 +2,7 @@ import AppRouting from './config/routes/AppRouting';
 
 const App = () => {
   return (
-    <div className='flex font-bold'>
+    <div className='h-[100vh] font-bold'>
       <AppRouting />
     </div>
   );
