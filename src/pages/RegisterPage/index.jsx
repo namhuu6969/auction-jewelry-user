@@ -2,14 +2,12 @@ import { Button, DatePicker, Flex, Form, Input, Typography, notification } from 
 import { Link } from 'react-router-dom';
 import Verify from './components/Verify';
 import { useState } from 'react';
-import { authApi } from '../../services/api/auth/auth';
+import { authApi } from '../../services/api/auth/authApi';
 const { Title } = Typography;
 
 export const Register = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [api, contextHolder] = notification.useNotification();
-  console.log(api)
   const openNotification = (placement, description, message) => {
     notification.error({
       message: message,
@@ -37,7 +35,6 @@ export const Register = () => {
 
   return (
     <Flex vertical className='overflow-hidden'>
-      {contextHolder}
       {open && <Verify open={open} setOpen={setOpen}/>}
       <Flex
         className='w-full z-10 bg-white py-5 lg:px-[100px] px-10 gap-5 fixed top-0'
@@ -94,12 +91,12 @@ export const Register = () => {
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your username!',
+                      message: 'Please input your name!',
                     },
                   ]}
                   className='lg:h-[50px]'
                 >
-                  <Input className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black' />
+                  <Input placeholder='E.g: Your name' className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black' />
                 </Form.Item>
                 {/* Email */}
                 <Form.Item
@@ -108,13 +105,14 @@ export const Register = () => {
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your password!',
+                      message: 'Please input your email!',
                     },
                   ]}
                   className='lg:h-[50px]'
                 >
                   <Input
                     type='email'
+                    placeholder='E.g: example@example.domain'
                     className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
                   />
                 </Form.Item>
@@ -125,7 +123,7 @@ export const Register = () => {
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your password!',
+                      message: 'Please input your phone number!',
                     },
                     {
                       pattern: /^\d{10}$/,
@@ -136,7 +134,7 @@ export const Register = () => {
                 >
                   <Input
                     type='tel'
-                    placeholder='Must be number and 10 digits'
+                    placeholder='E.g: 0123456789'
                     className='rounded-none w-full border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
                   />
                 </Form.Item>
@@ -154,6 +152,7 @@ export const Register = () => {
                 >
                   <DatePicker
                     format={'DD/MM/YYYY'}
+                    placeholder='DD/MM/YYYY'
                     disabledDate={disabledDate}
                   />
                 </Form.Item>
@@ -171,6 +170,7 @@ export const Register = () => {
                 >
                   <Input
                     type='text'
+                    placeholder='E.g: 01 Dien Bien Phu Street, 1 Distric, HCMC, Vietnam'
                     className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
                   />
                 </Form.Item>
@@ -191,7 +191,7 @@ export const Register = () => {
                   className='lg:h-[50px]'
                 >
                   <Input.Password
-                    placeholder='Must >= 6'
+                    placeholder='At least 6 characters'
                     className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
                   />
                 </Form.Item>
