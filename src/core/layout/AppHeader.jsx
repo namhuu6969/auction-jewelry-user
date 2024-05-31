@@ -1,8 +1,11 @@
-import { Button, Flex } from 'antd';
+import { Avatar, Button, Dropdown, Flex } from 'antd';
 import { Typography } from 'antd';
 const { Title } = Typography;
 import { Input } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { UserOutlined } from '@ant-design/icons';
+import { clearToken } from '../store/Auth/auth';
 
 const services = [
   { title: 'Support', link: '/support' },
@@ -24,6 +27,30 @@ const AppHeader = () => {
   const handleNavigation = (link) => {
     navigate(link);
   };
+  const auth = localStorage.getItem('fullName');
+  const dispatch = useDispatch();
+  const handleLogout = async () => {
+    dispatch(clearToken());
+    window.location.href = '/login'
+  };
+  const items = [
+    {
+      label: (
+        <Link to={'/'}>
+        Your profile
+      </Link>
+      ),
+      key: 'profile'
+    },
+    {
+      label: (
+        <p className='font-sans' onClick={handleLogout}>
+          Log out
+        </p>
+      ),
+      key: 'logout',
+    },
+  ];
   return (
     <Flex className='container mx-auto' vertical gap={'0.8rem'}>
       <Flex align='center' justify='end'>
@@ -62,13 +89,24 @@ const AppHeader = () => {
             <p style={{ lineHeight: '2rem' }}>13:31:10 PM</p>
             <p style={{ lineHeight: '0.4rem' }}>Thurday, 16/5/2024</p>
           </Flex>
-          <Button
-            className='font-serif bg-[#946257]'
-            type='primary'
-            onClick={() => navigate('/login')}
-          >
-            Login
-          </Button>
+          {auth ? (
+            <Dropdown
+              menu={{
+                items,
+              }}
+              trigger={['click']}
+            >
+              <Avatar size={48} icon={<UserOutlined />} />
+            </Dropdown>
+          ) : (
+            <Button
+              className='font-serif bg-[#946257]'
+              type='primary'
+              onClick={() => navigate('/login')}
+            >
+              Login
+            </Button>
+          )}
         </Flex>
       </Flex>
     </Flex>
