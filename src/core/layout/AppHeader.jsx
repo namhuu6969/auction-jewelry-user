@@ -10,7 +10,7 @@ import { clearToken } from '../store/Auth/auth';
 const services = [
   { title: 'Support', link: '/support' },
   { title: 'Services', link: '/support' },
-  { title: 'About', link: '/support' },
+  { title: 'About', link: '/about' },
   { title: 'License', link: '/support' },
   { title: 'Language', link: '/support', icon: <icon /> },
 ];
@@ -23,6 +23,10 @@ const navLink = [
 
 const AppHeader = () => {
   const navigate = useNavigate();
+
+  const handleNavigation = (link) => {
+    navigate(link);
+  };
   const auth = localStorage.getItem('fullName');
   const dispatch = useDispatch();
   const handleLogout = async () => {
@@ -48,13 +52,14 @@ const AppHeader = () => {
     },
   ];
   return (
-    <Flex className='mx-28 h-full' vertical gap={'0.8rem'}>
+    <Flex className='container mx-auto' vertical gap={'0.8rem'}>
       <Flex align='center' justify='end'>
-        <Flex className='' justify='space-between'>
+        <Flex flex={0.25} justify='space-between'>
           {services.map((item) => (
             <p
               style={{ lineHeight: '1.8rem' }}
-              className='font-serif font-thin text-black text-lg mx-2'
+              onClick={() => handleNavigation(item.link)}
+              className='font-serif font-thin text-black text-lg mx-2 hover:cursor-pointer'
               key={`${item.title} + ${item.link}`}
             >
               {item.title}
@@ -62,22 +67,19 @@ const AppHeader = () => {
           ))}
         </Flex>
       </Flex>
-      <Flex justify='space-between' className='h-20 '>
+      <Flex justify='space-between' className='h-25'>
         <Flex flex={0.4} justify='start' align='center'>
-          <Title
-            style={{ marginBottom: '0' }}
-            className='w-3/5 font-serif'
-            level={4}
-          >
+          <Title level={3} className='font-serif text-black text-nowrap !mb-0 hover:cursor-pointer'>
             JEWELRY AUCTION
           </Title>
-          <Input placeholder='Search...' />
+          <Input className='ml-5' placeholder='Search...' />
         </Flex>
         <Flex flex={0.3} justify='space-around' align='center'>
           {navLink.map((item) => (
             <p
+              onClick={() => handleNavigation(item.link)}
               style={{ lineHeight: '0rem' }}
-              className='font-serif font-thin text-black text-lg mx-2 line-height-none'
+              className='font-serif font-thin text-black text-lg mx-2 line-height-none hover:cursor-pointer'
               key={`${item.title} + ${item.link}`}
             >
               {item.title}
