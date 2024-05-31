@@ -1,25 +1,61 @@
-import { Layout, Menu, Checkbox, List, Card } from 'antd';
-import { useState } from 'react';
-
+import { useEffect, useState } from 'react';
+import { Layout, List, Card } from 'antd';
+import { FilterAuctions } from './components/FilterAuctions/FilterAuctions';
+import { StatusAuctions } from './components/StatusAuctions/StatusAuctions';
+import { IncomingAuctions } from './components/IncomingAuctions/IncomingAuctions';
+import { AuctionList } from './components/AuctionsList/AuctionList';
+import axios from 'axios';
 const { Header, Content, Sider } = Layout;
 
-const data = [
-  { title: 'Product 1', feature: 'Feature A' },
-  { title: 'Product 2', feature: 'Feature B' },
-  { title: 'Product 3', feature: 'Feature A' },
-  { title: 'Product 4', feature: 'Feature C' },
+const endpoint = 'https://664e0a97fafad45dfaded0e5.mockapi.io/api/v1/auction-list';
+
+const options = [
+  {
+    label: 'Vàng',
+    value: 'Gold',
+  },
+  {
+    label: 'Hột Xoàn',
+    value: 'Pearl',
+  },
+  {
+    label: 'Kim Cương',
+    value: 'Diamond',
+  },
 ];
 
+const onChange = (checkedValues) => {
+  console.log('checked = ', checkedValues);
+};
+
 export const Category = () => {
-  const [filteredData, setFilteredData] = useState(data);
+  const [loading, setLoading] = useState(false);
+  const [auctionData, setAuctionData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(endpoint);
+        setAuctionData(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  const [filteredData, setFilteredData] = useState(auctionData);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
 
   const handleFilterChange = (checkedValues) => {
     setSelectedFeatures(checkedValues);
     if (checkedValues.length === 0) {
-      setFilteredData(data);
+      setFilteredData(auctionData);
     } else {
-      setFilteredData(data.filter((item) => checkedValues.includes(item.feature)));
+      setFilteredData(auctionData.filter((item) => checkedValues.includes(item.feature)));
     }
   };
   return (
@@ -28,25 +64,12 @@ export const Category = () => {
         <h1>Categories Page</h1>
       </Header>
       <Layout>
-        <Sider width={200} style={{ background: '#fff' }}>
-          <Menu
-            mode='inline'
-            defaultSelectedKeys={['1']}
-            style={{ height: '100%', borderRight: 0 }}
-          >
-            <Menu.Item key='1'>Category 1</Menu.Item>
-            <Menu.Item key='2'>Category 2</Menu.Item>
-            <Menu.Item key='3'>Category 3</Menu.Item>
-          </Menu>
-          <div style={{ padding: '10px' }}>
-            <h3>Filter by Feature</h3>
-            <Checkbox.Group
-              options={['Feature A', 'Feature B', 'Feature C']}
-              onChange={handleFilterChange}
-            />
-          </div>
+        <Sider className='!flex-col !justify-between' width={'25%'} style={{ background: '#fff' }}>
+          <FilterAuctions options={options} onChange={onchange} data={filteredData} />
+          <StatusAuctions options={options} onChange={handleFilterChange} />
+          <IncomingAuctions data={auctionData} />
         </Sider>
-        <Layout style={{ padding: '0 24px 24px' }}>
+        <Layout>
           <Content
             style={{
               background: '#fff',
@@ -55,15 +78,7 @@ export const Category = () => {
               minHeight: 280,
             }}
           >
-            <List
-              grid={{ gutter: 16, column: 4 }}
-              dataSource={filteredData}
-              renderItem={(item) => (
-                <List.Item>
-                  <Card title={item.title}>{item.feature}</Card>
-                </List.Item>
-              )}
-            />
+            <AuctionList data={auctionData} Card={Card} />
           </Content>
         </Layout>
       </Layout>
