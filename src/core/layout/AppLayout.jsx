@@ -25,7 +25,9 @@ export const AppLayout = ({ components }) => {
       <Header style={headerStyle}>
         <AppHeader />
       </Header>
-      <Content style={contentStyle}>{components}</Content>
+      <Content className='container mx-auto' style={contentStyle}>
+        {components}
+      </Content>
       <Footer style={footerStyle}>
         <AppFooter />
       </Footer>

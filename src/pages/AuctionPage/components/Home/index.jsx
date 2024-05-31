@@ -44,13 +44,13 @@ export const Home = () => {
   }, []);
 
   return (
-    <div className='container mx-auto my-5'>
-      <div className='container my-5'>
+    <div className='container mx-auto'>
+      <div className='container'>
         <CarouselAntd arrows autoplay>
           <ImageBrandCard />
         </CarouselAntd>
       </div>
-      <div className='container'>
+      <div className='container my-5'>
         <Skeleton loading={loading}>
           <Flex className='justify-between'>
             <Title level={3} className='font-serif'>
@@ -73,7 +73,7 @@ export const Home = () => {
       </div>
       <Divider />
 
-      <div className='container mt-5'>
+      <div className='container'>
         <Skeleton loading={loading}>
           <Flex className='justify-between'>
             <Title level={3} className='font-serif'>
