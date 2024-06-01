@@ -9,6 +9,8 @@ import { JewelryDetail } from '@pages/AuctionPage/components/ProductList/compone
 import { About } from '@pages/AuctionPage/components/About';
 import { PagesNotFound } from '@pages/PagesNotFound/PagesNotFound';
 import { Category } from '@pages/AuctionPage/components/Category';
+import { Request } from '../../pages/AuctionPage/components/RequestJewelry';
+import { RequestJewelry } from '../../pages/AuctionPage/components/RequestJewelry/Jewelry';
 
 const AppRouting = () => {
   return (
@@ -22,6 +24,9 @@ const AppRouting = () => {
         <Route path='jewelry' element={<ProductList />}>
           <Route path='' element={<JewelryList />} />
           <Route path='detail/:id' element={<JewelryDetail />} />
+        </Route>
+        <Route path='request' element={<Request />}>
+          <Route path='jewelry' element={<RequestJewelry />} />
         </Route>
       </Route>
       <Route path='*' element={<PagesNotFound />} />

@@ -20,6 +20,9 @@ api.interceptors.request.use(
 
 const refreshToken = async () => {
   const refresh = localStorage.getItem('refreshToken');
+  if(!refresh) {
+    throw new Error("No refresh token available")
+  }
   const response = await axios.post(
     'http://localhost:8080/api/v1/user/refresh',
     { refresh }
@@ -35,7 +38,7 @@ api.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         const newAccessToken = await refreshToken();
