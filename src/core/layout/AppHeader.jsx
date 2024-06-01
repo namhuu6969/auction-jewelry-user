@@ -36,8 +36,20 @@ const AppHeader = () => {
   };
   const items = [
     {
-      label: <Link to={'/'}>Your profile</Link>,
-      key: 'profile',
+      label: (
+        <Link to={'/'} className='font-sans'>
+        Your profile
+      </Link>
+      ),
+      key: 'profile'
+    },
+    {
+      label: (
+        <Link to={'/request/jewelry'} className='font-sans'>
+        Request Jewelry
+      </Link>
+      ),
+      key: 'requestjewelry'
     },
     {
       label: (
