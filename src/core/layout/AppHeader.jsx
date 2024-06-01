@@ -17,6 +17,7 @@ const services = [
 
 const navLink = [
   { title: 'Auctions', link: '/auction' },
+  { title: 'Suggest', link: '/suggest' },
   { title: 'Blog', link: '/blog' },
   { title: 'Sell', link: '/sell' },
 ];
@@ -31,7 +32,7 @@ const AppHeader = () => {
   const dispatch = useDispatch();
   const handleLogout = async () => {
     dispatch(clearToken());
-    window.location.href = '/login'
+    window.location.href = '/login';
   };
   const items = [
     {
@@ -77,12 +78,16 @@ const AppHeader = () => {
       </Flex>
       <Flex justify='space-between' className='h-25'>
         <Flex flex={0.4} justify='start' align='center'>
-          <Title level={3} className='font-serif text-black text-nowrap !mb-0 hover:cursor-pointer'>
+          <Title
+            onClick={() => navigate('/')}
+            level={3}
+            className='font-serif text-black text-nowrap !mb-0 hover:cursor-pointer'
+          >
             JEWELRY AUCTION
           </Title>
           <Input className='ml-5' placeholder='Search...' />
         </Flex>
-        <Flex flex={0.3} justify='space-around' align='center'>
+        <Flex flex={0.4} justify='space-around' align='center'>
           {navLink.map((item) => (
             <p
               onClick={() => handleNavigation(item.link)}
