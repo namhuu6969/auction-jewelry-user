@@ -67,30 +67,22 @@ export const TablePrice = () => {
     return pricePerGram * 37.5; // 1 lượng = 37.5 grams
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
   return (
     <div className='container mx-auto'>
       <table className="table-auto bg-white shadow-md rounded border-collapse w-[50%] mx-auto font-sans">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-            <th className="py-3 px-6 text-left">Material</th>
-            <th className="py-3 px-6 text-left">Price per ounce (37.5g) ({exchangeRate} VND)</th>
+            <th className="py-3 px-6 text-left">Chất liệu</th>
+            <th className="py-3 px-6 text-left">Giá mỗi lượng (37.5g) ({exchangeRate} VND)</th>
           </tr>
         </thead>
         <tbody className="text-gray-600 text-sm font-light">
           <tr className="border-b border-gray-200 hover:bg-gray-100">
-            <td className="py-3 px-6 text-left whitespace-nowrap">Gold</td>
+            <td className="py-3 px-6 text-left whitespace-nowrap">Vàng</td>
             <td className="py-3 px-6 text-left">{materialPrice.gold ? materialPrice.gold.toLocaleString() : 'N/A'} VND</td>
           </tr>
           <tr className="border-b border-gray-200 hover:bg-gray-100">
-            <td className="py-3 px-6 text-left whitespace-nowrap">Silver</td>
+            <td className="py-3 px-6 text-left whitespace-nowrap">Bạc</td>
             <td className="py-3 px-6 text-left">{materialPrice.silver ? materialPrice.silver.toLocaleString() : 'N/A'} VND</td>
           </tr>
         </tbody>
