@@ -21,7 +21,7 @@ const footerStyle = {
 };
 export const AppLayout = ({ components }) => {
   return (
-    <Layout>
+    <Layout className='bg-[#fff]'>
       <Header style={headerStyle}>
         <AppHeader />
       </Header>
