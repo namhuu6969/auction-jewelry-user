@@ -1,0 +1,16 @@
+.custom-tabs .ant-tabs-tab-active {
+  background-color: #946257 !important;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.custom-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: white !important;
+}
+
+.custom-tabs .ant-tabs-tab  {
+  padding: 10px;
+}
+
+.custom-tabs .ant-tabs-nav-wrap {
+  justify-content: center;
+}

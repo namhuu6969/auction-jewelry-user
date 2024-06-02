@@ -38,23 +38,31 @@ const AppHeader = () => {
     {
       label: (
         <Link to={'/'} className='font-sans'>
-        Your profile
-      </Link>
+          Thông tin cá nhân
+        </Link>
       ),
-      key: 'profile'
+      key: 'profile',
     },
     {
       label: (
         <Link to={'/request/jewelry'} className='font-sans'>
-        Request Jewelry
-      </Link>
+          Yêu cầu trang sức
+        </Link>
       ),
-      key: 'requestjewelry'
+      key: 'requestjewelry',
+    },
+    {
+      label: (
+        <Link to={'/wishlist'} className='font-sans'>
+          Xem mong muốn
+        </Link>
+      ),
+      key: 'requestjewelry',
     },
     {
       label: (
         <p className='font-sans' onClick={handleLogout}>
-          Log out
+          Đăng xuất
         </p>
       ),
       key: 'logout',
@@ -117,7 +125,7 @@ const AppHeader = () => {
               type='primary'
               onClick={() => navigate('/login')}
             >
-              Login
+              Đăng nhập
             </Button>
           )}
         </Flex>
