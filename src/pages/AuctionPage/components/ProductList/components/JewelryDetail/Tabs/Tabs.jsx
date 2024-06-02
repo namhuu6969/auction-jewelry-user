@@ -155,7 +155,7 @@ const TabsContent = () => {
     },
   ];
   return (
-    <Tabs defaultActiveKey='1' className='custom-tabs' items={items} />
+    <Tabs defaultActiveKey='1' className='custom-tabs-detail' items={items} />
   );
 };
 

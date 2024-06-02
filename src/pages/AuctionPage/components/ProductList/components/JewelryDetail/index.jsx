@@ -8,8 +8,10 @@ import {
   ClockCircleOutlined,
 } from '@ant-design/icons';
 import TabsContent from './Tabs/Tabs';
-import './index.css'
+import './index.css';
 import { useState } from 'react';
+import { SecondaryButton } from '../../../../../../components/ui/SecondaryButton';
+import { PrimaryButton } from '../../../../../../components/ui/PrimaryButton';
 const { Title } = Typography;
 
 export const JewelryDetail = () => {
@@ -82,11 +84,7 @@ export const JewelryDetail = () => {
                 src={selectedImage.image}
               />
             </div>
-            <Carousel
-              component={img}
-              data={data}
-              numberOfSilde={5}
-            />
+            <Carousel component={img} data={data} numberOfSilde={5} />
           </Flex>
           <Flex vertical className='w-[50%]' gap={20}>
             <Title level={2} className='font-serif !font-medium text-left'>
@@ -150,20 +148,16 @@ export const JewelryDetail = () => {
                 </Title>
               </Flex>
             </Flex>
-            <Button
-              type='primary'
-              className='bg-[#946257] font-serif text-white !border-[#946257] text-xl h-fit font-semibold
-              hover:!border-[1px] hover:!border-solid hover:!border-[#946257] hover:!bg-[#946257] hover:!text-white '
+            <PrimaryButton
+              onClick={() => console.log('oke')}
+              className={'!text-2xl font-medium'}
             >
-              PLACE BID
-            </Button>
+              Đấu giá
+            </PrimaryButton>
             <div className='flex items-center gap-5'>
-              <Button
-                className='bg-[#9462572b] font-serif text-[#946257] !border-[#946257] text-xl h-fit font-thin w-fit px-10
-              hover:!border-[1px] hover:!border-solid hover:!border-[#946257] hover:!bg-[#9462572b] hover:!text-[#946257] '
-              >
-                BUY NOW
-              </Button>
+              <SecondaryButton onClick={() => console.log('oke')}>
+                Mua ngay
+              </SecondaryButton>
               <Title level={4} className='!m-0 !text-red-600'>
                 with 5.000.000VND
               </Title>
