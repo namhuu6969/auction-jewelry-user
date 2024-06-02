@@ -57,7 +57,7 @@ const AppHeader = () => {
           Xem mong muốn
         </Link>
       ),
-      key: 'requestjewelry',
+      key: 'wishlist',
     },
     {
       label: (
