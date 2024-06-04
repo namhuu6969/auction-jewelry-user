@@ -38,7 +38,7 @@ const AppHeader = () => {
   const items = [
     {
       label: (
-        <Link to={'/'} className='font-sans'>
+        <Link to={'/profile'} className='font-sans'>
           Thông tin cá nhân
         </Link>
       ),

@@ -11,6 +11,7 @@ import { PagesNotFound } from '@pages/PagesNotFound/PagesNotFound';
 import { Category } from '@pages/AuctionPage/components/Category';
 import { Request } from '@pages/AuctionPage/components/RequestJewelry';
 import { RequestJewelry } from '@pages/AuctionPage/components/RequestJewelry/Jewelry';
+import { ProfilePage } from '@pages/AuctionPage/components/ProfilePage';
 import WishlistPage from '@pages/AuctionPage/components/Wishlist';
 import { ValuationPage } from '@pages/AuctionPage/components/Valuation';
 
@@ -21,6 +22,7 @@ const AppRouting = () => {
       <Route path='/register' element={<Register />} />
       <Route exact path='/' element={<AuctionPage />}>
         <Route path='' element={<Home />} />
+        <Route path='/profile' element={<ProfilePage />} />
         <Route path='about' element={<About />} />
         <Route path='auction' element={<Category />} />
         <Route path='jewelry' element={<ProductList />}>
