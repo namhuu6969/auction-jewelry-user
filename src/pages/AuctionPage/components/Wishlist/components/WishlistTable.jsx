@@ -1,7 +1,9 @@
 import { Image, Table } from 'antd';
 import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
+import useTableSearch from '../../../../../hooks/useTableSearch';
 
 export const WishlistTable = () => {
+  const { getColumnSearchProps } = useTableSearch();
   const columns = [
     {
       title: 'Ảnh',
@@ -15,6 +17,7 @@ export const WishlistTable = () => {
       title: 'Tên sản phẩm',
       dataIndex: 'name',
       key: 'name',
+      ...getColumnSearchProps('name')
     },
     {
       title: 'Giá hiện tại',
@@ -35,6 +38,7 @@ export const WishlistTable = () => {
       title: 'Người bán',
       dataIndex: 'seller',
       key: 'seller',
+      ...getColumnSearchProps('seller')
     },
     {
       title: 'Đấu giá cao nhất',
@@ -51,8 +55,8 @@ export const WishlistTable = () => {
       key: 'action',
       render: () => (
         <PrimaryButton onClick={() => console.log('Success')}>
-        Xem
-      </PrimaryButton>
+          Xem
+        </PrimaryButton>
       ),
     },
   ];

@@ -1,4 +1,3 @@
-import { TablePrice } from './components/TablePrice';
 import { useSelector } from 'react-redux';
 import NotAuthorize from '../../../../../components/ui/NotAuthorize';
 import Breadcum from '@components/ui/Breadcum';
@@ -25,7 +24,6 @@ export const RequestJewelry = () => {
         <Breadcum linkBreadcum={breadcumLink} />
         <Divider className='border-black' />
       </Flex>
-      <TablePrice />
       <PolicyRequest />
       <Title level={4} className='font-serif'>Thông tin của trang sức</Title>
       <FormRequest />

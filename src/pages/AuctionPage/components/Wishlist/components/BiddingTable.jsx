@@ -1,7 +1,9 @@
 import { Image, Table } from 'antd';
 import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
+import useTableSearch from '../../../../../hooks/useTableSearch';
 
 export const BiddingTable = () => {
+  const { getColumnSearchProps } = useTableSearch();
   const columns = [
     {
       title: 'Ảnh',
@@ -15,21 +17,25 @@ export const BiddingTable = () => {
       title: 'Tên sản phẩm',
       dataIndex: 'name',
       key: 'name',
+      ...getColumnSearchProps('name')
     },
     {
       title: 'Giá hiện tại',
       dataIndex: 'current',
       key: 'current',
+      sorter: (a, b) => a.current - b.current,
     },
     {
       title: 'Giá mua ngay',
       dataIndex: 'buynow',
       key: 'buynow  ',
+      sorter: (a, b) => a.buynow - b.buynow,
     },
     {
       title: 'Số người tham gia',
       dataIndex: 'participants',
       key: 'participants',
+      sorter: (a, b) => a.participants - b.participants,
     },
     {
       title: 'Người bán',
@@ -62,9 +68,21 @@ export const BiddingTable = () => {
       image:
         'https://bazaarvietnam.vn/wp-content/uploads/2021/03/trang-suc-fine-jewelry-la-gi-cartier.jpg',
       name: 'Ring',
-      current: '1.000.000 VND',
-      buynow: '5.000.000 VND',
-      participants: '12',
+      current: 1000000,
+      buynow: 5000000,
+      participants: 12,
+      seller: 'ABC',
+      best: 'XYZ',
+      remain: '3 days',
+    },
+    {
+      key: '21',
+      image:
+        'https://bazaarvietnam.vn/wp-content/uploads/2021/03/trang-suc-fine-jewelry-la-gi-cartier.jpg',
+      name: 'Ring',
+      current: 2000000,
+      buynow: 6000000,
+      participants: 13,
       seller: 'ABC',
       best: 'XYZ',
       remain: '3 days',

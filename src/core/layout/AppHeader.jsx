@@ -20,6 +20,7 @@ const navLink = [
   { title: 'Suggest', link: '/suggest' },
   { title: 'Blog', link: '/blog' },
   { title: 'Sell', link: '/sell' },
+  { title: 'Định giá', link: '/valuation' },
 ];
 
 const AppHeader = () => {

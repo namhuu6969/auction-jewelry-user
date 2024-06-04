@@ -4,14 +4,6 @@ import { Button, Form, Input, InputNumber, Modal, Select, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
 export const FormRequest = () => {
-  const [category, setCategory] = useState([]);
-  const [brand, setBrand] = useState([]);
-  const [collection, setCollection] = useState([
-    {
-      label: 'ABC',
-      value: 'ABC',
-    },
-  ]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
@@ -46,6 +38,38 @@ export const FormRequest = () => {
       reader.onerror = (error) => reject(error);
     });
 
+  const [category, setCategory] = useState([]);
+  const [brand, setBrand] = useState([]);
+  const [collection, setCollection] = useState([]);
+  const [material, setMaterial] = useState([]);
+  const conditionItem = [
+    {
+      label: 'New',
+      value: 'New',
+    },
+    {
+      label: 'Used',
+      value: 'Used',
+    },
+  ];
+  const [choosedBrand, setChoosedBrand] = useState('');
+  const [selectedMaterials, setSelectedMaterials] = useState([]);
+  const handleMaterialsChange = (selectedIds) => {
+    const newSelectedMaterials = selectedIds.map((id) => {
+      const existing = selectedMaterials.find((m) => m.idMaterial === id);
+      return existing || { idMaterial: id, weight: null };
+    });
+    setSelectedMaterials(newSelectedMaterials);
+  };
+  const handleWeightChange = (id, weight) => {
+    setSelectedMaterials((prevState) =>
+      prevState.map((m) => (m.idMaterial === id ? { ...m, weight: weight } : m))
+    );
+  };
+  const handleChoosedBrandChange = (value) => {
+    setChoosedBrand(value);
+  };
+
   const fetchApiCategory = async () => {
     const response = await requestJewelryApi.getCategory();
     setCategory(response.data);
@@ -53,6 +77,14 @@ export const FormRequest = () => {
   const fetchBrand = async () => {
     const response = await requestJewelryApi.getBrand();
     setBrand(response.data);
+  };
+  const fetchCollection = async () => {
+    const response = await requestJewelryApi.getCollection();
+    setCollection(response.data);
+  };
+  const fetchMaterial = async () => {
+    const response = await requestJewelryApi.getMaterial();
+    setMaterial(response.data);
   };
   const itemsCategory = category.map((e) => ({
     label: e.name,
@@ -65,39 +97,59 @@ export const FormRequest = () => {
   const itemsGender = [
     {
       label: 'Nam',
-      value: 'male',
+      value: 'Male',
     },
     {
       label: 'Nữ',
-      value: 'female',
+      value: 'Female',
     },
     {
       label: 'Unisex',
-      value: 'unisex',
+      value: 'Unisex',
     },
   ];
-  const itemMaterials = [
-    {
-      label: 'Vàng',
-      value: 'gold',
-    },
-    {
-      label: 'Bạc',
-      value: 'silver',
-    },
-  ];
+  const itemsCollection = collection
+    .filter((item) => item.brand.id === choosedBrand)
+    .map((e) => ({
+      label: e.name,
+      value: e.id,
+    }));
+  const itemsMaterial = material.map((e) => ({
+    label: e.name,
+    value: e.id,
+  }));
   const filterOption = (input, option) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
   const handleSubmit = (values) => {
-    const imagesFileUrls = fileList.map((file) => file.thumbUrl || file.url);
-    const updatedValues = { ...values, imagesFile: imagesFileUrls };
+    const materials = selectedMaterials.map((material) => ({
+      idMaterial: material.idMaterial,
+      weight: values[`material_${material.idMaterial}`],
+    }));
+    
+    const { imagesFile, ...restValues } = values;
+    const imagesFileUrls = imagesFile.map((file) => file.thumbUrl || file.url);
+    selectedMaterials.forEach((material) => {
+      delete restValues[`material_${material.idMaterial}`];
+    });
+
+    const updatedValues = {
+      jewelryRequest: {
+        ...restValues,
+        materials,
+      },
+      imageThumbnail: imagesFileUrls[0],
+      imagesFile: imagesFileUrls,
+    };
+
     console.log(updatedValues);
   };
 
   useEffect(() => {
     fetchApiCategory();
     fetchBrand();
+    fetchCollection();
+    fetchMaterial();
   }, []);
   return (
     <>
@@ -163,6 +215,23 @@ export const FormRequest = () => {
             <Input />
           </Form.Item>
           <Form.Item
+            name={'jewelryCondition'}
+            label='Chất lượng'
+            rules={[
+              {
+                required: true,
+                message: 'Hãy nhập chất lượng!',
+              },
+            ]}
+            className='!text-left'
+          >
+            <Select
+              placeholder='Chọn chất lượng'
+              options={conditionItem}
+              className='!text-left'
+            />
+          </Form.Item>
+          <Form.Item
             name={'category'}
             label='Danh mục'
             rules={[
@@ -194,6 +263,7 @@ export const FormRequest = () => {
             className='!text-left'
           >
             <Select
+              onChange={handleChoosedBrandChange}
               showSearch
               placeholder='Chọn hãng'
               optionFilterProp='children'
@@ -204,7 +274,7 @@ export const FormRequest = () => {
           </Form.Item>
           <Form.Item
             name={'collection'}
-            label='Bộ sưu tập'
+            label='Bộ sưu tập (Vui lòng chọn hãng trước)'
             rules={[
               {
                 required: true,
@@ -218,22 +288,10 @@ export const FormRequest = () => {
               placeholder='Chọn bộ sưu tập'
               optionFilterProp='children'
               filterOption={filterOption}
-              options={collection}
+              options={itemsCollection}
               className='!text-left'
+              disabled={choosedBrand ? false : true}
             />
-          </Form.Item>
-          <Form.Item
-            name={'jewelryCondition'}
-            label='Chất lượng'
-            rules={[
-              {
-                required: true,
-                message: 'Hãy nhập chất lượng!',
-              },
-            ]}
-            className='!text-left'
-          >
-            <Input />
           </Form.Item>
           <Form.Item
             name={'sex'}
@@ -256,7 +314,7 @@ export const FormRequest = () => {
             />
           </Form.Item>
           <Form.Item
-            name={'itemMaterials'}
+            name={'materials'}
             label='Chất liệu'
             rules={[
               {
@@ -272,10 +330,33 @@ export const FormRequest = () => {
               placeholder='Chọn chất liệu'
               optionFilterProp='children'
               filterOption={filterOption}
-              options={itemMaterials}
+              options={itemsMaterial}
               className='!text-left'
+              onChange={handleMaterialsChange}
             />
           </Form.Item>
+          {selectedMaterials.map((material) => (
+            <Form.Item
+              name={`material_${material.idMaterial}`}
+              key={material.idMaterial}
+              label={`Nhập cân nặng của ${
+                itemsMaterial.filter(
+                  (item) => item.value === material.idMaterial
+                )[0].label
+              }`}
+              className='!text-left'
+              rules={[
+                { required: true, message: 'Hãy nhập cân nặng của vật liệu' },
+              ]}
+            >
+              <InputNumber
+                controls={false}
+                value={material.weight}
+                onChange={(e) => handleWeightChange(material.idMaterial, e)}
+                className='w-full'
+              />
+            </Form.Item>
+          ))}
         </div>
 
         <Form.Item

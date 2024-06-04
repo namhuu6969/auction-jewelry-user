@@ -13,6 +13,7 @@ import { Request } from '@pages/AuctionPage/components/RequestJewelry';
 import { RequestJewelry } from '@pages/AuctionPage/components/RequestJewelry/Jewelry';
 import { ProfilePage } from '@pages/AuctionPage/components/ProfilePage';
 import WishlistPage from '@pages/AuctionPage/components/Wishlist';
+import { ValuationPage } from '@pages/AuctionPage/components/Valuation';
 
 const AppRouting = () => {
   return (
@@ -31,7 +32,8 @@ const AppRouting = () => {
         <Route path='request' element={<Request />}>
           <Route path='jewelry' element={<RequestJewelry />} />
         </Route>
-        <Route path='/wishlist' element={<WishlistPage />} />
+        <Route path='wishlist' element={<WishlistPage />} />
+        <Route path='valuation' element={<ValuationPage />} />
       </Route>
       <Route path='*' element={<PagesNotFound />} />
     </Routes>
