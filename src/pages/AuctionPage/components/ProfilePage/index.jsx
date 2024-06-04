@@ -25,11 +25,6 @@ export const ProfilePage = () => {
 
   return (
     <Layout className='p-4'>
-      <Header style={{ background: '#fff', padding: 0 }}>
-        <Title level={2} style={{ textAlign: 'center' }}>
-          User Profile
-        </Title>
-      </Header>
       <Content style={{ padding: '0 50px', marginTop: 20 }}>
         <Row gutter={[16, 16]}>
           <Col span={6}>
