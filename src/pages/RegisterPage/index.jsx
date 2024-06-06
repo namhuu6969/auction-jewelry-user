@@ -1,4 +1,12 @@
-import { Button, DatePicker, Flex, Form, Input, Typography, notification } from 'antd';
+import {
+  Button,
+  DatePicker,
+  Flex,
+  Form,
+  Input,
+  Typography,
+  notification,
+} from 'antd';
 import { Link } from 'react-router-dom';
 import Verify from './components/Verify';
 import { useState } from 'react';
@@ -22,12 +30,10 @@ export const Register = () => {
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      const response = await authApi.signUpApi(values);
-      if (response.data) {
-        setOpen(true);
-      }
+      await authApi.signUpApi(values);
+      setOpen(true);
     } catch (err) {
-      openNotification('top', err.response.data.message, 'Sign up failed')
+      openNotification('top', err.response.data.message, 'Sign up failed');
     } finally {
       setLoading(false);
     }
@@ -35,7 +41,7 @@ export const Register = () => {
 
   return (
     <Flex vertical className='overflow-hidden'>
-      {open && <Verify open={open} setOpen={setOpen}/>}
+      {open && <Verify open={open} setOpen={setOpen} />}
       <Flex
         className='w-full z-10 bg-white py-5 lg:px-[100px] px-10 gap-5 fixed top-0'
         justify='left'
@@ -96,7 +102,10 @@ export const Register = () => {
                   ]}
                   className='lg:h-[50px]'
                 >
-                  <Input placeholder='E.g: Your name' className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black' />
+                  <Input
+                    placeholder='E.g: Your name'
+                    className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
+                  />
                 </Form.Item>
                 {/* Email */}
                 <Form.Item
