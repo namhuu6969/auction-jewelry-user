@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
 import { requestJewelryApi } from '../../../../../../services/api/RequestApi/requestJewelryApi';
-import { Button, Form, Input, InputNumber, Modal, Select, Upload } from 'antd';
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+  Upload,
+  notification,
+} from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
 export const FormRequest = () => {
@@ -38,6 +47,7 @@ export const FormRequest = () => {
       reader.onerror = (error) => reject(error);
     });
 
+  const [form] = Form.useForm();
   const [category, setCategory] = useState([]);
   const [brand, setBrand] = useState([]);
   const [collection, setCollection] = useState([]);
@@ -54,17 +64,32 @@ export const FormRequest = () => {
   ];
   const [choosedBrand, setChoosedBrand] = useState('');
   const [selectedMaterials, setSelectedMaterials] = useState([]);
-  const handleMaterialsChange = (selectedIds) => {
-    const newSelectedMaterials = selectedIds.map((id) => {
-      const existing = selectedMaterials.find((m) => m.idMaterial === id);
-      return existing || { idMaterial: id, weight: null };
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type, title) => {
+    api[type]({
+      message: title,
+      placement: 'top',
+      duration: 5
+    });
+  };
+  const [loading, setLoading] = useState(false);
+  const handleMaterialsChange = (selectedMaterialIds) => {
+    const newSelectedMaterials = selectedMaterialIds.map((id) => {
+      const existingMaterial = selectedMaterials.find(
+        (mat) => mat.idMaterial === id
+      );
+      return existingMaterial
+        ? existingMaterial
+        : { idMaterial: id, weight: 0 };
     });
     setSelectedMaterials(newSelectedMaterials);
   };
-  const handleWeightChange = (id, weight) => {
-    setSelectedMaterials((prevState) =>
-      prevState.map((m) => (m.idMaterial === id ? { ...m, weight: weight } : m))
+
+  const handleWeightChange = (idMaterial, weight) => {
+    const updatedMaterials = selectedMaterials.map((material) =>
+      material.idMaterial === idMaterial ? { ...material, weight } : material
     );
+    setSelectedMaterials(updatedMaterials);
   };
   const handleChoosedBrandChange = (value) => {
     setChoosedBrand(value);
@@ -92,8 +117,14 @@ export const FormRequest = () => {
   }));
   const itemsBrand = brand.map((e) => ({
     label: e.name,
-    value: e.id,
+    value: e.name,
   }));
+  const itemsCollection = collection
+    .filter((item) => item.brand.name === choosedBrand)
+    .map((e) => ({
+      label: e.name,
+      value: e.name,
+    }));
   const itemsGender = [
     {
       label: 'Nam',
@@ -108,12 +139,6 @@ export const FormRequest = () => {
       value: 'Unisex',
     },
   ];
-  const itemsCollection = collection
-    .filter((item) => item.brand.id === choosedBrand)
-    .map((e) => ({
-      label: e.name,
-      value: e.id,
-    }));
   const itemsMaterial = material.map((e) => ({
     label: e.name,
     value: e.id,
@@ -121,28 +146,47 @@ export const FormRequest = () => {
   const filterOption = (input, option) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
-  const handleSubmit = (values) => {
-    const materials = selectedMaterials.map((material) => ({
-      idMaterial: material.idMaterial,
-      weight: values[`material_${material.idMaterial}`],
-    }));
-    
-    const { imagesFile, ...restValues } = values;
-    const imagesFileUrls = imagesFile.map((file) => file.thumbUrl || file.url);
-    selectedMaterials.forEach((material) => {
-      delete restValues[`material_${material.idMaterial}`];
-    });
+  const handleSubmit = async (values) => {
+    try {
+      setLoading(true)
+      const formData = new FormData();
+      if (values?.name) formData.append('name', values.name);
+      if (values?.description)
+        formData.append('description', values.description);
+      if (values?.category) formData.append('category', values.category);
+      if (values?.weight) formData.append('weight', values.weight);
+      if (values?.size) formData.append('size', values.size);
+      if (values?.color) formData.append('color', values.color);
+      if (values?.sex) formData.append('sex', values.sex);
+      if (values?.brand) formData.append('brand', values.brand);
+      if (values?.jewelryCondition)
+        formData.append('jewelryCondition', values.jewelryCondition);
+      if (values?.collection) formData.append('collection', values.collection);
 
-    const updatedValues = {
-      jewelryRequest: {
-        ...restValues,
-        materials,
-      },
-      imageThumbnail: imagesFileUrls[0],
-      imagesFile: imagesFileUrls,
-    };
-
-    console.log(updatedValues);
+      if (selectedMaterials.length > 0) {
+        selectedMaterials.forEach((material, index) => {
+          formData.append(
+            `materials[${index}].idMaterial`,
+            material.idMaterial
+          );
+          formData.append(`materials.[${index}].weight`, material.weight);
+        });
+      }
+      if (values?.imagesFile && values.imagesFile.length > 0) {
+        formData.append('imageThumbnail', values.imagesFile[0].originFileObj);
+        values.imagesFile.forEach((file) => {
+          formData.append(`imagesFile`, file.originFileObj);
+        });
+      }
+      const response = await requestJewelryApi.addRequestJewelry(formData);
+      form.resetFields()
+      setSelectedMaterials([])
+      openNotificationWithIcon('success', response.message);
+    } catch (error) {
+      openNotificationWithIcon('error', error);
+    } finally {
+      setLoading(false)
+    }
   };
 
   useEffect(() => {
@@ -153,6 +197,7 @@ export const FormRequest = () => {
   }, []);
   return (
     <>
+      {contextHolder}
       <Form
         onFinish={handleSubmit}
         labelCol={{
@@ -160,6 +205,7 @@ export const FormRequest = () => {
         }}
         className='!font-sans'
         size='large'
+        form={form}
       >
         <div className='grid grid-cols-4 gap-5'>
           <Form.Item
@@ -374,7 +420,7 @@ export const FormRequest = () => {
         </Form.Item>
         <Form.Item
           name='imagesFile'
-          label='Đăng ảnh sản phẩm'
+          label='Đăng ảnh sản phẩm (Ảnh đầu tiên sẽ là ảnh bìa sản phẩm)'
           valuePropName='fileList'
           getValueFromEvent={normFile}
           rules={[{ required: true, message: 'Hãy đăng ảnh sản phẩm' }]}
@@ -401,6 +447,7 @@ export const FormRequest = () => {
             className='w-full bg-[#946257] font-serif hover:!bg-[#946257] hover:!shadow-none'
             type='primary'
             htmlType='submit'
+            loading={loading}
           >
             Gửi yêu cầu
           </Button>

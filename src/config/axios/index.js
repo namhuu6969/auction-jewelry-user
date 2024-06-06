@@ -1,9 +1,18 @@
+import { notification } from 'antd';
 import axios from 'axios';
 // import { setTokens } from '@/core/store/auth/authenticate';
 
 const api = axios.create({
   baseURL: 'http://localhost:8080/api/v1/',
 });
+
+const openNotificationWithIcon = (type, title) => {
+  notification[type]({
+    message: title,
+    placement: 'top',
+    duration: 5,
+  });
+};
 
 api.interceptors.request.use(
   (config) => {
@@ -46,6 +55,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (error) {
         console.log(error);
+        openNotificationWithIcon('warning', error.message)
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('fullName');
