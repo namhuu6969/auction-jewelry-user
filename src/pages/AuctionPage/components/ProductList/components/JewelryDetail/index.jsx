@@ -1,4 +1,4 @@
-import { Avatar, Button, Divider, Flex, Typography } from 'antd';
+import { Avatar, Button, Divider, Flex, Modal, Typography } from 'antd';
 import Breadcum from '@components/ui/Breadcum';
 import { useParams } from 'react-router-dom';
 import Carousel from '@components/ui/carousel/Carousel';
@@ -9,10 +9,12 @@ import { useState } from 'react';
 import { SecondaryButton } from '@components/ui/SecondaryButton';
 import { PrimaryButton } from '@components/ui/PrimaryButton';
 import { BidModal } from './BidModal/BidModal'; // Adjust the import path as needed
+import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
 
 export const JewelryDetail = () => {
+  const navigator = useNavigate();
   const { id } = useParams();
   const [selectedImage, setSelectedImage] = useState({
     id: 1,
@@ -27,14 +29,19 @@ export const JewelryDetail = () => {
   };
 
   const handleOk = () => {
-    if (currentStep === steps.length - 1) {
-      // Handle the final submission logic here
-      console.log('Final bid amount:', bidAmount);
-      setIsModalVisible(false);
-      setCurrentStep(0); // Reset step after submission
-    } else {
-      next();
-    }
+    // Handle the final submission logic here
+    console.log('Final bid amount:', bidAmount);
+    setIsModalVisible(false);
+    setCurrentStep(0); // Reset step after submission
+    Modal.success({
+      title: 'Bid Successfully',
+      content: `Your bid is on its way!`,
+      okText: 'Bid more now',
+      cancelText: 'Cancel',
+      onOk: () => {
+        navigator('/auction');
+      },
+    });
   };
 
   const handleCancel = () => {
