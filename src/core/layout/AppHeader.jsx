@@ -55,7 +55,7 @@ const AppHeader = () => {
     {
       label: (
         <Link to={'/wishlist'} className='font-sans'>
-          Xem mong muốn
+          Quản lý đấu giá
         </Link>
       ),
       key: 'wishlist',
