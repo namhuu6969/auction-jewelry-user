@@ -69,7 +69,7 @@ export const FormRequest = () => {
     api[type]({
       message: title,
       placement: 'top',
-      duration: 5
+      duration: 5,
     });
   };
   const [loading, setLoading] = useState(false);
@@ -111,19 +111,19 @@ export const FormRequest = () => {
     const response = await requestJewelryApi.getMaterial();
     setMaterial(response.data);
   };
-  const itemsCategory = category.map((e) => ({
-    label: e.name,
-    value: e.id,
+  const itemsCategory = category?.map((e) => ({
+    label: e?.name,
+    value: e?.id,
   }));
-  const itemsBrand = brand.map((e) => ({
-    label: e.name,
-    value: e.name,
+  const itemsBrand = brand?.map((e) => ({
+    label: e?.name,
+    value: e?.name,
   }));
   const itemsCollection = collection
-    .filter((item) => item.brand.name === choosedBrand)
-    .map((e) => ({
-      label: e.name,
-      value: e.name,
+    ?.filter((item) => item?.brand.name === choosedBrand)
+    ?.map((e) => ({
+      label: e?.name,
+      value: e?.name,
     }));
   const itemsGender = [
     {
@@ -139,16 +139,16 @@ export const FormRequest = () => {
       value: 'Unisex',
     },
   ];
-  const itemsMaterial = material.map((e) => ({
-    label: e.name,
-    value: e.id,
+  const itemsMaterial = material?.map((e) => ({
+    label: e?.name,
+    value: e?.id,
   }));
   const filterOption = (input, option) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
   const handleSubmit = async (values) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const formData = new FormData();
       if (values?.name) formData.append('name', values.name);
       if (values?.description)
@@ -179,13 +179,13 @@ export const FormRequest = () => {
         });
       }
       const response = await requestJewelryApi.addRequestJewelry(formData);
-      form.resetFields()
-      setSelectedMaterials([])
+      form.resetFields();
+      setSelectedMaterials([]);
       openNotificationWithIcon('success', response.message);
     } catch (error) {
       openNotificationWithIcon('error', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
