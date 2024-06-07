@@ -8,5 +8,9 @@ export const authApi = {
   signInApi: async (data) => {
     const response = await axiosClient.post('user/signin', data)
     return response.data
+  },
+  forgotPasswordApi: async (email) => {
+    const response = await axiosClient.get(`user/forgotpassword?email=${email}`)
+    return response.data
   }
 }

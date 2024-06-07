@@ -12,10 +12,12 @@ import { authApi } from '../../services/api/auth/authApi';
 import { useDispatch } from 'react-redux';
 import { setToken } from '../../core/store/Auth/auth';
 import { useState } from 'react';
+import { ForgotPassword } from './components/ForgotPassword';
 const { Title } = Typography;
 
 export const Login = () => {
   const [loading, setLoading] = useState(false);
+  const [openForgot, setOpenForgot] = useState(false)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const openNotification = (placement, description, message) => {
@@ -43,6 +45,7 @@ export const Login = () => {
   };
   return (
     <Flex vertical>
+      <ForgotPassword openForgot={openForgot} setOpenForgot={setOpenForgot} />
       <Flex
         className='w-full z-10 bg-white py-5 fixed top-0 lg:px-[100px] p-10 gap-10'
         justify='left'
@@ -131,7 +134,7 @@ export const Login = () => {
               </Form.Item> */}
               <Link
                 className='hover:text-blue-600 text-blue-600 underline'
-                to={'/'}
+                onClick={() => setOpenForgot(true)}
               >
                 Forget Password?
               </Link>
