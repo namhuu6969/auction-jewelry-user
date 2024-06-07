@@ -1,6 +1,9 @@
 import { Button, List } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 export const AuctionList = ({ data, Card }) => {
+  const navigate = useNavigate();
+
   return (
     <List
       grid={{ gutter: 16, column: 4 }}
@@ -24,7 +27,11 @@ export const AuctionList = ({ data, Card }) => {
               </p>
             </div>
             <div className='text-end mt-4'>
-              <Button type='primary' key='bid'>
+              <Button
+                onClick={() => navigate(`/jewelry/detail/${item.id}`)}
+                type='primary'
+                key='bid'
+              >
                 Chi Tiết
               </Button>
             </div>

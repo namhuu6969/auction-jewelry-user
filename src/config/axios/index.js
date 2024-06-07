@@ -29,13 +29,10 @@ api.interceptors.request.use(
 
 const refreshToken = async () => {
   const refresh = localStorage.getItem('refreshToken');
-  if(!refresh) {
-    throw new Error("No refresh token available")
+  if (!refresh) {
+    throw new Error('No refresh token available');
   }
-  const response = await axios.post(
-    'http://localhost:8080/api/v1/user/refresh',
-    { refresh }
-  );
+  const response = await axios.post('http://localhost:8080/api/v1/user/refresh', { refresh });
   const { accessToken } = response.data;
   localStorage.setItem('accessToken', accessToken);
   return accessToken;
@@ -55,7 +52,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (error) {
         console.log(error);
-        openNotificationWithIcon('warning', error.message)
+        openNotificationWithIcon('warning', error.message);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('fullName');
