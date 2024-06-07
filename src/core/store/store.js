@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import auctionListReducer from './AuctionListStore/auctionList';
 import authReducer from './Auth/auth';
+import wishlistReducer from './WishlistStore/wishlist';
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    auctionList: auctionListReducer
+    auctionList: auctionListReducer,
+    wishlist: wishlistReducer
   }
 });
 
