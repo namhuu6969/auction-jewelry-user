@@ -120,7 +120,7 @@ export const FormRequest = () => {
     value: e?.name,
   }));
   const itemsCollection = collection
-    ?.filter((item) => item?.brand.name === choosedBrand)
+    // ?.filter((item) => item?.brand.name === choosedBrand)
     ?.map((e) => ({
       label: e?.name,
       value: e?.name,
