@@ -14,6 +14,7 @@ import { RequestJewelry } from '@pages/AuctionPage/components/RequestJewelry/Jew
 import { ProfilePage } from '@pages/AuctionPage/components/ProfilePage';
 import WishlistPage from '@pages/AuctionPage/components/Wishlist';
 import { ValuationPage } from '@pages/AuctionPage/components/Valuation';
+import { Payment } from '@pages/AuctionPage/components/Payment';
 
 const AppRouting = () => {
   return (
@@ -22,7 +23,8 @@ const AppRouting = () => {
       <Route path='/register' element={<Register />} />
       <Route exact path='/' element={<AuctionPage />}>
         <Route path='' element={<Home />} />
-        <Route path='/profile' element={<ProfilePage />} />
+        <Route path='payment' element={<Payment />} />
+        <Route path='profile' element={<ProfilePage />} />
         <Route path='about' element={<About />} />
         <Route path='auction' element={<Category />} />
         <Route path='jewelry' element={<ProductList />}>

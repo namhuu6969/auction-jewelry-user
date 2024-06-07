@@ -2,25 +2,67 @@ import { Avatar, Button, Divider, Flex, Typography } from 'antd';
 import Breadcum from '@components/ui/Breadcum';
 import { useParams } from 'react-router-dom';
 import Carousel from '@components/ui/carousel/Carousel';
-import {
-  StarFilled,
-  UserOutlined,
-  ClockCircleOutlined,
-} from '@ant-design/icons';
+import { StarFilled, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import TabsContent from './Tabs/Tabs';
 import './index.css';
 import { useState } from 'react';
-import { SecondaryButton } from '../../../../../../components/ui/SecondaryButton';
-import { PrimaryButton } from '../../../../../../components/ui/PrimaryButton';
+import { SecondaryButton } from '@components/ui/SecondaryButton';
+import { PrimaryButton } from '@components/ui/PrimaryButton';
+import { BidModal } from './BidModal/BidModal'; // Adjust the import path as needed
+
 const { Title } = Typography;
 
 export const JewelryDetail = () => {
   const { id } = useParams();
   const [selectedImage, setSelectedImage] = useState({
     id: 1,
-    image:
-      'https://happyjewelers.com/cdn/shop/products/130-40289_1_1445x.jpg?v=1687387508',
+    image: 'https://happyjewelers.com/cdn/shop/products/130-40289_1_1445x.jpg?v=1687387508',
   });
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [bidAmount, setBidAmount] = useState('');
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    if (currentStep === steps.length - 1) {
+      // Handle the final submission logic here
+      console.log('Final bid amount:', bidAmount);
+      setIsModalVisible(false);
+      setCurrentStep(0); // Reset step after submission
+    } else {
+      next();
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setCurrentStep(0); // Reset step on cancel
+  };
+
+  const increaseBidAmount = () => {
+    setBidAmount((prevBidAmount) => {
+      return parseInt(prevBidAmount) + 100;
+    });
+  };
+
+  const handleBidAmountChange = (e) => {
+    const value = e.target.value;
+    if (value >= 0) {
+      setBidAmount(value);
+    }
+  };
+
+  const next = () => {
+    setCurrentStep(currentStep + 1);
+  };
+
+  const prev = () => {
+    setCurrentStep(currentStep - 1);
+  };
+
   const breadcumLink = [
     {
       name: 'Home',
@@ -35,6 +77,7 @@ export const JewelryDetail = () => {
       link: `/jewelry/detail/${id}`,
     },
   ];
+
   const img = ({ element }) => {
     return (
       <img
@@ -46,16 +89,15 @@ export const JewelryDetail = () => {
       />
     );
   };
+
   const data = [
     {
       id: 1,
-      image:
-        'https://happyjewelers.com/cdn/shop/products/130-40289_1_1445x.jpg?v=1687387508',
+      image: 'https://happyjewelers.com/cdn/shop/products/130-40289_1_1445x.jpg?v=1687387508',
     },
     {
       id: 2,
-      image:
-        'https://c0.wallpaperflare.com/preview/984/867/753/jewellery-gold-wedding-indian.jpg',
+      image: 'https://c0.wallpaperflare.com/preview/984/867/753/jewellery-gold-wedding-indian.jpg',
     },
     {
       id: 3,
@@ -64,13 +106,14 @@ export const JewelryDetail = () => {
     },
     {
       id: 4,
-      image:
-        'https://c0.wallpaperflare.com/preview/984/867/753/jewellery-gold-wedding-indian.jpg',
+      image: 'https://c0.wallpaperflare.com/preview/984/867/753/jewellery-gold-wedding-indian.jpg',
     },
   ];
+
   const handleImageClick = (imageUrl) => {
     setSelectedImage(imageUrl);
   };
+
   return (
     <div className='container mx-auto'>
       <Flex vertical>
@@ -92,28 +135,16 @@ export const JewelryDetail = () => {
             </Title>
             <Flex className='items-center w-full'>
               <div className='grid grid-cols-2 gap-y-5'>
-                <Title
-                  className='!m-0 !my-auto text-left font-sans !font-medium'
-                  level={4}
-                >
+                <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
                   The current:
                 </Title>
-                <Title
-                  className='!m-0 !my-auto !text-red-600 text-left font-sans'
-                  level={3}
-                >
+                <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
                   1.000.000 VND
                 </Title>
-                <Title
-                  className='!m-0 !my-auto text-left font-sans !font-medium'
-                  level={4}
-                >
+                <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
                   Step:
                 </Title>
-                <Title
-                  className='!m-0 !my-auto !text-red-600 text-left font-sans'
-                  level={3}
-                >
+                <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
                   500.000 VND
                 </Title>
               </div>
@@ -148,16 +179,11 @@ export const JewelryDetail = () => {
                 </Title>
               </Flex>
             </Flex>
-            <PrimaryButton
-              onClick={() => console.log('oke')}
-              className={'!text-2xl font-medium'}
-            >
+            <PrimaryButton onClick={showModal} className={'!text-2xl font-medium'}>
               Đấu giá
             </PrimaryButton>
             <div className='flex items-center gap-5'>
-              <SecondaryButton onClick={() => console.log('oke')}>
-                Mua ngay
-              </SecondaryButton>
+              <SecondaryButton onClick={() => console.log('oke')}>Mua ngay</SecondaryButton>
               <Title level={4} className='!m-0 !text-red-600'>
                 with 5.000.000VND
               </Title>
@@ -179,6 +205,18 @@ export const JewelryDetail = () => {
         </Flex>
         <TabsContent />
       </Flex>
+      <BidModal
+        isVisible={isModalVisible}
+        currentStep={currentStep}
+        bidAmount={bidAmount}
+        handleOk={handleOk}
+        userWallet={1000}
+        handleCancel={handleCancel}
+        handleBidAmountChange={handleBidAmountChange}
+        increaseBidAmount={increaseBidAmount}
+        next={next}
+        prev={prev}
+      />
     </div>
   );
 };
