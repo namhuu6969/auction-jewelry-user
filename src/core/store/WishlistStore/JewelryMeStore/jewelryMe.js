@@ -5,10 +5,12 @@ const initialState = {
   brand: [],
   category: [],
   jewelryId: null,
+  jewelryData: [],
+  render: false
 };
 
-const wishlistSlice = createSlice({
-  name: 'wishlist',
+const jewelryMeSlice = createSlice({
+  name: 'jewelryMe',
   initialState,
   reducers: {
     setCollection: (state, action) => {
@@ -23,10 +25,22 @@ const wishlistSlice = createSlice({
     setJewelryId: (state, action) => {
       state.jewelryId = action.payload;
     },
+    setJewelryData: (state, action) => {
+      state.jewelryData = action.payload;
+    },
+    setRender: (state, action) => {
+      state.render = action.payload
+    }
   },
 });
 
-export const { setCollection, setBrand, setCategory, setJewelryId } =
-  wishlistSlice.actions;
+export const {
+  setCollection,
+  setBrand,
+  setCategory,
+  setJewelryId,
+  setJewelryData,
+  setRender
+} = jewelryMeSlice.actions;
 
-export default wishlistSlice.reducer;
+export default jewelryMeSlice.reducer;
