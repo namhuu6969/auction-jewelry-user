@@ -1,4 +1,4 @@
-import { Tabs } from 'antd';
+import { Divider, Flex, Tabs } from 'antd';
 import './index.css';
 import { MyJewelryTable } from './components/MyJewelryTable';
 import { WishlistTable } from './components/WishlistTable';
@@ -10,10 +10,26 @@ import NotAuthorize from '../../../../components/ui/NotAuthorize';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { wishlistApi } from '../../../../services/api/WishlistApi/wishlistApi';
-import { setBrand, setCategory, setCollection } from '../../../../core/store/WishlistStore/wishlist';
+import Breadcum from '@components/ui/Breadcum';
+import {
+  setBrand,
+  setCategory,
+  setCollection,
+} from '../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
+import { MyAuctionTable } from './components/MyAuctionTable';
 const WishlistPage = () => {
   const authorize = useSelector((state) => state.auth.fullName);
-  const dispatch = useDispatch()
+  const breadcumLink = [
+    {
+      name: 'Home',
+      link: '/',
+    },
+    {
+      name: 'Wishlist',
+      link: '/wishlist',
+    },
+  ];
+  const dispatch = useDispatch();
   const items = [
     {
       key: 1,
@@ -22,45 +38,56 @@ const WishlistPage = () => {
     },
     {
       key: 2,
+      label: 'Phiên của tôi',
+      children: <MyAuctionTable />,
+    },
+    {
+      key: 3,
       label: 'Mong muốn',
       children: <WishlistTable />,
     },
     {
-      key: 3,
+      key: 4,
       label: 'Đấu giá',
       children: <BiddingTable />,
     },
     {
-      key: 4,
+      key: 5,
       label: 'Đấu giá thắng',
       children: <WinningTable />,
     },
     {
-      key: 5,
+      key: 6,
       label: 'Đang bày bán',
       children: <OnSaleTable />,
     },
     {
-      key: 6,
+      key: 7,
       label: 'Đã kết thúc',
       children: <EndingTable />,
     },
   ];
   useEffect(() => {
     const fetchData = async () => {
-      const responseCate = await wishlistApi.getCategory()
-      const responseBrand = await wishlistApi.getBrand()
-      const responseCollection = await wishlistApi.getCollection()
-      dispatch(setCategory(responseCate.data))
-      dispatch(setBrand(responseBrand.data))
-      dispatch(setCollection(responseCollection.data))
-    }
-    fetchData()
-  }, [dispatch])
+      const responseCate = await wishlistApi.getCategory();
+      const responseBrand = await wishlistApi.getBrand();
+      const responseCollection = await wishlistApi.getCollection();
+      dispatch(setCategory(responseCate.data));
+      dispatch(setBrand(responseBrand.data));
+      dispatch(setCollection(responseCollection.data));
+    };
+    fetchData();
+  }, [dispatch]);
   return (
     <div className='h-full'>
       {authorize ? (
-        <Tabs defaultActiveKey='1' className='custom-tabs' items={items} />
+        <>
+          <Flex className='flex-col'>
+            <Breadcum linkBreadcum={breadcumLink} />
+            <Divider className='border-black' />
+          </Flex>
+          <Tabs defaultActiveKey='1' className='custom-tabs' items={items} />
+        </>
       ) : (
         <NotAuthorize />
       )}

@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
 import { requestJewelryApi } from '../../../../../../services/api/RequestApi/requestJewelryApi';
-import {
-  Button,
-  Form,
-  Input,
-  InputNumber,
-  Modal,
-  Select,
-  Upload,
-  notification,
-} from 'antd';
+import { Button, Form, Input, InputNumber, Modal, Select, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-
+import { useNotification } from '../../../../../../hooks/useNotification';
+const getBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
 export const FormRequest = () => {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -39,15 +37,19 @@ export const FormRequest = () => {
     }
     return e?.fileList;
   };
-  const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
 
+  const beforeUpload = (file) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      openNotification({
+        type: 'error',
+        description: 'Bạn chỉ có thể upload file PNG/JPG !',
+      });
+    }
+    return isJpgOrPng || Upload.LIST_IGNORE;
+  };
   const [form] = Form.useForm();
+  const { openNotification, contextHolder } = useNotification();
   const [category, setCategory] = useState([]);
   const [brand, setBrand] = useState([]);
   const [collection, setCollection] = useState([]);
@@ -64,14 +66,6 @@ export const FormRequest = () => {
   ];
   const [choosedBrand, setChoosedBrand] = useState('');
   const [selectedMaterials, setSelectedMaterials] = useState([]);
-  const [api, contextHolder] = notification.useNotification();
-  const openNotificationWithIcon = (type, title) => {
-    api[type]({
-      message: title,
-      placement: 'top',
-      duration: 5,
-    });
-  };
   const [loading, setLoading] = useState(false);
   const handleMaterialsChange = (selectedMaterialIds) => {
     const newSelectedMaterials = selectedMaterialIds.map((id) => {
@@ -178,12 +172,19 @@ export const FormRequest = () => {
           formData.append(`imagesFile`, file.originFileObj);
         });
       }
+      console.log(values)
       const response = await requestJewelryApi.addRequestJewelry(formData);
       form.resetFields();
       setSelectedMaterials([]);
-      openNotificationWithIcon('success', response.message);
+      openNotification({
+        type: 'success',
+        description: response.message,
+      });
     } catch (error) {
-      openNotificationWithIcon('error', error);
+      openNotification({
+        type: 'error',
+        description: error.message  ,
+      });
     } finally {
       setLoading(false);
     }
@@ -432,7 +433,7 @@ export const FormRequest = () => {
             fileList={fileList}
             onPreview={handlePreview}
             onChange={handleChange}
-            beforeUpload={() => false}
+            beforeUpload={beforeUpload}
           >
             {fileList.length >= 8 ? null : (
               <div>

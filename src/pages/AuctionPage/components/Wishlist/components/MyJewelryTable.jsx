@@ -3,29 +3,85 @@ import useTableSearch from '../../../../../hooks/useTableSearch';
 import { useEffect, useState } from 'react';
 import { wishlistApi } from '../../../../../services/api/WishlistApi/wishlistApi';
 import { useDispatch, useSelector } from 'react-redux';
-import { ModalAddAuction } from './ModalAddAuction';
-import { setJewelryId } from '../../../../../core/store/WishlistStore/wishlist';
+import { ModalAddAuction } from './components/ModalAddAuction';
+import { setJewelryId, setJewelryData } from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
+import { ModalJewelryDetail } from './components/ModalJewelryDetail';
+import { getImage } from '../../../../../utils/utils';
 
 export const MyJewelryTable = () => {
   const { getColumnSearchProps } = useTableSearch();
-  const [jewelryData, setJewelryData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const category = useSelector((state) => state.wishlist.category);
-  const brand = useSelector((state) => state.wishlist.brand);
-  const collection = useSelector((state) => state.wishlist.collection);
+  const [images, setImages] = useState({});
+  const category = useSelector((state) => state.jewelryMe.category);
+  const brand = useSelector((state) => state.jewelryMe.brand);
+  const collection = useSelector((state) => state.jewelryMe.collection);
+  const jewelryData = useSelector((state) => state.jewelryMe.jewelryData);
+  const render = useSelector((state) => state.jewelryMe.render);
   const [open, setOpen] = useState(false);
+  const [openDetail, setOpenDetail] = useState(false);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchJewelryMe = async () => {
+      try {
+        setLoading(true);
+        const response = await wishlistApi.getJewelryByMe();
+        dispatch(setJewelryData(response));
+        fetchImages(response);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchImages = async (jewelryData) => {
+      const imageMap = {};
+      for (const jewelry of jewelryData) {
+        const images = await getImage(jewelry.id);
+        if (images.length > 0) {
+          imageMap[jewelry.id] = images[0].url; // Take the first image's base64 string
+        }
+      }
+      setImages(imageMap);
+    };
+
+    fetchJewelryMe();
+    if (render) {
+      fetchJewelryMe();
+    }
+  }, [dispatch, render]);
+
+  const handleAddAuctionClick = (id) => {
+    setOpen(true);
+    dispatch(setJewelryId(id));
+  };
+
+  const handleOpenDetail = (id) => {
+    setOpenDetail(true);
+    dispatch(setJewelryId(id));
+  };
+
+  const getMenu = (id, status) => (
+    <Menu>
+      <Menu.Item key='0' disabled={status === 'AUCTIONING'} title={status === 'AUCTIONING' ? 'Sản phẩm đang tham gia đấu giá' : ''}>
+        <a onClick={() => handleAddAuctionClick(id)}>Thêm vào đấu giá</a>
+      </Menu.Item>
+      <Menu.Item key='1'>
+        <a onClick={() => handleOpenDetail(id)}>Xem chi tiết</a>
+      </Menu.Item>
+    </Menu>
+  );
+
   const columns = [
     {
       title: 'Ảnh',
-      dataIndex: 'jewelryImages',
-      key: 'jewelryImages',
-      render: (image, index) => (
+      key: 'image',
+      render: (data) => (
         <>
           <Image
-            key={index}
             className='!w-[150px] !h-[150px]'
-            // src={getImage(image[0]?.id).imageUrl}
+            src={`http://localhost:8080/uploads/jewelry/${images[data.id]}`}
             alt=''
           />
         </>
@@ -117,39 +173,11 @@ export const MyJewelryTable = () => {
       ),
     },
   ];
-  const handleAddAuctionClick = (id) => {
-    setOpen(true);
-    dispatch(setJewelryId(id));
-  };
 
-  const getMenu = (id, status) => (
-    <Menu>
-      <Menu.Item
-        key='0'
-        disabled={status === 'AUCTIONING' ? true : false}
-        title={status === 'AUCTIONING' ? 'Sản phẩm đang tham gia đấu giá' : ''}
-      >
-        <a onClick={() => handleAddAuctionClick(id)}>Thêm vào đấu giá</a>
-      </Menu.Item>
-    </Menu>
-  );
-  useEffect(() => {
-    const fetchJewelryMe = async () => {
-      try {
-        setLoading(true);
-        const response = await wishlistApi.getJewelryByMe();
-        setJewelryData(response);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchJewelryMe();
-  }, []);
   return (
     <>
       <ModalAddAuction open={open} setOpen={setOpen} />
+      <ModalJewelryDetail open={openDetail} setOpen={setOpenDetail} />
       <Table loading={loading} dataSource={jewelryData} columns={columns} />
     </>
   );
