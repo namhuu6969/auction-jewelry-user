@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react';
 import { wishlistApi } from '../../../../../services/api/WishlistApi/wishlistApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { ModalAddAuction } from './components/ModalAddAuction';
-import { setJewelryId, setJewelryData } from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
+import {
+  setJewelryId,
+  setJewelryData,
+} from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { ModalJewelryDetail } from './components/ModalJewelryDetail';
 import { getImage } from '../../../../../utils/utils';
 
@@ -40,7 +43,7 @@ export const MyJewelryTable = () => {
       for (const jewelry of jewelryData) {
         const images = await getImage(jewelry.id);
         if (images.length > 0) {
-          imageMap[jewelry.id] = images[0].url; // Take the first image's base64 string
+          imageMap[jewelry.id] = images[0].url;
         }
       }
       setImages(imageMap);
@@ -64,7 +67,11 @@ export const MyJewelryTable = () => {
 
   const getMenu = (id, status) => (
     <Menu>
-      <Menu.Item key='0' disabled={status === 'AUCTIONING'} title={status === 'AUCTIONING' ? 'Sản phẩm đang tham gia đấu giá' : ''}>
+      <Menu.Item
+        key='0'
+        disabled={status === 'AUCTIONING'}
+        title={status === 'AUCTIONING' ? 'Sản phẩm đang tham gia đấu giá' : ''}
+      >
         <a onClick={() => handleAddAuctionClick(id)}>Thêm vào đấu giá</a>
       </Menu.Item>
       <Menu.Item key='1'>
@@ -162,6 +169,7 @@ export const MyJewelryTable = () => {
       title: 'Hành động',
       key: 'action',
       align: 'center',
+      fixed: 'right',
       render: (data) => (
         <Dropdown overlay={getMenu(data.id, data.status)} trigger={['click']}>
           <a onClick={(e) => e.preventDefault()}>
@@ -178,7 +186,14 @@ export const MyJewelryTable = () => {
     <>
       <ModalAddAuction open={open} setOpen={setOpen} />
       <ModalJewelryDetail open={openDetail} setOpen={setOpenDetail} />
-      <Table loading={loading} dataSource={jewelryData} columns={columns} />
+      <Table
+        scroll={{
+          x: 1500,
+        }}
+        loading={loading}
+        dataSource={[...jewelryData]}
+        columns={columns}
+      />
     </>
   );
 };

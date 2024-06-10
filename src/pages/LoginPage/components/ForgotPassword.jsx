@@ -36,7 +36,7 @@ export const ForgotPassword = ({ openForgot, setOpenForgot }) => {
   };
   return (
     <Modal
-      title='Forgot Password'
+      title='Quên mật khẩu'
       open={openForgot}
       onCancel={() => setOpenForgot(false)}
       footer={() => (
