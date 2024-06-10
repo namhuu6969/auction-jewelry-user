@@ -62,12 +62,11 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (error) {
-        console.log(error);
-        openNotificationWithIcon('warning', error.message);
+        window.location.href = '/login';
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('fullName');
-        window.location.href = '/login';
+        openNotificationWithIcon('warning', error.message);
         return Promise.reject(error);
       }
     }

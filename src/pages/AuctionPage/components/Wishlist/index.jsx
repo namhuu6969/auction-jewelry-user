@@ -3,7 +3,6 @@ import './index.css';
 import { MyJewelryTable } from './components/MyJewelryTable';
 import { WishlistTable } from './components/WishlistTable';
 import { WinningTable } from './components/WinningTable';
-import { OnSaleTable } from './components/OnSaleTable';
 import { EndingTable } from './components/EndingTable';
 import { BiddingTable } from './components/BiddingTable';
 import NotAuthorize from '../../../../components/ui/NotAuthorize';
@@ -58,11 +57,6 @@ const WishlistPage = () => {
     },
     {
       key: 6,
-      label: 'Đang bày bán',
-      children: <OnSaleTable />,
-    },
-    {
-      key: 7,
       label: 'Đã kết thúc',
       children: <EndingTable />,
     },
