@@ -4,18 +4,31 @@ import { Checkbox, AutoComplete, Input, Typography, DatePicker, Space, Button, F
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
-export const FilterAuctions = ({ options, onChange, data }) => {
+export const FilterAuctions = ({
+  category,
+  brands,
+  onChange,
+  data,
+  setFilteredData,
+  handleInputSearch,
+}) => {
   const [searchOptions, setSearchOptions] = useState([]);
 
   const handleSearch = (value) => {
     const searchResults = data
-      .filter((item) => item.title.toLowerCase().includes(value.toLowerCase()))
-      .map((item) => ({ value: item.title }));
+      .filter((item) => item.jewelry.name.toLowerCase().includes(value.toLowerCase()))
+      .map((item) => ({ value: item.jewelry.name }));
     setSearchOptions(searchResults);
   };
 
   const onSelect = (value) => {
     // Handle selection of a search result if needed
+    // setSelectedFeatures(value);
+    console.log(value);
+    const filterData = data.filter((item) =>
+      item.jewelry.name.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredData(filterData);
   };
 
   const onDateChange = (dates, dateStrings) => {
@@ -27,7 +40,7 @@ export const FilterAuctions = ({ options, onChange, data }) => {
   return (
     <div className='m-4 p-4 shadow-lg rounded-md flex flex-col items-start'>
       <Title level={3}>
-        Loại Tài Sản
+        Tìm Kiếm Trang Sức
         <div className='mt-2 mb-4 border-b-2 border-black w-30' />
       </Title>
 
@@ -36,6 +49,7 @@ export const FilterAuctions = ({ options, onChange, data }) => {
           options={searchOptions}
           onSearch={handleSearch}
           onSelect={onSelect}
+          onChange={handleInputSearch}
           style={{ width: '100%' }}
         >
           <Input.Search placeholder='Search by title' enterButton />
@@ -43,10 +57,40 @@ export const FilterAuctions = ({ options, onChange, data }) => {
       </div>
 
       <div className='w-full mb-4'>
-        <Checkbox.Group options={options} defaultValue={['Option 1']} onChange={onChange} />
+        <Title level={3}>
+          Loại Trang Sức
+          <div className='mt-2 mb-4 border-b-2 border-black w-30' />
+        </Title>
+        <Checkbox.Group
+          className='flex-start'
+          options={category}
+          defaultValue={['Option 1']}
+          onChange={onChange}
+        />
       </div>
 
-      <div className='w-full mb-4'>
+      <div className='w-full my-4'>
+        <Title level={3}>
+          Theo Hãng
+          <div className='mt-2 mb-4 border-b-2 border-black w-30' />
+        </Title>
+        <Checkbox.Group options={brands} defaultValue={['Option 1']} onChange={onChange} />
+      </div>
+
+      <div className='w-full my-4'>
+        <Title level={3}>
+          Tình Trạng
+          <div className='mt-2 mb-4 border-b-2 border-black w-30' />
+        </Title>
+        <Checkbox.Group
+          className='!justify-start'
+          options={['Mới', 'Đã qua sử dụng']}
+          defaultValue={['Option 1']}
+          onChange={onChange}
+        />
+      </div>
+
+      <div className='w-full my-4'>
         <Space direction='vertical' size={12}>
           <RangePicker
             placeholder={['Từ Ngày', 'Đến Ngày']}
