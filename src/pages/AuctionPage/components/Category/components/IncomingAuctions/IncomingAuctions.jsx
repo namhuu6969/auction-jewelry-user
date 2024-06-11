@@ -16,10 +16,10 @@ export const IncomingAuctions = ({ data }) => {
           if (index < 3) {
             return (
               <MiniCard
-                key={item.name}
-                imageSrc={item.imageUrl}
-                title={item.name}
-                price={item.startingPrice}
+                key={item.id}
+                imageSrc={item.jewelry.thumbnail}
+                title={item.jewelry.name}
+                price={item.jewelry.staringPrice}
               />
             );
           }

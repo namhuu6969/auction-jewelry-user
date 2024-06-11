@@ -12,15 +12,19 @@ export const AuctionList = ({ data, Card }) => {
         <List.Item>
           <Card
             cover={
-              <img className='!w-full !h-full object-cover' alt={item.name} src={item.imageUrl} />
+              <img
+                className='!w-full !h-full !object-cover'
+                alt={item.jewelry.name}
+                src={`http://localhost:8080/uploads/jewelry/${item.jewelry.thumbnail}`}
+              />
             }
           >
             <div className='text-start'>
-              <p>{item.name}</p>
+              <p>{item.jewelry.name}</p>
               <p style={{ fontWeight: '500' }}>
                 Trạng thái:{' '}
-                {item.startingPrice > 200 ? (
-                  <span style={{ color: 'green' }}>Đang diễn ra</span>
+                {item.status === 'Waiting' ? (
+                  <span style={{ color: 'green' }}>Đang chờ</span>
                 ) : (
                   <span style={{ color: 'red' }}>Đã kết thúc</span>
                 )}

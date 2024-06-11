@@ -12,16 +12,18 @@ const MiniCard = ({ imageSrc, title, price }) => {
   };
 
   const formatPrice = (price) => {
-    const priceInNumber = parseFloat(price.replace('$', '').replace(',', ''));
-    if (priceInNumber >= 1000000000) {
-      const billion = Math.floor(priceInNumber / 1000000000);
-      const million = Math.floor((priceInNumber % 1000000000) / 1000000);
-      return `${billion} tỷ ${million} triệu`;
-    } else if (priceInNumber >= 1000000) {
-      const million = Math.floor(priceInNumber / 1000000);
-      return `${million} triệu`;
-    } else {
-      return `${priceInNumber.toLocaleString('vi-VN')}`;
+    if (price > 0) {
+      const priceInNumber = parseFloat(price.replace('$', '').replace(',', ''));
+      if (priceInNumber >= 1000000000) {
+        const billion = Math.floor(priceInNumber / 1000000000);
+        const million = Math.floor((priceInNumber % 1000000000) / 1000000);
+        return `${billion} tỷ ${million} triệu`;
+      } else if (priceInNumber >= 1000000) {
+        const million = Math.floor(priceInNumber / 1000000);
+        return `${million} triệu`;
+      } else {
+        return `${priceInNumber.toLocaleString('vi-VN')}`;
+      }
     }
   };
 
@@ -30,7 +32,7 @@ const MiniCard = ({ imageSrc, title, price }) => {
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ flex: '1' }}>
           <img
-            src={imageSrc}
+            src={`http://localhost:8080/uploads/jewelry/${imageSrc}`}
             alt={truncateTitle(title, 3)}
             style={{ width: '100%', height: 'auto' }}
           />
