@@ -1,13 +1,13 @@
 import { Modal, Button, Input, Steps, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-const { TextArea } = Input;
 const { Step } = Steps;
 const { Title } = Typography;
 
 export const BidModal = ({
   isVisible,
   currentStep,
+  step,
   bidAmount,
   userWallet, // Added userWallet prop
   handleOk,
@@ -31,7 +31,7 @@ export const BidModal = ({
             placeholder='Enter your bid amount'
           />
           <Button onClick={increaseBidAmount} type='primary' disabled={!bidAmount}>
-            Increase by 100
+            Increase by {step}
           </Button>
           <p>Your Wallet Balance: {userWallet} VND</p> {/* Display wallet balance */}
         </div>
@@ -95,7 +95,8 @@ export const BidModal = ({
           <Step key={index} title={step.title} />
         ))}
       </Steps>
-      <div className='steps-content'>{steps[currentStep].content}</div>
+      <div className='steps-content'>{steps[currentStep].content}</div>{' '}
+      {/* Use optional chaining to avoid undefined error */}
     </Modal>
   );
 };
