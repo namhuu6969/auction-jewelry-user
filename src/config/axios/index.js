@@ -3,7 +3,7 @@ import axios from 'axios';
 // import { setTokens } from '@/core/store/auth/authenticate';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api/v1/',
+  baseURL: 'http://167.71.212.203:8080/api/v1/',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ const refreshToken = async () => {
     throw new Error('No refresh token available');
   }
   const response = await axios.post(
-    'http://localhost:8080/api/v1/user/refresh',
+    'http://167.71.212.203:8080/api/v1/user/refresh',
     { refresh }
   );
   const { accessToken } = response.data;

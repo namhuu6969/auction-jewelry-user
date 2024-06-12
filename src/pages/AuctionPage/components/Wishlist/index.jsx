@@ -3,7 +3,6 @@ import './index.css';
 import { MyJewelryTable } from './components/MyJewelryTable';
 import { WishlistTable } from './components/WishlistTable';
 import { WinningTable } from './components/WinningTable';
-import { EndingTable } from './components/EndingTable';
 import { BiddingTable } from './components/BiddingTable';
 import NotAuthorize from '../../../../components/ui/NotAuthorize';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,6 +16,7 @@ import {
   setMaterial,
 } from '../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { MyAuctionTable } from './components/MyAuctionTable';
+import { ValuatingTable } from './components/ValuatingTable';
 const WishlistPage = () => {
   const authorize = useSelector((state) => state.auth.fullName);
   const breadcumLink = [
@@ -38,29 +38,30 @@ const WishlistPage = () => {
     },
     {
       key: 2,
+      label: 'Định giá',
+      children: <ValuatingTable />,
+    },
+    {
+      key: 3,
       label: 'Phiên của tôi',
       children: <MyAuctionTable />,
     },
     {
-      key: 3,
+      key: 4,
       label: 'Mong muốn',
       children: <WishlistTable />,
     },
     {
-      key: 4,
+      key: 5,
       label: 'Đấu giá',
       children: <BiddingTable />,
     },
     {
-      key: 5,
+      key: 6,
       label: 'Đấu giá thắng',
       children: <WinningTable />,
     },
-    {
-      key: 6,
-      label: 'Đã kết thúc',
-      children: <EndingTable />,
-    },
+
   ];
   useEffect(() => {
     const fetchData = async () => {
