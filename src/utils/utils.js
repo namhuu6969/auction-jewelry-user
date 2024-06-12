@@ -6,7 +6,7 @@ export const getImage = async (imageUrl) => {
 };
 
 export const imageURL = (imageUrl) => {
-  return `http://localhost:8080/uploads/jewelry/${imageUrl}`
+  return `http://167.71.212.203:8080/uploads/jewelry/${imageUrl}`
 }
 
 export const formatPrice = (price) => {

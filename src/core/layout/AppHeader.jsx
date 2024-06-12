@@ -96,7 +96,7 @@ const AppHeader = () => {
           </Title>
           <Input className='ml-5' placeholder='Search...' />
         </Flex>
-        <Flex flex={0.4} justify='space-around' align='center'>
+        <Flex flex={0.5} justify='space-around' align='center'>
           {navLink.map((item) => (
             <p
               onClick={() => handleNavigation(item.link)}
