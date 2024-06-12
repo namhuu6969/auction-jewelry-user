@@ -20,5 +20,9 @@ export const wishlistApi = {
   addAuction: async (data) => {
     const response = await api.post('auction', data)
     return response.data
+  },
+  getMaterial: async () => {
+    const response = await api.get('material')
+    return response.data
   }
 }

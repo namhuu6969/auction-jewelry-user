@@ -9,10 +9,12 @@ import {
   setJewelryData,
 } from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { ModalJewelryDetail } from './components/ModalJewelryDetail';
-import { getImage } from '../../../../../utils/utils';
+import { getImage, imageURL } from '../../../../../utils/utils';
+import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
 
 export const MyJewelryTable = () => {
   const { getColumnSearchProps } = useTableSearch();
+  const { getColumnSearchDateProps } = useTableSearchDate();
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState({});
   const category = useSelector((state) => state.jewelryMe.category);
@@ -20,6 +22,7 @@ export const MyJewelryTable = () => {
   const collection = useSelector((state) => state.jewelryMe.collection);
   const jewelryData = useSelector((state) => state.jewelryMe.jewelryData);
   const render = useSelector((state) => state.jewelryMe.render);
+  const material = useSelector((state) => state.jewelryMe.material);
   const [open, setOpen] = useState(false);
   const [openDetail, setOpenDetail] = useState(false);
   const dispatch = useDispatch();
@@ -88,11 +91,26 @@ export const MyJewelryTable = () => {
         <>
           <Image
             className='!w-[150px] !h-[150px]'
-            src={`http://localhost:8080/uploads/jewelry/${images[data.id]}`}
+            src={imageURL(images[data?.id])}
             alt=''
           />
         </>
       ),
+    },
+    {
+      title: 'Ngày tạo',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      ...getColumnSearchDateProps('createdAt'),
+      sorter: (a, b) => new Date(a?.createdAt) - new Date(b?.createdAt),
+      render: (data) =>
+        data
+          ? new Intl.DateTimeFormat('vi-VN', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            }).format(new Date(data))
+          : '',
     },
     {
       title: 'Tên sản phẩm',
@@ -105,60 +123,57 @@ export const MyJewelryTable = () => {
       dataIndex: 'category',
       key: 'category',
       filters: category.map((e) => ({
-        text: e.name,
-        value: e.name,
+        text: e?.name,
+        value: e?.name,
       })),
       onFilter: (value, record) => record?.category?.name?.startsWith(value),
       filterSearch: true,
-      render: (e, index) => <p key={index}>{e.name}</p>,
+      render: (e, index) => <p key={index}>{e?.name}</p>,
     },
     {
       title: 'Hãng',
       dataIndex: 'brand',
       key: 'brand',
       filters: brand.map((e) => ({
-        text: e.name,
-        value: e.name,
+        text: e?.name,
+        value: e?.name,
       })),
       onFilter: (value, record) => record?.brand?.name?.startsWith(value),
       filterSearch: true,
-      render: (e, index) => <p key={index}>{e.name}</p>,
+      render: (e, index) => <p key={index}>{e?.name}</p>,
     },
     {
       title: 'Bộ sưu tập',
       dataIndex: 'collection',
       key: 'collection',
       filters: collection.map((e) => ({
-        text: e.name,
-        value: e.name,
+        text: e?.name,
+        value: e?.name,
       })),
       onFilter: (value, record) => record?.collection?.name?.startsWith(value),
       filterSearch: true,
-      render: (e, index) => <p key={index}>{e.name}</p>,
+      render: (e, index) => <p key={index}>{e?.name}</p>,
     },
     {
       title: 'Chất liệu',
       dataIndex: 'jewelryMaterials',
       key: 'jewelryMaterials',
-      filters: [
-        {
-          text: 'Gold',
-          value: 'Gold',
-        },
-        {
-          text: 'Silver',
-          value: 'Silver',
-        },
-      ],
+      filters: material.map((e) => ({
+        text: e?.name,
+        value: e?.name,
+      })),
       onFilter: (value, record) =>
         record.jewelryMaterials.some(
           (material) => material.material.name === value
         ),
       filterSearch: true,
-      render: (jewelryMaterials) =>
-        jewelryMaterials.map((material) => (
-          <Tag key={material.id}>{material.material.name}</Tag>
-        )),
+      render: (jewelryMaterials) => (
+        <div className='grid grid-cols-4 gap-1'>
+          {jewelryMaterials.map((material) => (
+            <Tag key={material.id} className='col-span-2 text-center w-full'>{material.material.name}</Tag>
+          ))}
+        </div>
+      ),
     },
     {
       title: 'Trạng thái',

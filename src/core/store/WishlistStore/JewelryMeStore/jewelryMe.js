@@ -4,6 +4,7 @@ const initialState = {
   collection: [],
   brand: [],
   category: [],
+  material: [],
   jewelryId: null,
   jewelryData: [],
   render: false
@@ -30,6 +31,9 @@ const jewelryMeSlice = createSlice({
     },
     setRender: (state, action) => {
       state.render = action.payload
+    },
+    setMaterial: (state, action) => {
+      state.material = action.payload
     }
   },
 });
@@ -40,7 +44,8 @@ export const {
   setCategory,
   setJewelryId,
   setJewelryData,
-  setRender
+  setRender,
+  setMaterial,
 } = jewelryMeSlice.actions;
 
 export default jewelryMeSlice.reducer;

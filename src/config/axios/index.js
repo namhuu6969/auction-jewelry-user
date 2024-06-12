@@ -4,9 +4,9 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'http://localhost:8080/api/v1/',
-  header: {
+  headers: {
     'Accept': 'application/json',
-    'Content-Type': 'multipart/form-data',
+    'Content-Type': 'application/json',
   },
 });
 
