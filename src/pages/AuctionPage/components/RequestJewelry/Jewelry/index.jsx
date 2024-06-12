@@ -14,7 +14,7 @@ export const RequestJewelry = () => {
       link: '/',
     },
     {
-      name: 'Request Jewelry',
+      name: 'Yêu cầu trang sức',
       link: '/request/jewelry',
     },
   ];

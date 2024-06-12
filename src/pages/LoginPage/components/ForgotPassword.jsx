@@ -5,8 +5,7 @@ import { authApi } from '../../../services/api/auth/authApi';
 
 export const ForgotPassword = ({ openForgot, setOpenForgot }) => {
   const [form] = Form.useForm();
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(false);
   const [api, contextHolder] = notification.useNotification();
   const openNotificationWithIcon = (type, title) => {
     api[type]({
@@ -15,30 +14,31 @@ export const ForgotPassword = ({ openForgot, setOpenForgot }) => {
       duration: 5,
     });
   };
-  const handleChangeEmail = (e) => {
-    setEmail(e.target.value);
-  };
   const handleSubmit = () => {
     form.submit();
   };
-  const handleFinish = async () => {
+  const handleClose = () => {
+    setOpenForgot(false);
+    form.resetFields();
+  };
+  const handleFinish = async (values) => {
     try {
-      setLoading(true)
-      const response = await authApi.forgotPasswordApi(email);
-      openNotificationWithIcon('success', response.message)
-      setOpenForgot(false)
-      setEmail('')
+      setLoading(true);
+      const response = await authApi.forgotPasswordApi(values.email);
+      openNotificationWithIcon('success', response.message);
+      handleClose();
     } catch (error) {
-      openNotificationWithIcon('error', error)
+      console.log(error)
+      openNotificationWithIcon('error', error.response.data.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
   return (
     <Modal
       title='Quên mật khẩu'
       open={openForgot}
-      onCancel={() => setOpenForgot(false)}
+      onCancel={handleClose}
       footer={() => (
         <>
           <PrimaryButton loading={loading} onClick={handleSubmit}>
@@ -56,8 +56,17 @@ export const ForgotPassword = ({ openForgot, setOpenForgot }) => {
         }}
         onFinish={handleFinish}
       >
-        <Form.Item label='Nhập Email của bạn'>
-          <Input onChange={handleChangeEmail} type='email' />
+        <Form.Item
+          label='Nhập Email của bạn'
+          name='email'
+          rules={[
+            {
+              required: true,
+              message: 'Hãy nhập email',
+            },
+          ]}
+        >
+          <Input type='email' />
         </Form.Item>
       </Form>
     </Modal>

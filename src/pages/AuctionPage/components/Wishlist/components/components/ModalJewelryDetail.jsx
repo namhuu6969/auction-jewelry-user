@@ -1,7 +1,7 @@
 import { Modal, Descriptions, Image, Divider, Row, Col } from 'antd';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { getImage } from '../../../../../../utils/utils';
+import { getImage, imageURL } from '../../../../../../utils/utils';
 
 export const ModalJewelryDetail = ({ open, setOpen }) => {
   const handleClose = () => {
@@ -40,7 +40,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                 key={e.id}
                 width='200px'
                 height={'200px'}
-                src={`http://localhost:8080/uploads/jewelry/${e.url}`}
+                src={imageURL(e?.url)}
                 alt={data.name}
               />
             ))}

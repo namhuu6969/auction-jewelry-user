@@ -1,22 +1,32 @@
-import { Dropdown, Image, Menu, Space, Table } from 'antd';
+import { Dropdown, Image, Menu, Popconfirm, Space, Spin, Table } from 'antd';
 import useTableSearch from '../../../../../hooks/useTableSearch';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setMyAuctionData } from '../../../../../core/store/WishlistStore/MyAuctionStore/myAuction';
+import {
+  setMyAuctionData,
+  setRenderMyAuction,
+} from '../../../../../core/store/WishlistStore/MyAuctionStore/myAuction';
 import { myAuctionApi } from '../../../../../services/api/WishlistApi/myAuctionApi';
 import { useNavigate } from 'react-router-dom';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
-import { getImage } from '../../../../../utils/utils';
+import { formatPrice, getImage, imageURL } from '../../../../../utils/utils';
+import { useNotification } from '../../../../../hooks/useNotification';
 
 export const MyAuctionTable = () => {
   const { getColumnSearchProps } = useTableSearch();
   const { getColumnSearchDateProps } = useTableSearchDate();
+  const { openNotification, contextHolder } = useNotification();
   const [loading, setLoading] = useState(false);
+  const [loadingUpdated, setLoadingUpdated] = useState(false);
   const [images, setImages] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const auctionData = useSelector((state) => state.myAuction.myAuctionData);
-  const numberFormatter = new Intl.NumberFormat('vi-VN');
+  const isRender = useSelector((state) => state.myAuction.renderMyAuction);
+
+  // eslint-disable-next-line no-unused-vars
+  const [pageSize, setPageSize] = useState(4);
+
   const calculateRemainingDays = (endTime) => {
     const end = new Date(endTime);
     const now = new Date();
@@ -24,6 +34,34 @@ export const MyAuctionTable = () => {
     const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
     return daysDiff > 0 ? daysDiff : 'Phiên đã kết thúc';
   };
+
+  const handleChangeStatusAuction = async (id, status) => {
+    try {
+      if (status === 'Cancel') {
+        setLoadingUpdated(true);
+      }
+      await myAuctionApi.updateMyAuction(id, status);
+      if (status === 'Cancel') {
+        openNotification({
+          type: 'success',
+          description: 'Hủy phiên thành công',
+        });
+      }
+      dispatch(setRenderMyAuction(true));
+    } catch (error) {
+      if (status === 'Cancel') {
+        openNotification({
+          type: 'error',
+          description: 'Hủy phiên thất bại',
+        });
+      }
+    } finally {
+      if (status === 'Cancel') {
+        setLoadingUpdated(false);
+      }
+    }
+  };
+
   const columns = [
     {
       title: 'Ảnh',
@@ -32,7 +70,7 @@ export const MyAuctionTable = () => {
         <>
           <Image
             className='!w-[150px] !h-[150px]'
-            src={`http://localhost:8080/uploads/jewelry/${images[data.id]}`}
+            src={imageURL(images[data?.id])}
             alt=''
           />
         </>
@@ -58,7 +96,7 @@ export const MyAuctionTable = () => {
       dataIndex: 'startTime',
       key: 'startTime',
       ...getColumnSearchDateProps('startTime'),
-      sorter: (a, b) => new Date(a?.createdAt) - new Date(b?.createdAt),
+      sorter: (a, b) => new Date(a?.startTime) - new Date(b?.startTime),
       render: (data) =>
         data
           ? new Intl.DateTimeFormat('vi-VN', {
@@ -79,28 +117,28 @@ export const MyAuctionTable = () => {
       dataIndex: ['jewelry', 'staringPrice'],
       key: 'staringPrice',
       sorter: (a, b) => a?.staringPrice - b?.staringPrice,
-      render: (data) => <p>{numberFormatter.format(data)} VND</p>,
+      render: (data) => <p>{formatPrice(data)} VND</p>,
     },
     {
       title: 'Giá hiện tại',
       dataIndex: 'currentPrice',
       key: 'currentPrice',
-      sorter: (a, b) => a.currentPrice - b.currentPrice,
-      render: (data) => <p>{numberFormatter.format(data)} VND</p>,
+      sorter: (a, b) => a?.currentPrice - b?.currentPrice,
+      render: (data) => <p>{formatPrice(data)} VND</p>,
     },
     {
       title: 'Bước nhảy',
       dataIndex: 'step',
       key: 'step',
-      sorter: (a, b) => a.step - b.step,
-      render: (data) => <p>{numberFormatter.format(data)} VND</p>,
+      sorter: (a, b) => a?.step - b?.step,
+      render: (data) => <p>{formatPrice(data)} VND</p>,
     },
     {
       title: 'Số người tham gia',
       dataIndex: 'totalBids',
       key: 'totalBids',
       align: 'center',
-      sorter: (a, b) => a.totalBids - b.totalBids,
+      sorter: (a, b) => a?.totalBids - b?.totalBids,
     },
     {
       title: 'Số ngày còn lại',
@@ -108,7 +146,15 @@ export const MyAuctionTable = () => {
       align: 'center',
       key: 'endTime',
       render: (data) =>
-        data ? <p>{calculateRemainingDays(data)} ngày</p> : 'NaN',
+        data ? (
+          <p>
+            {calculateRemainingDays(data) === 'Phiên đã kết thúc'
+              ? 'Phiên đã kết thúc'
+              : calculateRemainingDays(data) + ' ngày'}{' '}
+          </p>
+        ) : (
+          'NaN'
+        ),
       sorter: (a, b) =>
         calculateRemainingDays(a?.endTime) - calculateRemainingDays(b?.endTime),
     },
@@ -118,12 +164,15 @@ export const MyAuctionTable = () => {
       key: 'status',
     },
     {
-      title: 'Hành dộng',
+      title: 'Hành động',
       key: 'action',
       align: 'center',
       fixed: 'right',
       render: (data) => (
-        <Dropdown overlay={getMenu(data.id)} trigger={['click']}>
+        <Dropdown
+          overlay={getMenu(data.id, data.status, data.totalBids)}
+          trigger={['click']}
+        >
           <a onClick={(e) => e.preventDefault()}>
             <Space>
               <p className='text-2xl'>...</p>
@@ -134,28 +183,65 @@ export const MyAuctionTable = () => {
     },
   ];
 
-  const getMenu = (id) => (
+  const getMenu = (id, status, totalBids) => (
     <Menu>
       <Menu.Item key='0'>
         <a onClick={() => navigate(`/jewelry/detail/${id}`)}>
           Xem chi tiết đấu giá
         </a>
       </Menu.Item>
+      <Menu.Item
+        key='1'
+        className={`${
+          status === 'Inprogess' ||
+          status === 'Completed' ||
+          status === 'Waiting'
+            ? '!hidden'
+            : '!block'
+        }`}
+      >
+        <a onClick={() => handleChangeStatusAuction(id, 'Waiting')}>
+          Mở phiên đấu giá {loadingUpdated ? <Spin /> : ''}
+        </a>
+      </Menu.Item>
+      <Menu.Item
+        key='2'
+        className={`${
+          status === 'Completed' || status === 'Cancel' ? '!hidden' : '!block'
+        }`}
+        disabled={totalBids > 3 ? true : false}
+      >
+        <Popconfirm
+          title='Hủy phiên đấu giá'
+          description='Bạn có chắc là sẽ hủy phiên này?'
+          onConfirm={() => handleChangeStatusAuction(id, 'Cancel')}
+          okText='Có'
+          cancelText='Không'
+        >
+          <a className='!text-red-600'>
+            Hủy phiên đấu giá {loadingUpdated ? <Spin /> : ''}
+          </a>
+        </Popconfirm>
+      </Menu.Item>
     </Menu>
   );
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         const response = await myAuctionApi.getMyAuction();
-        fetchImages(response)
-        dispatch(setMyAuctionData(response));
+        if (response.data) {
+          fetchImages(response.data);
+          dispatch(setMyAuctionData(response.data));
+        }
       } catch (error) {
-        console.log(error);
+        console.error('Error fetching auction data:', error);
       } finally {
         setLoading(false);
       }
     };
+
     const fetchImages = async (jewelryData) => {
       const imageMap = {};
       for (const jewelry of jewelryData) {
@@ -166,16 +252,26 @@ export const MyAuctionTable = () => {
       }
       setImages(imageMap);
     };
+
+    if (isRender === true) {
+      fetchData();
+      dispatch(setRenderMyAuction(false));
+    }
     fetchData();
-  }, [dispatch]);
+  }, [dispatch, isRender]);
+
   return (
-    <Table
-      loading={loading}
-      dataSource={auctionData}
-      columns={columns}
-      scroll={{
-        x: 2000,
-      }}
-    />
+    <>
+      {contextHolder}
+      <Table
+        loading={loading}
+        dataSource={auctionData}
+        columns={columns}
+        scroll={{
+          x: 2000,
+        }}
+        pagination={{ pageSize: pageSize }}
+      />
+    </>
   );
 };

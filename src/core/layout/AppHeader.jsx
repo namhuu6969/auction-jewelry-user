@@ -8,18 +8,18 @@ import { UserOutlined } from '@ant-design/icons';
 import { clearToken } from '../store/Auth/auth';
 
 const services = [
-  { title: 'Support', link: '/support' },
-  { title: 'Services', link: '/support' },
-  { title: 'About', link: '/about' },
-  { title: 'License', link: '/support' },
-  { title: 'Language', link: '/support', icon: <icon /> },
+  { title: 'Hỗ trợ', link: '/support' },
+  { title: 'Dịch vụ', link: '/support' },
+  { title: 'Về chúng tôi', link: '/about' },
+  { title: 'Chính sách', link: '/support' },
+  { title: 'Ngôn ngữ', link: '/support', icon: <icon /> },
 ];
 
 const navLink = [
-  { title: 'Auctions', link: '/auction' },
-  { title: 'Suggest', link: '/suggest' },
+  { title: 'Đấu giá', link: '/auction' },
+  { title: 'Đề xuất', link: '/jewelry' },
   { title: 'Blog', link: '/blog' },
-  { title: 'Sell', link: '/sell' },
+  { title: 'Bày bán', link: '/sell' },
   { title: 'Định giá', link: '/valuation' },
 ];
 
@@ -72,12 +72,12 @@ const AppHeader = () => {
   return (
     <Flex className='container mx-auto' vertical gap={'0.8rem'}>
       <Flex align='center' justify='end'>
-        <Flex flex={0.25} justify='space-between'>
+        <Flex gap={5} justify='space-between'>
           {services.map((item) => (
             <p
               style={{ lineHeight: '1.8rem' }}
               onClick={() => handleNavigation(item.link)}
-              className='font-serif font-thin text-black text-lg mx-2 hover:cursor-pointer'
+              className='font-serif font-thin text-black text-lg mx-2 hover:cursor-pointer underline underline-offset-4'
               key={`${item.title} + ${item.link}`}
             >
               {item.title}

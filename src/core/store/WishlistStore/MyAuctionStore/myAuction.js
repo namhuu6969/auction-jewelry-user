@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  myAuctionData: []
+  myAuctionData: [],
+  renderMyAuction: false
 };
 
 const myAuctionSlice = createSlice({
@@ -10,12 +11,16 @@ const myAuctionSlice = createSlice({
   reducers: {
     setMyAuctionData: (state, action) => {
       state.myAuctionData = action.payload
+    },
+    setRenderMyAuction: (state, action) => {
+      state.renderMyAuction = action.payload
     }
   }
 })
 
 export const {
-  setMyAuctionData
+  setMyAuctionData,
+  setRenderMyAuction,
 } = myAuctionSlice.actions;
 
 export default myAuctionSlice.reducer;

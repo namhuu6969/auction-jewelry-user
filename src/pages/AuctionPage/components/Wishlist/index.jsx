@@ -14,6 +14,7 @@ import {
   setBrand,
   setCategory,
   setCollection,
+  setMaterial,
 } from '../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { MyAuctionTable } from './components/MyAuctionTable';
 const WishlistPage = () => {
@@ -24,7 +25,7 @@ const WishlistPage = () => {
       link: '/',
     },
     {
-      name: 'Wishlist',
+      name: 'Quản lý',
       link: '/wishlist',
     },
   ];
@@ -66,9 +67,11 @@ const WishlistPage = () => {
       const responseCate = await wishlistApi.getCategory();
       const responseBrand = await wishlistApi.getBrand();
       const responseCollection = await wishlistApi.getCollection();
+      const responseMaterial = await wishlistApi.getMaterial()
       dispatch(setCategory(responseCate.data));
       dispatch(setBrand(responseBrand.data));
       dispatch(setCollection(responseCollection.data));
+      dispatch(setMaterial(responseMaterial.data))
     };
     fetchData();
   }, [dispatch]);

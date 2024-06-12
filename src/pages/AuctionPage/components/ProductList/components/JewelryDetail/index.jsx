@@ -32,7 +32,7 @@ export const JewelryDetail = () => {
       setStep(response.data.step);
       setSelectedImage({
         id: 1,
-        image: `http://localhost:8080/uploads/jewelry/${response.data.jewelry.jewelryImages[0].url}`, // Set the initial selected image
+        image: `http://localhost:8080/uploads/jewelry/${response.data.jewelry.jewelryImages[0]?.url}`, // Set the initial selected image
       });
       // console.log(response.data);
     };
@@ -119,9 +119,9 @@ export const JewelryDetail = () => {
     return (
       <img
         className={`w-[60%] my-10 carousel-image cursor-pointer ${
-          element.id === selectedImage.id ? 'selected' : ''
+          element.id === selectedImage?.id ? 'selected' : ''
         }`}
-        src={element.image}
+        src={element?.image}
         onClick={() => handleImageClick(element)}
       />
     );
