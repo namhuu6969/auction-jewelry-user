@@ -1,4 +1,5 @@
 import { Card, Typography } from 'antd';
+import { formatPrice } from '@utils/utils';
 
 const { Title } = Typography;
 
@@ -9,22 +10,6 @@ const MiniCard = ({ imageSrc, title, price }) => {
       return `${words.slice(0, number).join(' ')} ...`;
     }
     return title;
-  };
-
-  const formatPrice = (price) => {
-    if (price > 0) {
-      const priceInNumber = parseFloat(price.replace('$', '').replace(',', ''));
-      if (priceInNumber >= 1000000000) {
-        const billion = Math.floor(priceInNumber / 1000000000);
-        const million = Math.floor((priceInNumber % 1000000000) / 1000000);
-        return `${billion} tỷ ${million} triệu`;
-      } else if (priceInNumber >= 1000000) {
-        const million = Math.floor(priceInNumber / 1000000);
-        return `${million} triệu`;
-      } else {
-        return `${priceInNumber.toLocaleString('vi-VN')}`;
-      }
-    }
   };
 
   return (
