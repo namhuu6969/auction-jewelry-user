@@ -3,9 +3,9 @@ import axios from 'axios';
 // import { setTokens } from '@/core/store/auth/authenticate';
 
 const api = axios.create({
-  baseURL: 'http://167.71.212.203:8080/api/v1/',
+  baseURL: 'http://localhost:8080/api/v1/',
   headers: {
-    'Accept': 'application/json',
+    Accept: 'application/json',
     'Content-Type': 'application/json',
   },
 });
@@ -36,10 +36,7 @@ const refreshToken = async () => {
   if (!refresh) {
     throw new Error('No refresh token available');
   }
-  const response = await axios.post(
-    'http://167.71.212.203:8080/api/v1/user/refresh',
-    { refresh }
-  );
+  const response = await axios.post('http://localhost:8080/api/v1/user/refresh', { refresh });
   const { accessToken } = response.data;
   localStorage.setItem('accessToken', accessToken);
   return accessToken;
@@ -51,11 +48,7 @@ api.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    if (
-      error.response &&
-      error.response.status === 401 &&
-      !originalRequest._retry
-    ) {
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         const newAccessToken = await refreshToken();
