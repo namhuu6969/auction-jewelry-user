@@ -5,11 +5,8 @@ import { StatusAuctions } from './components/StatusAuctions/StatusAuctions';
 import { IncomingAuctions } from './components/IncomingAuctions/IncomingAuctions';
 import { AuctionList } from './components/AuctionsList/AuctionList';
 import { requestJewelryApi } from '@api/RequestApi/requestJewelryApi';
-import axios from 'axios';
-import { auctionApi } from '../../../../services/api/AuctionApi/AuctionApi';
+import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
 const { Header, Content, Sider } = Layout;
-
-const endpoint = 'https://664e0a97fafad45dfaded0e5.mockapi.io/api/v1/auction-list';
 
 const options = [
   {

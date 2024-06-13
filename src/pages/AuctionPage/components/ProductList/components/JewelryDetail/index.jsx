@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 import { PrimaryButton } from '@components/ui/PrimaryButton';
 import { BidModal } from './BidModal/BidModal'; // Adjust the import path as needed
 import { useNavigate } from 'react-router-dom';
-import { auctionApi } from '../../../../../../services/api/AuctionApi/AuctionApi';
+import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
 
 const { Title } = Typography;
 
