@@ -1,12 +1,11 @@
-import { Button, Divider, Flex, Skeleton, Typography } from 'antd';
+import { Divider, Flex, Skeleton, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import Breadcum from '@components/ui/Breadcum';
 import Carousel from '@components/ui/carousel/Carousel';
-import { useDispatch, useSelector } from 'react-redux';
-import { setListAuction } from '@core/store/AuctionListStore/auctionList';
+import { useDispatch } from 'react-redux';
 import CardContent from '../../../../../../components/ui/Card';
+import { jewelryApi } from '../../../../../../services/api/JewelryApi/jewelryApi';
 const { Title } = Typography;
 const breadcumLink = [
   {
@@ -20,29 +19,29 @@ const breadcumLink = [
 ];
 export const JewelryList = () => {
   const [loading, setLoading] = useState(false);
-  const auctionData = useSelector((state) => state.auctionList.auctionListData);
+  const [dataCategory1, setDataCategory1] = useState([]);
+  const [dataCollection1, setDataCollection1] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [category, setCategory] = useState([]);
-  const endpoint = 'https://664e0a97fafad45dfaded0e5.mockapi.io/api/v1/auction-list';
-  const endpointCategory = 'https://664e0a97fafad45dfaded0e5.mockapi.io/api/v1/category';
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(endpoint);
-        dispatch(setListAuction(response.data));
+        const responseCategory1 = await jewelryApi.getAuctionSuggest(
+          'category=1'
+        );
+        const responseCollection1 = await jewelryApi.getAuctionSuggest(
+          'collection=1'
+        );
+        setDataCategory1(responseCategory1.data.content);
+        setDataCollection1(responseCollection1.data.content);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    };
-    const fetchCtr = async () => {
-      const response = await axios.get(endpointCategory);
-      setCategory(response.data);
     };
     fetchData();
-    fetchCtr();
   }, [dispatch]);
 
   return (
@@ -51,27 +50,10 @@ export const JewelryList = () => {
         <Breadcum linkBreadcum={breadcumLink} />
         <Divider className='border-black' />
         <div className='container'>
-          <Title className='text-left font-serif' level={3}>
-            Category
-          </Title>
-          <Flex gap={10} className='content-center'>
-            {category.map((e) => (
-              <Button
-                key={e.id}
-                className=' !border-black font-semibold !text-black hover:!bg-[#946257] hover:!text-[#fff] font-serif'
-              >
-                {e.category}
-              </Button>
-            ))}
-          </Flex>
-        </div>
-        <Divider />
-
-        <div className='container'>
           <Skeleton loading={loading}>
             <Flex className='justify-between'>
               <Title level={3} className='font-serif'>
-                Ring
+                {dataCategory1[0]?.jewelry?.category?.name}
               </Title>
               <Title level={5}>
                 <Link to={'/'} className='font-serif !text-[#000] !underline'>
@@ -80,7 +62,7 @@ export const JewelryList = () => {
               </Title>
             </Flex>
             <Carousel
-              data={auctionData.filter((item) => item.category === 2)}
+              data={dataCategory1}
               numberOfSilde={4}
               component={CardContent}
               onClick={(e) => navigate(`detail/${e.id}`)}
@@ -92,7 +74,7 @@ export const JewelryList = () => {
           <Skeleton loading={loading}>
             <Flex className='justify-between'>
               <Title level={3} className='font-serif'>
-                In progress
+                {dataCollection1[0]?.jewelry?.collection?.name}
               </Title>
               <Title level={5}>
                 <Link to={'/'} className='font-serif !text-[#000] !underline'>
@@ -101,7 +83,7 @@ export const JewelryList = () => {
               </Title>
             </Flex>
             <Carousel
-              data={auctionData.filter((item) => item.status === 'inProgress')}
+              data={dataCollection1}
               numberOfSilde={4}
               component={CardContent}
               onClick={(e) => navigate(`detail/${e.id}`)}

@@ -14,7 +14,7 @@ const Carousel = ({ data = [], numberOfSilde = 1, component: Component, onClick 
       className='w-full !h-full !p-0'
       spaceBetween={50}
     >
-      {data.map((element) => (
+      {data?.map((element) => (
         <SwiperSlide
           onClick={() => onClick(element)}
           key={element.id}
