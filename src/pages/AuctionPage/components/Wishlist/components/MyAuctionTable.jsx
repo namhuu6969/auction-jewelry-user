@@ -1,16 +1,16 @@
 import { Dropdown, Image, Menu, Popconfirm, Space, Spin, Table } from 'antd';
-import useTableSearch from '../../../../../hooks/useTableSearch';
+import useTableSearch from '@hooks/useTableSearch';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setMyAuctionData,
   setRenderMyAuction,
-} from '../../../../../core/store/WishlistStore/MyAuctionStore/myAuction';
-import { myAuctionApi } from '../../../../../services/api/WishlistApi/myAuctionApi';
+} from '@core/store/WishlistStore/MyAuctionStore/myAuction';
+import { myAuctionApi } from '@api/WishlistApi/myAuctionApi';
 import { useNavigate } from 'react-router-dom';
-import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
-import { formatPrice, getImage, imageURL } from '../../../../../utils/utils';
-import { useNotification } from '../../../../../hooks/useNotification';
+import useTableSearchDate from '@hooks/useTableSearchDate';
+import { formatPrice, getImage, imageURL } from '@utils/utils';
+import { useNotification } from '@hooks/useNotification';
 
 export const MyAuctionTable = () => {
   const { getColumnSearchProps } = useTableSearch();
@@ -68,11 +68,7 @@ export const MyAuctionTable = () => {
       key: 'image',
       render: (data) => (
         <>
-          <Image
-            className='!w-[150px] !h-[150px]'
-            src={imageURL(images[data?.id])}
-            alt=''
-          />
+          <Image className='!w-[150px] !h-[150px]' src={imageURL(images[data?.id])} alt='' />
         </>
       ),
     },
@@ -155,8 +151,7 @@ export const MyAuctionTable = () => {
         ) : (
           'NaN'
         ),
-      sorter: (a, b) =>
-        calculateRemainingDays(a?.endTime) - calculateRemainingDays(b?.endTime),
+      sorter: (a, b) => calculateRemainingDays(a?.endTime) - calculateRemainingDays(b?.endTime),
     },
     {
       title: 'Trạng thái',
@@ -169,10 +164,7 @@ export const MyAuctionTable = () => {
       align: 'center',
       fixed: 'right',
       render: (data) => (
-        <Dropdown
-          overlay={getMenu(data.id, data.status, data.totalBids)}
-          trigger={['click']}
-        >
+        <Dropdown overlay={getMenu(data.id, data.status, data.totalBids)} trigger={['click']}>
           <a onClick={(e) => e.preventDefault()}>
             <Space>
               <p className='text-2xl'>...</p>
@@ -186,16 +178,12 @@ export const MyAuctionTable = () => {
   const getMenu = (id, status, totalBids) => (
     <Menu>
       <Menu.Item key='0'>
-        <a onClick={() => navigate(`/jewelry/detail/${id}`)}>
-          Xem chi tiết đấu giá
-        </a>
+        <a onClick={() => navigate(`/jewelry/detail/${id}`)}>Xem chi tiết đấu giá</a>
       </Menu.Item>
       <Menu.Item
         key='1'
         className={`${
-          status === 'Inprogess' ||
-          status === 'Completed' ||
-          status === 'Waiting'
+          status === 'Inprogess' || status === 'Completed' || status === 'Waiting'
             ? '!hidden'
             : '!block'
         }`}
@@ -206,9 +194,7 @@ export const MyAuctionTable = () => {
       </Menu.Item>
       <Menu.Item
         key='2'
-        className={`${
-          status === 'Completed' || status === 'Cancel' ? '!hidden' : '!block'
-        }`}
+        className={`${status === 'Completed' || status === 'Cancel' ? '!hidden' : '!block'}`}
         disabled={totalBids > 3 ? true : false}
       >
         <Popconfirm
@@ -218,9 +204,7 @@ export const MyAuctionTable = () => {
           okText='Có'
           cancelText='Không'
         >
-          <a className='!text-red-600'>
-            Hủy phiên đấu giá {loadingUpdated ? <Spin /> : ''}
-          </a>
+          <a className='!text-red-600'>Hủy phiên đấu giá {loadingUpdated ? <Spin /> : ''}</a>
         </Popconfirm>
       </Menu.Item>
     </Menu>

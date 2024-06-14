@@ -9,7 +9,8 @@ import { useState, useEffect } from 'react';
 import { PrimaryButton } from '@components/ui/PrimaryButton';
 import { BidModal } from './BidModal/BidModal'; // Adjust the import path as needed
 import { useNavigate } from 'react-router-dom';
-import { auctionApi } from '../../../../../../services/api/AuctionApi/AuctionApi';
+import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
+import { BiddingApi } from '@api/AuctionServices/BiddingApi/BiddingApi';
 
 const { Title } = Typography;
 
@@ -32,9 +33,8 @@ export const JewelryDetail = () => {
       setStep(response.data.step);
       setSelectedImage({
         id: 1,
-        image: `http://localhost:8080/uploads/jewelry/${response.data.jewelry.jewelryImages[0]?.url}`, // Set the initial selected image
+        image: `http://167.71.212.203:8080/uploads/jewelry/${response.data.jewelry.jewelryImages[0]?.url}`, // Set the initial selected image
       });
-      // console.log(response.data);
     };
     fetchAuctionData();
   }, [id]);
@@ -43,38 +43,50 @@ export const JewelryDetail = () => {
     setIsModalVisible(true);
   };
 
-  const handleOk = () => {
-    // Handle the final submission logic here
-    console.log('Final bid amount:', bidAmount);
+  const handleOk = async () => {
+    const validBidAmount = Math.floor(bidAmount / step) * step;
+    const dataBidding = { auctionId: id, bidAmount: validBidAmount };
     setIsModalVisible(false);
-    setCurrentStep(0); // Reset step after submission
-    Modal.success({
-      title: 'Bid Successfully',
-      content: `Your bid is on its way!`,
-      okText: 'Bid more now',
-      cancelText: 'Cancel',
-      onOk: () => {
-        navigator('/auction');
-      },
-    });
+    const response = await BiddingApi.createBid(dataBidding);
+    if (response.code === 200) {
+      Modal.success({
+        title: 'Bid Successfully',
+        content: 'Your bid is on its way!',
+        okText: 'Bid more now',
+        cancelText: 'Cancel',
+        onOk: () => {
+          navigator('/auction');
+        },
+      });
+      setCurrentStep(0);
+      setBidAmount(''); // Reset bid amount after successful bid
+    }
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    setCurrentStep(0); // Reset step on cancel
+    setCurrentStep(0);
   };
 
   const increaseBidAmount = () => {
+    setBidAmount((prevBidAmount) => (parseInt(prevBidAmount) + step).toString());
+  };
+
+  const decreaseBidAmount = () => {
     setBidAmount((prevBidAmount) => {
-      return parseInt(prevBidAmount) + step;
+      const newBidAmount = parseInt(prevBidAmount) - step;
+      return newBidAmount >= 0 ? newBidAmount.toString() : '0';
     });
   };
 
   const handleBidAmountChange = (e) => {
     const value = e.target.value;
-    if (value >= 0) {
-      setBidAmount(value);
-    }
+    setBidAmount(value);
+  };
+
+  const handleBlur = () => {
+    const validBidAmount = Math.floor(bidAmount / step) * step;
+    setBidAmount(validBidAmount.toString());
   };
 
   const next = () => {
@@ -157,7 +169,7 @@ export const JewelryDetail = () => {
                 component={img}
                 data={jewelryImages.map((img) => ({
                   id: img.id,
-                  image: `http://localhost:8080/uploads/jewelry/${img.url}`,
+                  image: `http://167.71.212.203:8080/uploads/jewelry/${img.url}`,
                 }))}
                 numberOfSilde={5}
               />
@@ -250,7 +262,7 @@ export const JewelryDetail = () => {
         <TabsContent jewelry={jewelryData} startTime={startTime} endTime={endTime} />
       </Flex>
       <BidModal
-        isVisible={isModalVisible}
+        open={isModalVisible}
         currentStep={currentStep}
         step={step}
         bidAmount={bidAmount}
@@ -258,7 +270,9 @@ export const JewelryDetail = () => {
         userWallet={1000}
         handleCancel={handleCancel}
         handleBidAmountChange={handleBidAmountChange}
+        handleBlur={handleBlur}
         increaseBidAmount={increaseBidAmount}
+        decreaseBidAmount={decreaseBidAmount}
         next={next}
         prev={prev}
       />
