@@ -1,5 +1,8 @@
+import api from '../../../config/axios'
+
 export const jewelryApi = {
-  getJewelryList: (async) => {
-    
+  getAuctionSuggest: async (filter) => {
+    const response = await api.get(`auction/viewauction?${filter}`)
+    return response.data
   }
 }
