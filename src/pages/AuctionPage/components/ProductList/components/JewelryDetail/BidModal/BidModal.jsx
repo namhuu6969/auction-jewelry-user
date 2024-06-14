@@ -5,15 +5,17 @@ const { Step } = Steps;
 const { Title } = Typography;
 
 export const BidModal = ({
-  isVisible,
+  open,
   currentStep,
   step,
   bidAmount,
-  userWallet, // Added userWallet prop
+  userWallet,
   handleOk,
   handleCancel,
   handleBidAmountChange,
+  handleBlur,
   increaseBidAmount,
+  decreaseBidAmount,
   next,
   prev,
 }) => {
@@ -26,13 +28,21 @@ export const BidModal = ({
           <Input
             type='number'
             min='0'
+            step={step}
             value={bidAmount}
             onChange={handleBidAmountChange}
-            placeholder='Enter your bid amount'
+            onBlur={handleBlur} // Pass handleBlur function here
+            placeholder={`Enter your bid amount (multiple of ${step})`}
           />
-          <Button onClick={increaseBidAmount} type='primary' disabled={!bidAmount}>
+          <Button onClick={increaseBidAmount} type='primary'>
             Increase by {step}
           </Button>
+          <Button onClick={decreaseBidAmount} type='primary'>
+            Decrease by {step}
+          </Button>
+          {bidAmount % step !== 0 && ( // Display error message if bidAmount is not a multiple of step
+            <p style={{ color: 'red' }}>Bid amount must be a multiple of {step}</p>
+          )}
           <p>Your Wallet Balance: {userWallet} VND</p> {/* Display wallet balance */}
         </div>
       ),
@@ -70,7 +80,7 @@ export const BidModal = ({
   return (
     <Modal
       title='Place a Bid'
-      visible={isVisible}
+      open={open}
       onOk={checkWallet}
       onCancel={handleCancel}
       footer={[
@@ -80,7 +90,12 @@ export const BidModal = ({
           </Button>
         ),
         currentStep < steps.length - 1 ? (
-          <Button disabled={!bidAmount} key='next' type='primary' onClick={next}>
+          <Button
+            disabled={!bidAmount || bidAmount % step !== 0}
+            key='next'
+            type='primary'
+            onClick={next}
+          >
             Next
           </Button>
         ) : (
@@ -95,8 +110,7 @@ export const BidModal = ({
           <Step key={index} title={step.title} />
         ))}
       </Steps>
-      <div className='steps-content'>{steps[currentStep].content}</div>{' '}
-      {/* Use optional chaining to avoid undefined error */}
+      <div className='steps-content'>{steps[currentStep].content}</div>
     </Modal>
   );
 };
