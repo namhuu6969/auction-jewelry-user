@@ -9,14 +9,13 @@ import {
   setJewelryData,
 } from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { ModalJewelryDetail } from './components/ModalJewelryDetail';
-import { getImage, imageURL } from '../../../../../utils/utils';
+import { imageURL } from '../../../../../utils/utils';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
 
 export const MyJewelryTable = () => {
   const { getColumnSearchProps } = useTableSearch();
   const { getColumnSearchDateProps } = useTableSearchDate();
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState({});
   const category = useSelector((state) => state.jewelryMe.category);
   const brand = useSelector((state) => state.jewelryMe.brand);
   const collection = useSelector((state) => state.jewelryMe.collection);
@@ -33,23 +32,11 @@ export const MyJewelryTable = () => {
         setLoading(true);
         const response = await wishlistApi.getJewelryByMe();
         dispatch(setJewelryData(response));
-        fetchImages(response);
       } catch (error) {
         console.log(error);
       } finally {
         setLoading(false);
       }
-    };
-
-    const fetchImages = async (jewelryData) => {
-      const imageMap = {};
-      for (const jewelry of jewelryData) {
-        const images = await getImage(jewelry.id);
-        if (images.length > 0) {
-          imageMap[jewelry.id] = images[0].url;
-        }
-      }
-      setImages(imageMap);
     };
 
     fetchJewelryMe();
@@ -86,12 +73,13 @@ export const MyJewelryTable = () => {
   const columns = [
     {
       title: 'Ảnh',
+      dataIndex: 'thumbnail',
       key: 'image',
       render: (data) => (
         <>
           <Image
             className='!w-[150px] !h-[150px]'
-            src={imageURL(images[data?.id])}
+            src={imageURL(data)}
             alt=''
           />
         </>
@@ -170,7 +158,9 @@ export const MyJewelryTable = () => {
       render: (jewelryMaterials) => (
         <div className='grid grid-cols-4 gap-1'>
           {jewelryMaterials.map((material) => (
-            <Tag key={material.id} className='col-span-2 text-center w-full'>{material.material.name}</Tag>
+            <Tag key={material.id} className='col-span-2 text-center w-full'>
+              {material.material.name}
+            </Tag>
           ))}
         </div>
       ),

@@ -6,13 +6,22 @@ export const getImage = async (imageUrl) => {
 };
 
 export const imageURL = (imageUrl) => {
-  return `http://167.71.212.203:8080/uploads/jewelry/${imageUrl}`
-}
+  return `http://167.71.212.203:8080/uploads/jewelry/${imageUrl}`;
+};
+
+export const formatDate = (date) => {
+  const formatted = new Intl.DateTimeFormat('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(date));
+  return formatted;
+};
 
 export const formatPrice = (price) => {
   if (price > 0) {
     const priceInNumber = parseFloat(
-      price.toString().replace('$', '').replace(',', '')
+      price?.toString().replace('$', '').replace(',', '')
     );
     if (priceInNumber >= 1000000000) {
       const billion = Math.floor(priceInNumber / 1000000000);
@@ -25,6 +34,6 @@ export const formatPrice = (price) => {
       return `${priceInNumber.toLocaleString('vi-VN')}`;
     }
   } else {
-    return 0
+    return 0;
   }
 };

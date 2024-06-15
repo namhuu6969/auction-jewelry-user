@@ -24,5 +24,9 @@ export const wishlistApi = {
   getMaterial: async () => {
     const response = await api.get('material')
     return response.data
+  },
+  getWishlist: async () => {
+    const response = await api.get('wishlist')
+    return response.data
   }
 }
