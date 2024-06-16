@@ -11,6 +11,7 @@ import {
 import { ModalJewelryDetail } from './components/ModalJewelryDetail';
 import { imageURL } from '../../../../../utils/utils';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
+import { ModalValuate } from './components/ModalValuate';
 
 export const MyJewelryTable = () => {
   const { getColumnSearchProps } = useTableSearch();
@@ -23,6 +24,7 @@ export const MyJewelryTable = () => {
   const render = useSelector((state) => state.jewelryMe.render);
   const material = useSelector((state) => state.jewelryMe.material);
   const [open, setOpen] = useState(false);
+  const [openValuate, setOpenValuate] = useState(false);
   const [openDetail, setOpenDetail] = useState(false);
   const dispatch = useDispatch();
 
@@ -55,6 +57,11 @@ export const MyJewelryTable = () => {
     dispatch(setJewelryId(id));
   };
 
+  const handleOpenValuate = (id) => {
+    setOpenValuate(true);
+    dispatch(setJewelryId(id));
+  };
+
   const getMenu = (id, status) => (
     <Menu>
       <Menu.Item
@@ -66,6 +73,15 @@ export const MyJewelryTable = () => {
       </Menu.Item>
       <Menu.Item key='1'>
         <a onClick={() => handleOpenDetail(id)}>Xem chi tiết</a>
+      </Menu.Item>
+      <Menu.Item
+        key='2'
+        disabled={status === 'ONLINE_VALUATED' || status === 'OFFLINE_VALUATING'}
+        title={
+          status === 'ONLINE_VALUATED' ? 'Sản phẩm đang định giá' : ''
+        }
+      >
+        <a onClick={() => handleOpenValuate(id)}>Định giá sản phẩm</a>
       </Menu.Item>
     </Menu>
   );
@@ -189,6 +205,7 @@ export const MyJewelryTable = () => {
 
   return (
     <>
+      <ModalValuate open={openValuate} setOpen={setOpenValuate} />
       <ModalAddAuction open={open} setOpen={setOpen} />
       <ModalJewelryDetail open={openDetail} setOpen={setOpenDetail} />
       <Table
