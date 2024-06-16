@@ -17,7 +17,7 @@ export const BidModal = ({
   increaseBidAmount,
   decreaseBidAmount,
   next,
-  prev,
+  prev
 }) => {
   const steps = [
     {

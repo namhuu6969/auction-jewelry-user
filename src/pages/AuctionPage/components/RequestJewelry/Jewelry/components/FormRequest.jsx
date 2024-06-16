@@ -71,9 +71,9 @@ export const FormRequest = () => {
     if (materialsInput.length === 0) {
       return Promise.resolve();
     }
-    if (value !== totalMaterialWeight) {
+    if (value < totalMaterialWeight) {
       return Promise.reject(
-        new Error('Tổng khối lượng chất liệu phải bằng khối lượng sản phẩm!')
+        new Error('Tổng khối lượng chất liệu phải lớn hơn khối lượng sản phẩm!')
       );
     }
     return Promise.resolve();
@@ -109,10 +109,12 @@ export const FormRequest = () => {
     value: e?.name,
   }));
 
-  const itemsCollection = collection?.filter((item) => item.brand.name === choosedBrand).map((e) => ({
-    label: e?.name,
-    value: e?.name,
-  }));
+  const itemsCollection = collection
+    ?.filter((item) => item.brand.name === choosedBrand)
+    .map((e) => ({
+      label: e?.name,
+      value: e?.name,
+    }));
 
   const itemsGender = [
     {
@@ -129,10 +131,6 @@ export const FormRequest = () => {
     },
   ];
 
-  const itemsMaterial = material?.map((e) => ({
-    label: e?.name,
-    value: e?.id,
-  }));
 
   const filterOption = (input, option) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
@@ -198,6 +196,7 @@ export const FormRequest = () => {
   const removeMaterialInput = (index) => {
     const updatedMaterials = materialsInput.filter((_, idx) => idx !== index);
     setMaterialsInput(updatedMaterials);
+    form.resetFields([`material_${index}`, `weight_${index}`]);
     form.validateFields(['weight']);
   };
 
@@ -207,6 +206,13 @@ export const FormRequest = () => {
     );
     setMaterialsInput(updatedMaterials);
     form.validateFields(['weight']);
+  };
+
+  const getFilteredMaterials = (index) => {
+    const selectedMaterials = materialsInput
+      .filter((_, idx) => idx !== index)
+      .map((material) => material.idMaterial);
+    return material?.filter((mat) => !selectedMaterials.includes(mat.id));
   };
 
   const handleWeightChange = (index, weight) => {
@@ -226,6 +232,7 @@ export const FormRequest = () => {
 
   return (
     <>
+      {console.log(materialsInput)}
       {contextHolder}
       <Form
         onFinish={handleSubmit}
@@ -252,7 +259,7 @@ export const FormRequest = () => {
           </Form.Item>
           <Form.Item
             name={'weight'}
-            label='Cân nặng'
+            label='Cân nặng (g)'
             rules={[
               {
                 required: true,
@@ -332,17 +339,7 @@ export const FormRequest = () => {
               className='!text-left'
             />
           </Form.Item>
-          <Form.Item
-            name={'brand'}
-            label='Hãng'
-            rules={[
-              {
-                required: true,
-                message: 'Hãy chọn hãng!',
-              },
-            ]}
-            className='!text-left'
-          >
+          <Form.Item name={'brand'} label='Hãng' className='!text-left'>
             <Select
               onChange={(value) => setChoosedBrand(value)}
               showSearch
@@ -358,7 +355,7 @@ export const FormRequest = () => {
             label='Bộ sưu tập (Vui lòng chọn hãng trước)'
             rules={[
               {
-                required: true,
+                required: choosedBrand ? true : false,
                 message: 'Hãy chọn bộ sưu tập!',
               },
             ]}
@@ -414,13 +411,16 @@ export const FormRequest = () => {
                 placeholder='Chọn chất liệu'
                 optionFilterProp='children'
                 filterOption={filterOption}
-                options={itemsMaterial}
+                options={getFilteredMaterials(index)?.map((e) => ({
+                  label: e?.name,
+                  value: e?.id,
+                }))}
                 className='!text-left !w-full'
                 onChange={(value) => handleMaterialChange(index, value)}
               />
             </Form.Item>
             <Form.Item
-              label='Cân nặng'
+              label='Cân nặng (g)  '
               className='!text-left'
               rules={[
                 { required: true, message: 'Hãy nhập cân nặng của vật liệu' },

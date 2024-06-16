@@ -1,58 +1,76 @@
 import { Image, Table } from 'antd';
 import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
+import { useEffect, useState } from 'react';
+import { wishlistApi } from '../../../../../services/api/WishlistApi/wishlistApi';
+import { formatDate, getImage, imageURL } from '../../../../../utils/utils';
+import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
 import useTableSearch from '../../../../../hooks/useTableSearch';
 
 export const WishlistTable = () => {
   const { getColumnSearchProps } = useTableSearch();
+  const { getColumnSearchDateProps } = useTableSearchDate();
+  const [dataSource, setDataSource] = useState([]);
+  const [images, setImages] = useState({});
+  const [loading, setLoading] = useState(false);
   const columns = [
     {
       title: 'Ảnh',
-      dataIndex: 'image',
       key: 'image',
-      render: (image) => (
-        <Image className='!w-[150px] !h-[150px]' src={image} alt='' />
+      render: (data) => (
+        <>
+          <Image
+            className='!w-[150px] !h-[150px]'
+            src={imageURL(images[data?.id])}
+            alt=''
+          />
+        </>
       ),
     },
     {
+      title: 'Ngày tạo',
+      dataIndex: ['auction', 'createdAt'],
+      key: 'createdAt',
+      ...getColumnSearchDateProps('createdAt'),
+      sorter: (a, b) => new Date(a?.createdAt) - new Date(b?.createdAt),
+      render: (data) => formatDate(data),
+    },
+    {
       title: 'Tên sản phẩm',
-      dataIndex: 'name',
+      dataIndex: ['auction', 'jewelry', 'name'],
       key: 'name',
-      ...getColumnSearchProps('name')
+      ...getColumnSearchProps('name'),
     },
     {
-      title: 'Giá hiện tại',
-      dataIndex: 'current',
-      key: 'current',
+      title: 'Danh mục',
+      dataIndex: ['auction', 'jewelry', 'category', 'name'],
+      key: 'category',
     },
     {
-      title: 'Giá mua ngay',
-      dataIndex: 'buynow',
-      key: 'buynow  ',
+      title: 'Hãng',
+      dataIndex: ['auction', 'jewelry', 'brand', 'name'],
+      key: 'brand',
+      ...getColumnSearchProps('brand'),
     },
     {
-      title: 'Số người tham gia',
-      dataIndex: 'participants',
-      key: 'participants',
+      title: 'Bộ sưu tập',
+      dataIndex: ['auction', 'jewelry', 'collection', 'name'],
+      key: 'collection',
     },
     {
-      title: 'Người bán',
-      dataIndex: 'seller',
-      key: 'seller',
-      ...getColumnSearchProps('seller')
+      title: 'Thời gian bắt đầu',
+      dataIndex: ['auction', 'startTime'],
+      key: 'startTime',
+      render: (data) => formatDate(data),
     },
     {
-      title: 'Đấu giá cao nhất',
-      dataIndex: 'best',
-      key: 'best',
-    },
-    {
-      title: 'Còn lại',
-      dataIndex: 'remain',
-      key: 'remain',
+      title: 'Trạng thái',
+      dataIndex: ['auction', 'status'],
+      key: 'startTime',
     },
     {
       title: 'Hành dộng',
       key: 'action',
+      fixed: 'right',
       render: () => (
         <PrimaryButton onClick={() => console.log('Success')}>
           Xem
@@ -60,19 +78,41 @@ export const WishlistTable = () => {
       ),
     },
   ];
-  const items = [
-    {
-      key: '1',
-      image:
-        'https://bazaarvietnam.vn/wp-content/uploads/2021/03/trang-suc-fine-jewelry-la-gi-cartier.jpg',
-      name: 'Ring',
-      current: '1.000.000 VND',
-      buynow: '5.000.000 VND',
-      participants: '12',
-      seller: 'ABC',
-      best: 'XYZ',
-      remain: '3 days',
-    },
-  ];
-  return <Table dataSource={items} columns={columns} />;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await wishlistApi.getWishlist();
+        setDataSource(response.data);
+        if (response.data) {
+          fetchImages(response.data);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    const fetchImages = async (jewelryData) => {
+      const imageMap = {};
+      for (const jewelry of jewelryData) {
+        const images = await getImage(jewelry.jewelry.id);
+        if (images.length > 0) {
+          imageMap[jewelry.id] = images[0].url;
+        }
+      }
+      setImages(imageMap);
+    };
+    fetchData();
+  }, []);
+  return (
+    <Table
+      scroll={{
+        x: 2000,
+      }}
+      loading={loading}
+      dataSource={dataSource}
+      columns={columns}
+    />
+  );
 };

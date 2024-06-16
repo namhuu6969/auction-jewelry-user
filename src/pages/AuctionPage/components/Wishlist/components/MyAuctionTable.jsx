@@ -8,9 +8,9 @@ import {
 } from '@core/store/WishlistStore/MyAuctionStore/myAuction';
 import { myAuctionApi } from '@api/WishlistApi/myAuctionApi';
 import { useNavigate } from 'react-router-dom';
-import useTableSearchDate from '@hooks/useTableSearchDate';
-import { formatPrice, getImage, imageURL } from '@utils/utils';
-import { useNotification } from '@hooks/useNotification';
+import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
+import { formatPrice, imageURL } from '../../../../../utils/utils';
+import { useNotification } from '../../../../../hooks/useNotification';
 
 export const MyAuctionTable = () => {
   const { getColumnSearchProps } = useTableSearch();
@@ -18,7 +18,6 @@ export const MyAuctionTable = () => {
   const { openNotification, contextHolder } = useNotification();
   const [loading, setLoading] = useState(false);
   const [loadingUpdated, setLoadingUpdated] = useState(false);
-  const [images, setImages] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const auctionData = useSelector((state) => state.myAuction.myAuctionData);
@@ -65,10 +64,15 @@ export const MyAuctionTable = () => {
   const columns = [
     {
       title: 'Ảnh',
+      dataIndex: ['jewelry', 'thumbnail'],
       key: 'image',
       render: (data) => (
         <>
-          <Image className='!w-[150px] !h-[150px]' src={imageURL(images[data?.id])} alt='' />
+          <Image
+            className='!w-[150px] !h-[150px]'
+            src={imageURL(data)}
+            alt=''
+          />
         </>
       ),
     },
@@ -215,8 +219,8 @@ export const MyAuctionTable = () => {
       try {
         setLoading(true);
         const response = await myAuctionApi.getMyAuction();
+        console.log(response.data)
         if (response.data) {
-          fetchImages(response.data);
           dispatch(setMyAuctionData(response.data));
         }
       } catch (error) {
@@ -224,17 +228,6 @@ export const MyAuctionTable = () => {
       } finally {
         setLoading(false);
       }
-    };
-
-    const fetchImages = async (jewelryData) => {
-      const imageMap = {};
-      for (const jewelry of jewelryData) {
-        const images = await getImage(jewelry.jewelry.id);
-        if (images.length > 0) {
-          imageMap[jewelry.id] = images[0].url;
-        }
-      }
-      setImages(imageMap);
     };
 
     if (isRender === true) {

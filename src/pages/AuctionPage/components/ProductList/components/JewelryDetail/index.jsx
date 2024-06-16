@@ -1,8 +1,12 @@
-import { Avatar, Button, Divider, Flex, Modal, Typography } from 'antd';
+import { Avatar, Button, Divider, Flex, Image, Modal, Typography } from 'antd';
 import Breadcum from '@components/ui/Breadcum';
 import { useParams } from 'react-router-dom';
 import Carousel from '@components/ui/carousel/Carousel';
-import { StarFilled, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import {
+  StarFilled,
+  UserOutlined,
+  ClockCircleOutlined,
+} from '@ant-design/icons';
 import TabsContent from './Tabs/Tabs';
 import './index.css';
 import { useState, useEffect } from 'react';
@@ -69,7 +73,9 @@ export const JewelryDetail = () => {
   };
 
   const increaseBidAmount = () => {
-    setBidAmount((prevBidAmount) => (parseInt(prevBidAmount) + step).toString());
+    setBidAmount((prevBidAmount) =>
+      (parseInt(prevBidAmount) + step).toString()
+    );
   };
 
   const decreaseBidAmount = () => {
@@ -129,12 +135,13 @@ export const JewelryDetail = () => {
 
   const img = ({ element }) => {
     return (
-      <img
+      <Image
         className={`w-[60%] my-10 carousel-image cursor-pointer ${
           element.id === selectedImage?.id ? 'selected' : ''
         }`}
         src={element?.image}
         onClick={() => handleImageClick(element)}
+        preview={false}
       />
     );
   };
@@ -149,7 +156,7 @@ export const JewelryDetail = () => {
 
   const { name, jewelryImages, staringPrice, sellerId } = jewelryData;
 
-  const { currentPrice, endTime, startTime, status } = auctionData;
+  const { currentPrice, totalBids, endTime, startTime, status } = auctionData;
 
   return (
     <div className='container mx-auto'>
@@ -159,8 +166,8 @@ export const JewelryDetail = () => {
         <Flex gap={10}>
           <Flex vertical className='w-[50%] justify-center'>
             <div>
-              <img
-                className='w-[500px] mx-auto h-[500px] cursor-pointer'
+              <Image
+                className='w-[100%] mx-auto !object-cover cursor-pointer'
                 src={selectedImage.image}
               />
             </div>
@@ -181,22 +188,40 @@ export const JewelryDetail = () => {
             </Title>
             <Flex className='items-center w-full'>
               <div className='grid grid-cols-2 gap-y-5'>
-                <Title className='!mr-4 !my-auto text-left font-sans !font-medium' level={4}>
+                <Title
+                  className='!mr-4 !my-auto text-left font-sans !font-medium'
+                  level={4}
+                >
                   Giá thầu hiện tại:
                 </Title>
-                <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
+                <Title
+                  className='!m-0 !my-auto !text-red-600 text-left font-sans'
+                  level={3}
+                >
                   {currentPrice} VND
                 </Title>
-                <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
+                <Title
+                  className='!m-0 !my-auto text-left font-sans !font-medium'
+                  level={4}
+                >
                   Bước nhảy:
                 </Title>
-                <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
+                <Title
+                  className='!m-0 !my-auto !text-red-600 text-left font-sans'
+                  level={3}
+                >
                   {step} VND
                 </Title>
-                <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
+                <Title
+                  className='!m-0 !my-auto text-left font-sans !font-medium'
+                  level={4}
+                >
                   Trạng thái:
                 </Title>
-                <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
+                <Title
+                  className='!m-0 !my-auto !text-red-600 text-left font-sans'
+                  level={3}
+                >
                   {status}
                 </Title>
               </div>
@@ -213,7 +238,7 @@ export const JewelryDetail = () => {
               <Flex className='items-center' gap={10}>
                 <UserOutlined className='!text-3xl' />
                 <Title level={4} className='!m-0 font-sans !font-thin'>
-                  12
+                  {totalBids}
                 </Title>
               </Flex>
               <Flex className='items-center' gap={10}>
@@ -231,7 +256,10 @@ export const JewelryDetail = () => {
                 </Title>
               </Flex>
             </Flex>
-            <PrimaryButton onClick={showModal} className={'!text-2xl font-medium'}>
+            <PrimaryButton
+              onClick={showModal}
+              className={'!text-2xl font-medium'}
+            >
               Đấu giá
             </PrimaryButton>
             {staringPrice > 0 && (
@@ -259,7 +287,11 @@ export const JewelryDetail = () => {
             </div>
           </Flex>
         </Flex>
-        <TabsContent jewelry={jewelryData} startTime={startTime} endTime={endTime} />
+        <TabsContent
+          jewelry={jewelryData}
+          startTime={startTime}
+          endTime={endTime}
+        />
       </Flex>
       <BidModal
         open={isModalVisible}
@@ -267,7 +299,7 @@ export const JewelryDetail = () => {
         step={step}
         bidAmount={bidAmount}
         handleOk={handleOk}
-        userWallet={1000}
+        userWallet={1000000000000000}
         handleCancel={handleCancel}
         handleBidAmountChange={handleBidAmountChange}
         handleBlur={handleBlur}
