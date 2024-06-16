@@ -23,10 +23,6 @@ const options = [
   },
 ];
 
-const onChange = (checkedValues) => {
-  console.log('checked = ', checkedValues);
-};
-
 export const Category = () => {
   const [loading, setLoading] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
@@ -34,11 +30,16 @@ export const Category = () => {
   const [category, setCategory] = useState([]);
   const [brands, setBrands] = useState([]);
 
+  const onChanges = (checkedValues) => {
+    console.log('checked = ', checkedValues);
+  };
+
   useEffect(() => {
     const fetchApiCategory = async () => {
       try {
         const response = await requestJewelryApi.getCategory();
         setCategory(response.data.map((item) => item.name));
+        console.log(category);
       } catch (error) {
         console.error(error);
       }
@@ -47,7 +48,8 @@ export const Category = () => {
     const fetchBrand = async () => {
       try {
         const response = await requestJewelryApi.getBrand();
-        setBrands(response.data.map((item) => item.name));
+        const brandsFilter = response.data.filter((item) => item.name !== null);
+        setBrands(brandsFilter.map((item) => item.name));
       } catch (error) {
         console.error(error);
       }
@@ -90,6 +92,17 @@ export const Category = () => {
     );
     setFilteredData(filterData);
   };
+
+  const handleCategoryFilter = (value) => {
+    console.log(value);
+    if (value === '') setFilteredData(auctionData);
+    const filterData = auctionData.filter((item) =>
+      item.jewelry.category.name.toLowerCase().includes(value.toLowerCase())
+    );
+
+    setFilteredData(filterData);
+  };
+
   return (
     <Layout style={{ minHeight: '100vh', width: '100%' }}>
       <Header style={{ background: '#fff', padding: 0, textAlign: 'center' }}>
@@ -100,7 +113,7 @@ export const Category = () => {
           <FilterAuctions
             category={category}
             brands={brands}
-            onChange={onchange}
+            onChange={onChanges}
             data={filteredData}
             setFilteredData={setFilteredData}
             handleInputSearch={handleInputSearch}
