@@ -4,14 +4,12 @@ import { Checkbox, AutoComplete, Input, Typography, DatePicker, Space, Button, F
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
-export const FilterAuctions = ({
-  category,
-  brands,
-  onChange,
-  data,
-  setFilteredData,
-  handleInputSearch,
-}) => {
+export const FilterAuctions = ({ category, brands, data, setFilteredData, handleInputSearch }) => {
+  const [checkedList, setCheckedList] = useState([]);
+  const onChange = (list) => {
+    setCheckedList(list);
+  };
+
   const [searchOptions, setSearchOptions] = useState([]);
 
   const handleSearch = (value) => {
