@@ -15,7 +15,7 @@ export const AuctionList = ({ data, Card }) => {
               <img
                 className='!w-full !h-full !object-cover'
                 alt={item.jewelry.name}
-                src={`http://localhost:8080/uploads/jewelry/${item.jewelry.thumbnail}`}
+                src={`http://167.71.212.203:8080/uploads/jewelry/${item.jewelry.thumbnail}`}
               />
             }
           >
