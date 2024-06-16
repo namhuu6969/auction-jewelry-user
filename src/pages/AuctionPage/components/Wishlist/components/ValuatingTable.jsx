@@ -5,23 +5,26 @@ import { setMyValuation } from '../../../../../core/store/WishlistStore/MyValuat
 import { Dropdown, Image, Menu, Space, Table } from 'antd';
 import { setJewelryId } from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { ModalAddAuction } from './components/ModalAddAuction';
-import { getImage, imageURL } from '../../../../../utils/utils';
+import { imageURL } from '../../../../../utils/utils';
 
 export const ValuatingTable = () => {
   const dataSource = useSelector((state) => state.myValuation.myValuationData);
   const [open, setOpen] = useState(false);
-  const [images, setImages] = useState({});
+  const render = useSelector((state) => state.jewelryMe.render);
   const dispatch = useDispatch();
+  const formatPriceVND = (price) =>
+    price.toLocaleString('vi', { style: 'currency', currency: 'VND' });
 
   const columns = [
     {
       title: 'Ảnh',
+      dataIndex: ['jewelry', 'thumbnail'],
       key: 'image',
       render: (data) => (
         <>
           <Image
             className='!w-[150px] !h-[150px]'
-            src={imageURL(images[data?.id])}
+            src={imageURL(data)}
             alt=''
           />
         </>
@@ -41,6 +44,7 @@ export const ValuatingTable = () => {
       title: 'Giá trị định giá',
       dataIndex: 'valuation_value',
       key: 'valuation_value',
+      render: (data) => formatPriceVND(data),
     },
     {
       title: 'Phí định giá',
@@ -94,20 +98,12 @@ export const ValuatingTable = () => {
     const fetchMyValuation = async () => {
       const response = await myValuatingApi.getValuatingMe();
       dispatch(setMyValuation(response.data));
-      fetchImages(response.jewelry);
-    };
-    const fetchImages = async (jewelryData) => {
-      const imageMap = {};
-      for (const jewelry of jewelryData) {
-        const images = await getImage(jewelry.id);
-        if (images.length > 0) {
-          imageMap[jewelry.id] = images[0].url;
-        }
-      }
-      setImages(imageMap);
     };
     fetchMyValuation();
-  }, [dispatch]);
+    if (render) {
+      fetchMyValuation();
+    }
+  }, [dispatch, render]);
   return (
     <>
       <ModalAddAuction open={open} setOpen={setOpen} />

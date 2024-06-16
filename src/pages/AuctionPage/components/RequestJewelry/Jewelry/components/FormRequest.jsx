@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { requestJewelryApi } from '../../../../../../services/api/RequestApi/requestJewelryApi';
 import { Button, Form, Input, InputNumber, Modal, Select, Upload } from 'antd';
 import { UploadOutlined, MinusCircleOutlined } from '@ant-design/icons';
@@ -73,7 +73,7 @@ export const FormRequest = () => {
     }
     if (value < totalMaterialWeight) {
       return Promise.reject(
-        new Error('Tổng khối lượng chất liệu phải lớn hơn khối lượng sản phẩm!')
+        new Error('Tổng khối lượng chất liệu phải lớn hơn hoặc bằng khối lượng sản phẩm!')
       );
     }
     return Promise.resolve();
@@ -99,45 +99,13 @@ export const FormRequest = () => {
     setMaterial(response.data);
   };
 
-  const itemsCategory = category?.map((e) => ({
-    label: e?.name,
-    value: e?.id,
-  }));
-
-  const itemsBrand = brand?.map((e) => ({
-    label: e?.name,
-    value: e?.name,
-  }));
-
-  const itemsCollection = collection
-    ?.filter((item) => item.brand.name === choosedBrand)
-    .map((e) => ({
-      label: e?.name,
-      value: e?.name,
-    }));
-
-  const itemsGender = [
-    {
-      label: 'Nam',
-      value: 'Male',
-    },
-    {
-      label: 'Nữ',
-      value: 'Female',
-    },
-    {
-      label: 'Unisex',
-      value: 'Unisex',
-    },
-  ];
-
-
   const filterOption = (input, option) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
+      console.log(values);
       const formData = new FormData();
       if (values?.name) formData.append('name', values.name);
       if (values?.description)
@@ -171,12 +139,12 @@ export const FormRequest = () => {
         });
       }
 
-      const response = await requestJewelryApi.addRequestJewelry(formData);
+      await requestJewelryApi.addRequestJewelry(formData);
       form.resetFields();
       setMaterialsInput([{ idMaterial: null, weight: 0 }]);
       openNotification({
         type: 'success',
-        description: response.message,
+        description: 'Đăng sản phẩm thành công',
       });
     } catch (error) {
       openNotification({
@@ -229,10 +197,50 @@ export const FormRequest = () => {
     fetchCollection();
     fetchMaterial();
   }, []);
+  const itemsGender = useMemo(
+    () => [
+      { label: 'Nam', value: 'Male' },
+      { label: 'Nữ', value: 'Female' },
+      { label: 'Unisex', value: 'Unisex' },
+    ],
+    []
+  );
+
+  const itemsCondition = useMemo(
+    () => [
+      { label: 'New', value: 'New' },
+      { label: 'Used', value: 'Used' },
+    ],
+    []
+  );
+  const itemsCategory = category?.map((e) => ({
+    label: e?.name,
+    value: e?.id,
+  }));
+
+  const itemsBrand = brand?.map((e) => ({
+    label: e?.name,
+    value: e?.name,
+  }));
+
+  const itemsCollection = collection
+    ?.filter((item) => item.brand.name === choosedBrand)
+    .map((e) => ({
+      label: e?.name,
+      value: e?.name,
+    }));
+  useEffect(() => {
+    if (itemsCategory.length > 0) {
+      form.setFieldsValue({
+        category: itemsCategory[0].value,
+        sex: itemsGender[0].value,
+        jewelryCondition: itemsCondition[0].value,
+      });
+    }
+  }, [form, itemsCategory, itemsCondition, itemsGender]);
 
   return (
     <>
-      {console.log(materialsInput)}
       {contextHolder}
       <Form
         onFinish={handleSubmit}
@@ -243,7 +251,7 @@ export const FormRequest = () => {
         size='large'
         form={form}
       >
-        <div className='grid grid-cols-4 gap-y-7 gap-x-5'>
+        <div className='grid grid-cols-3 gap-y-7 gap-x-5'>
           <Form.Item
             name={'name'}
             label='Tên trang sức'
@@ -253,7 +261,7 @@ export const FormRequest = () => {
                 message: 'Hãy nhập tên trang sức!',
               },
             ]}
-            className='!text-left col-span-2'
+            className='!text-left col-span-1'
           >
             <Input />
           </Form.Item>
@@ -311,11 +319,9 @@ export const FormRequest = () => {
             className='!text-left'
           >
             <Select
+              defaultValue={'New'}
               placeholder='Chọn chất lượng'
-              options={[
-                { label: 'New', value: 'New' },
-                { label: 'Used', value: 'Used' },
-              ]}
+              options={itemsCondition}
               className='!text-left'
             />
           </Form.Item>
@@ -394,7 +400,7 @@ export const FormRequest = () => {
         </div>
 
         {materialsInput.map((material, index) => (
-          <div key={index} className='grid grid-cols-4 gap-4'>
+          <div key={index} className='grid grid-cols-3 gap-4'>
             <Form.Item
               name={`material_${index}`}
               label='Chất liệu'
@@ -420,10 +426,16 @@ export const FormRequest = () => {
               />
             </Form.Item>
             <Form.Item
-              label='Cân nặng (g)  '
+              label='Cân nặng (g)'
+              name={`weight_${index}`}
               className='!text-left'
               rules={[
                 { required: true, message: 'Hãy nhập cân nặng của vật liệu' },
+                {
+                  type: 'number',
+                  min: 0.00000000000000001,
+                  message: 'Cân nặng phải lớn hơn 0!',
+                },
               ]}
             >
               <InputNumber
@@ -449,7 +461,7 @@ export const FormRequest = () => {
         <Button
           type='dashed'
           onClick={addMaterialInput}
-          className='w-1/2 flex justify-center'
+          className='w-2/3 flex justify-center'
         >
           Thêm chất liệu
         </Button>
@@ -464,7 +476,7 @@ export const FormRequest = () => {
             },
           ]}
         >
-          <Input.TextArea />
+          <Input.TextArea rows={4} />
         </Form.Item>
         <Form.Item
           name='imagesFile'

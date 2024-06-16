@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux';
 import NotAuthorize from '../../../../../components/ui/NotAuthorize';
 import Breadcum from '@components/ui/Breadcum';
 import { FormRequest } from './components/FormRequest';
@@ -7,7 +6,7 @@ import { Divider, Flex, Typography } from 'antd';
 const { Title } = Typography;
 
 export const RequestJewelry = () => {
-  const authorize = useSelector((state) => state.auth.fullName);
+  const authorize = localStorage.getItem('fullName');
   const breadcumLink = [
     {
       name: 'Home',

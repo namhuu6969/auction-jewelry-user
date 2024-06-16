@@ -21,7 +21,7 @@ export const MyAuctionTable = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const auctionData = useSelector((state) => state.myAuction.myAuctionData);
-  const isRender = useSelector((state) => state.myAuction.renderMyAuction);
+  const render = useSelector((state) => state.jewelryMe.render);
 
   // eslint-disable-next-line no-unused-vars
   const [pageSize, setPageSize] = useState(4);
@@ -230,12 +230,11 @@ export const MyAuctionTable = () => {
       }
     };
 
-    if (isRender === true) {
+    if (render === true) {
       fetchData();
-      dispatch(setRenderMyAuction(false));
     }
     fetchData();
-  }, [dispatch, isRender]);
+  }, [dispatch, render]);
 
   return (
     <>
