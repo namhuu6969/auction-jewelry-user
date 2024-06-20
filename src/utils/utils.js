@@ -6,7 +6,7 @@ export const getImage = async (imageUrl) => {
 };
 
 export const imageURL = (imageUrl) => {
-  return `http://167.71.212.203:8080/uploads/jewelry/${imageUrl}`;
+  return `http://apijewelryauction.techx.id.vn:8081/uploads/jewelry/${imageUrl}`;
 };
 
 export const formatDate = (date) => {

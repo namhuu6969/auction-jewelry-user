@@ -8,6 +8,7 @@ const CardNews = ({ element }) => {
       bordered={false}
       bodyStyle={{ padding: 0 }}
       className='!w-full !h-full'
+      hoverable
     >
       <Flex className='!min-h-full bg-[#F2E7E7] px-5 py-4' vertical>
         <Title className='multi-line-ellipsis !flex-1 text-left font-serif' level={4}>
