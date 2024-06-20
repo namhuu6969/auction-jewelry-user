@@ -8,5 +8,9 @@ export const myJewelryApi = {
   getJewelryById: async (id) => {
     const response = await api.get(`jewelry/${id}`)
     return response.data
+  },
+  deleteJewelryApi: async (id) => {
+    const response  = await api.delete(`jewelry/${id}`)
+    return response.data
   }
 }

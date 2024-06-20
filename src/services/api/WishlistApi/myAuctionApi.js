@@ -21,4 +21,8 @@ export const myAuctionApi = {
     const response = await api.put(`auction/${id}`, data);
     return response.data;
   },
+  cancelAuction: async (id) => {
+    const response = await api.delete(`auction/cancel/${id}`)
+    return response.data
+  }
 };

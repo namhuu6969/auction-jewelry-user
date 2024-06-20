@@ -67,7 +67,7 @@ export const ValuatingTable = () => {
       key: 'action',
       render: (data) => (
         <Dropdown
-          overlay={getMenu(data.id, data.jewelry.status)}
+          overlay={getMenu(data.id, data.status, data.jewelry.staringPrice)}
           trigger={['click']}
         >
           <a onClick={(e) => e.preventDefault()}>
@@ -79,12 +79,15 @@ export const ValuatingTable = () => {
       ),
     },
   ];
-  const getMenu = (id, status) => (
+  const getMenu = (id, status, startingPrice) => (
     <Menu>
       <Menu.Item
         key='0'
-        disabled={status === 'AUCTIONING'}
-        title={status === 'AUCTIONING' ? 'Sản phẩm đang tham gia đấu giá' : ''}
+        disabled={status === 'REQUEST' || startingPrice === 0}
+        title={
+          (status === 'REQUEST' && 'Sản phẩm đang được định giá') ||
+          (startingPrice === 0 && 'Nhân viên chưa đặt giá khởi điểm')
+        }
       >
         <a onClick={() => handleAddAuctionClick(id)}>Thêm vào đấu giá</a>
       </Menu.Item>
@@ -106,6 +109,7 @@ export const ValuatingTable = () => {
   }, [dispatch, render]);
   return (
     <>
+      {console.log(dataSource)}
       <ModalAddAuction open={open} setOpen={setOpen} />
       <Table
         scroll={{
