@@ -23,4 +23,9 @@ export default defineConfig({
   server: {
     port: 4176,
   },
+  build: {
+    outDir: 'build',
+    assetsDir: 'assets',
+    emptyOutDir: true,
+  },
 });
