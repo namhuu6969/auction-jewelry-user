@@ -23,7 +23,7 @@ const columns = [
   },
 ];
 
-export const BidHistory = ({ auctionId }) => {
+export const BidHistory = ({ auctionId, size = 4 }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [bidHistory, setBidHistory] = useState(null);
@@ -56,7 +56,7 @@ export const BidHistory = ({ auctionId }) => {
   return (
     <>
       <Title
-        level={4}
+        level={size}
         className='!m-0 font-sans !font-thin hover:underline hover:cursor-pointer'
         onClick={showLoading}
       >

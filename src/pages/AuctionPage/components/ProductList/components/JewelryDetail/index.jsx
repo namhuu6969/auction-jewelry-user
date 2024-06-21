@@ -28,6 +28,9 @@ export const JewelryDetail = () => {
   const [bidAmount, setBidAmount] = useState('0');
   const [currentStep, setCurrentStep] = useState(0);
   const [step, setStep] = useState(0);
+  const [isWinner, setIsWinner] = useState(false); // State to check if user is winner
+
+  const userEmail = localStorage.getItem('fullName');
 
   useEffect(() => {
     const fetchAuctionData = async () => {
@@ -39,6 +42,7 @@ export const JewelryDetail = () => {
         id: 1,
         image: `http://167.71.212.203:8080/uploads/jewelry/${response.data.jewelry.jewelryImages[0]?.url}`, // Set the initial selected image
       });
+      setIsWinner(response.data.winner);
     };
     fetchAuctionData();
   }, [id]);
@@ -150,13 +154,23 @@ export const JewelryDetail = () => {
 
   const handleAddToWishList = async (auctionId) => {
     try {
-      const response = await wishlistApi.addWishList(auctionId);
-      if (response.code === 200) {
-        notification.success({
-          message: 'Success',
-          description: 'Add to wishlist successfully',
+      const response = await wishlistApi.getWishlist();
+      const alreadyHasWishList = response.data.some((item) => item.auction.id == auctionId);
+      if (alreadyHasWishList) {
+        notification.warning({
+          message: 'Already in wishlist',
         });
+        return;
+      } else {
+        await wishlistApi.addWishList(auctionId);
+        if (response.code === 200) {
+          notification.success({
+            message: 'Success',
+            description: 'Add to wishlist successfully',
+          });
+        }
       }
+      // await wishlistApi.addWishList(auctionId);
     } catch (err) {
       notification.error({
         message: 'Error',
@@ -180,7 +194,22 @@ export const JewelryDetail = () => {
         <Divider className='border-black' />
         <Flex gap={10}>
           <Flex vertical className='w-[50%] justify-center'>
-            <div>
+            {isWinner && (
+              <div className='overlay-winner'>
+                {isWinner.email === userEmail ? (
+                  <div>
+                    <p>Bạn đang là người đặt giá cao nhất</p>
+                    <BidHistory auctionId={id} size={5} />
+                  </div>
+                ) : (
+                  <div>
+                    <p>{`${isWinner.full_name} đang là người đặt giá cao nhất`}</p>
+                    <BidHistory auctionId={id} size={5} />
+                  </div>
+                )}
+              </div>
+            )}
+            <div className='overlay'>
               <Image
                 className='w-[100%] mx-auto !object-cover cursor-pointer'
                 src={selectedImage.image}
