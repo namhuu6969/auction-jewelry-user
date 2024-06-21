@@ -5,7 +5,7 @@ import { WishlistTable } from './components/WishlistTable';
 import { WinningTable } from './components/WinningTable';
 import { BiddingTable } from './components/BiddingTable';
 import NotAuthorize from '../../../../components/ui/NotAuthorize';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { wishlistApi } from '../../../../services/api/WishlistApi/wishlistApi';
 import Breadcum from '@components/ui/Breadcum';
@@ -18,7 +18,7 @@ import {
 import { MyAuctionTable } from './components/MyAuctionTable';
 import { ValuatingTable } from './components/ValuatingTable';
 const WishlistPage = () => {
-  const authorize = useSelector((state) => state.auth.fullName);
+  const authorize = localStorage.getItem('fullName');
   const breadcumLink = [
     {
       name: 'Home',

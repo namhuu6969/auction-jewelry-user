@@ -5,23 +5,26 @@ import { setMyValuation } from '../../../../../core/store/WishlistStore/MyValuat
 import { Dropdown, Image, Menu, Space, Table } from 'antd';
 import { setJewelryId } from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { ModalAddAuction } from './components/ModalAddAuction';
-import { getImage, imageURL } from '../../../../../utils/utils';
+import { imageURL } from '../../../../../utils/utils';
 
 export const ValuatingTable = () => {
   const dataSource = useSelector((state) => state.myValuation.myValuationData);
   const [open, setOpen] = useState(false);
-  const [images, setImages] = useState({});
+  const render = useSelector((state) => state.jewelryMe.render);
   const dispatch = useDispatch();
+  const formatPriceVND = (price) =>
+    price.toLocaleString('vi', { style: 'currency', currency: 'VND' });
 
   const columns = [
     {
       title: 'Ảnh',
+      dataIndex: ['jewelry', 'thumbnail'],
       key: 'image',
       render: (data) => (
         <>
           <Image
             className='!w-[150px] !h-[150px]'
-            src={imageURL(images[data?.id])}
+            src={imageURL(data)}
             alt=''
           />
         </>
@@ -41,6 +44,7 @@ export const ValuatingTable = () => {
       title: 'Giá trị định giá',
       dataIndex: 'valuation_value',
       key: 'valuation_value',
+      render: (data) => formatPriceVND(data),
     },
     {
       title: 'Phí định giá',
@@ -63,7 +67,7 @@ export const ValuatingTable = () => {
       key: 'action',
       render: (data) => (
         <Dropdown
-          overlay={getMenu(data.id, data.jewelry.status)}
+          overlay={getMenu(data.id, data.status, data.jewelry.staringPrice)}
           trigger={['click']}
         >
           <a onClick={(e) => e.preventDefault()}>
@@ -75,12 +79,15 @@ export const ValuatingTable = () => {
       ),
     },
   ];
-  const getMenu = (id, status) => (
+  const getMenu = (id, status, startingPrice) => (
     <Menu>
       <Menu.Item
         key='0'
-        disabled={status === 'AUCTIONING'}
-        title={status === 'AUCTIONING' ? 'Sản phẩm đang tham gia đấu giá' : ''}
+        disabled={status === 'REQUEST' || startingPrice === 0}
+        title={
+          (status === 'REQUEST' && 'Sản phẩm đang được định giá') ||
+          (startingPrice === 0 && 'Nhân viên chưa đặt giá khởi điểm')
+        }
       >
         <a onClick={() => handleAddAuctionClick(id)}>Thêm vào đấu giá</a>
       </Menu.Item>
@@ -94,22 +101,15 @@ export const ValuatingTable = () => {
     const fetchMyValuation = async () => {
       const response = await myValuatingApi.getValuatingMe();
       dispatch(setMyValuation(response.data));
-      fetchImages(response.jewelry);
-    };
-    const fetchImages = async (jewelryData) => {
-      const imageMap = {};
-      for (const jewelry of jewelryData) {
-        const images = await getImage(jewelry.id);
-        if (images.length > 0) {
-          imageMap[jewelry.id] = images[0].url;
-        }
-      }
-      setImages(imageMap);
     };
     fetchMyValuation();
-  }, [dispatch]);
+    if (render) {
+      fetchMyValuation();
+    }
+  }, [dispatch, render]);
   return (
     <>
+      {console.log(dataSource)}
       <ModalAddAuction open={open} setOpen={setOpen} />
       <Table
         scroll={{

@@ -29,4 +29,8 @@ export const wishlistApi = {
     const response = await api.post('wishlist', data);
     return response.data;
   },
+  getWishlist: async () => {
+    const response = await api.get('wishlist');
+    return response.data;
+  },
 };

@@ -22,6 +22,7 @@ const CardContent = ({ element = {} }) => {
   }, [element?.jewelry?.id]);
   return (
     <Card
+      hoverable
       cover={
         loading ? (
           <Image

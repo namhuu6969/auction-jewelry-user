@@ -1,4 +1,4 @@
-import { Avatar, Button, Divider, Flex, Modal, Typography, notification } from 'antd';
+import { Avatar, Button, Divider, Flex, Image, Modal, Typography, notification } from 'antd';
 import Breadcum from '@components/ui/Breadcum';
 import { Link, useParams } from 'react-router-dom';
 import Carousel from '@components/ui/carousel/Carousel';
@@ -133,12 +133,13 @@ export const JewelryDetail = () => {
 
   const img = ({ element }) => {
     return (
-      <img
+      <Image
         className={`w-[60%] my-10 carousel-image cursor-pointer ${
           element.id === selectedImage?.id ? 'selected' : ''
         }`}
         src={element?.image}
         onClick={() => handleImageClick(element)}
+        preview={false}
       />
     );
   };
@@ -170,7 +171,7 @@ export const JewelryDetail = () => {
 
   const { name, jewelryImages, staringPrice, sellerId } = jewelryData;
 
-  const { currentPrice, endTime, startTime, status } = auctionData;
+  const { currentPrice, totalBids, endTime, startTime, status } = auctionData;
 
   return (
     <div className='container mx-auto'>
@@ -180,8 +181,8 @@ export const JewelryDetail = () => {
         <Flex gap={10}>
           <Flex vertical className='w-[50%] justify-center'>
             <div>
-              <img
-                className='w-[500px] mx-auto h-[500px] cursor-pointer'
+              <Image
+                className='w-[100%] mx-auto !object-cover cursor-pointer'
                 src={selectedImage.image}
               />
             </div>
@@ -239,7 +240,7 @@ export const JewelryDetail = () => {
               <Flex className='items-center' gap={10}>
                 <UserOutlined className='!text-3xl' />
                 <Title level={4} className='!m-0 font-sans !font-thin'>
-                  12
+                  {totalBids}
                 </Title>
               </Flex>
               <Flex className='items-center' gap={10}>

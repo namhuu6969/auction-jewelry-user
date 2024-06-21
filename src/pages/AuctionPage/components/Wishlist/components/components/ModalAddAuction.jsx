@@ -6,12 +6,10 @@ import { PrimaryButton } from '../../../../../../components/ui/PrimaryButton';
 import { wishlistApi } from '../../../../../../services/api/WishlistApi/wishlistApi';
 import { setRender } from '../../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { useNotification } from '../../../../../../hooks/useNotification';
-import { setMyAuctionData } from '../../../../../../core/store/WishlistStore/MyAuctionStore/myAuction';
 const { RangePicker } = DatePicker;
 
 export const ModalAddAuction = ({ open, setOpen }) => {
   const jewelryId = useSelector((state) => state.jewelryMe.jewelryId);
-  const auctionData = useSelector((state) => state.myAuction.myAuctionData);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const [form] = Form.useForm();
@@ -55,6 +53,12 @@ export const ModalAddAuction = ({ open, setOpen }) => {
     }
     return Promise.reject(new Error('Vui lòng chọn khoảng thời gian hợp lệ'));
   };
+  const disabled7DaysDate = (current, { from }) => {
+    if (from) {
+      return Math.abs(current.diff(from, 'days')) >= 7;
+    }
+    return false;
+  };
   const onFinish = async (values) => {
     const startTime = values.dateRange
       ? values.dateRange[0].format('YYYY-MM-DD HH:mm')
@@ -71,9 +75,8 @@ export const ModalAddAuction = ({ open, setOpen }) => {
     };
     try {
       setLoading(true);
-      const response = await wishlistApi.addAuction(data);
+      await wishlistApi.addAuction(data);
       dispatch(setRender(true));
-      dispatch(setMyAuctionData([...auctionData, response.data]));
       form.resetFields();
       setOpen(false);
       openNotification({
@@ -81,7 +84,10 @@ export const ModalAddAuction = ({ open, setOpen }) => {
         description: 'Đã đưa lên sàn đấu giá thành công',
       });
     } catch (error) {
-      console.log(error);
+      openNotification({
+        type: 'error',
+        description: 'Sản phẩm đã đưa lên sàn đấu giá',
+      });
     } finally {
       setLoading(false);
     }
@@ -122,6 +128,8 @@ export const ModalAddAuction = ({ open, setOpen }) => {
             format='YYYY-MM-DD HH:mm'
             placeholder={['Thời gian bắt đầu', 'Thời gian kết thúc']}
             className='!w-full'
+            needConfirm={false}
+            disabledDate={disabled7DaysDate}
           />
         </Form.Item>
 
