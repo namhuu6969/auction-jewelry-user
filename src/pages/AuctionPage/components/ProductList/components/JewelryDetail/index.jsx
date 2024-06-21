@@ -1,8 +1,9 @@
-import { Avatar, Button, Divider, Flex, Modal, Typography } from 'antd';
+import { Avatar, Button, Divider, Flex, Modal, Typography, notification } from 'antd';
 import Breadcum from '@components/ui/Breadcum';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Carousel from '@components/ui/carousel/Carousel';
 import { StarFilled, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { PiGavelFill } from 'react-icons/pi';
 import TabsContent from './Tabs/Tabs';
 import './index.css';
 import { useState, useEffect } from 'react';
@@ -11,6 +12,9 @@ import { BidModal } from './BidModal/BidModal'; // Adjust the import path as nee
 import { useNavigate } from 'react-router-dom';
 import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
 import { BiddingApi } from '@api/AuctionServices/BiddingApi/BiddingApi';
+import { BidHistory } from './BidHistory/BidHistory';
+import { formatPrice } from '@utils/utils';
+import { wishlistApi } from '../../../../../../services/api/WishlistApi/wishlistApi';
 
 const { Title } = Typography;
 
@@ -21,7 +25,7 @@ export const JewelryDetail = () => {
   const [jewelryData, setJewelryData] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [bidAmount, setBidAmount] = useState('');
+  const [bidAmount, setBidAmount] = useState('0');
   const [currentStep, setCurrentStep] = useState(0);
   const [step, setStep] = useState(0);
 
@@ -143,6 +147,23 @@ export const JewelryDetail = () => {
     setSelectedImage(imageUrl);
   };
 
+  const handleAddToWishList = async (auctionId) => {
+    try {
+      const response = await wishlistApi.addWishList(auctionId);
+      if (response.code === 200) {
+        notification.success({
+          message: 'Success',
+          description: 'Add to wishlist successfully',
+        });
+      }
+    } catch (err) {
+      notification.error({
+        message: 'Error',
+        description: err.message,
+      });
+    }
+  };
+
   if (!jewelryData) {
     return <div>Loading...</div>;
   }
@@ -185,13 +206,13 @@ export const JewelryDetail = () => {
                   Giá thầu hiện tại:
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
-                  {currentPrice} VND
+                  {formatPrice(currentPrice)} VND
                 </Title>
                 <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
                   Bước nhảy:
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
-                  {step} VND
+                  {formatPrice(step)} VND
                 </Title>
                 <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
                   Trạng thái:
@@ -202,14 +223,19 @@ export const JewelryDetail = () => {
               </div>
               <div className='w-[40%] p-5'>
                 <Button
+                  onClick={() => handleAddToWishList(id)}
                   icon={<StarFilled className='text-yellow-400' />}
                   className='font-sans !shadow-lg hover:!border-[1px] hover:!border-solid hover:!border-black hover:!text-black !border-black'
                 >
-                  Watch/Wishlist
+                  Add Watch/Wishlist
                 </Button>
               </div>
             </Flex>
             <Flex gap={15}>
+              <Flex className='items-center' gap={10}>
+                <PiGavelFill className='!text-3xl' />
+                <BidHistory auctionId={id} />
+              </Flex>
               <Flex className='items-center' gap={10}>
                 <UserOutlined className='!text-3xl' />
                 <Title level={4} className='!m-0 font-sans !font-thin'>
@@ -219,7 +245,7 @@ export const JewelryDetail = () => {
               <Flex className='items-center' gap={10}>
                 <ClockCircleOutlined className='!text-3xl' />
                 <Title level={4} className='!m-0 font-sans !font-thin'>
-                  {calculateDaysDifference(startTime, endTime)} days
+                  {calculateDaysDifference(startTime, endTime)} ngày
                 </Title>
               </Flex>
               <Flex className='items-center' gap={10}>
@@ -267,7 +293,7 @@ export const JewelryDetail = () => {
         step={step}
         bidAmount={bidAmount}
         handleOk={handleOk}
-        userWallet={1000}
+        userWallet={1000000000000000}
         handleCancel={handleCancel}
         handleBidAmountChange={handleBidAmountChange}
         handleBlur={handleBlur}
