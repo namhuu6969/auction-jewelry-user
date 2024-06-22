@@ -3,7 +3,7 @@ import axios from 'axios';
 // import { setTokens } from '@/core/store/auth/authenticate';
 
 const api = axios.create({
-  baseURL: 'http://167.71.212.203:8080/api/v1/',
+  baseURL: 'http://apijewelryauction.techx.id.vn:8081/api/v1/',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',

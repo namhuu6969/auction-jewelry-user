@@ -9,6 +9,7 @@ import {
   InputNumber,
   Select,
   Button,
+  AutoComplete,
 } from 'antd';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,8 +34,15 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
   const [choosedBrand, setChoosedBrand] = useState('');
   const [material, setMaterial] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [materialsInput, setMaterialsInput] = useState([]);
+  const [materialsInput, setMaterialsInput] = useState([
+    { idMaterial: null, weight: 0 },
+  ]);
   const [form] = Form.useForm();
+  const [optionsBrand, setOptionsBrand] = useState([]);
+  const [optionsCollection, setOptionsCollection] = useState([]);
+  const getPanelValueBrand = (searchText) => (!searchText ? [] : itemsBrand);
+  const getPanelValueCollection = (searchText) =>
+    !searchText ? [] : itemsCollection;
 
   const handleSaveChange = () => {
     form.submit();
@@ -55,11 +63,12 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
   const removeMaterialInput = (index) => {
     const updatedMaterials = materialsInput.filter((_, idx) => idx !== index);
     setMaterialsInput(updatedMaterials);
+    form.resetFields([`material_${index}`, `weight_${index}`]);
     form.validateFields(['weight']);
   };
 
   const handleMaterialChange = (index, idMaterial) => {
-    const updatedMaterials = materialsInput?.map((material, idx) =>
+    const updatedMaterials = materialsInput.map((material, idx) =>
       idx === index ? { ...material, idMaterial } : material
     );
     setMaterialsInput(updatedMaterials);
@@ -74,9 +83,11 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
     if (materialsInput.length === 0) {
       return Promise.resolve();
     }
-    if (value !== totalMaterialWeight) {
+    if (value < totalMaterialWeight) {
       return Promise.reject(
-        new Error('Tổng khối lượng chất liệu phải bằng khối lượng sản phẩm!')
+        new Error(
+          'Tổng khối lượng chất liệu phải lớn hơn hoặc bằng khối lượng sản phẩm!'
+        )
       );
     }
     return Promise.resolve();
@@ -125,11 +136,6 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
     },
   ];
 
-  const itemsMaterial = material?.map((e) => ({
-    label: e?.name,
-    value: e?.id,
-  }));
-
   const handleSubmit = async (values) => {
     const data = {
       ...values,
@@ -154,6 +160,13 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getFilteredMaterials = (index) => {
+    const selectedMaterials = materialsInput
+      .filter((_, idx) => idx !== index)
+      .map((material) => material.idMaterial);
+    return material?.filter((mat) => !selectedMaterials.includes(mat.id));
   };
 
   useEffect(() => {
@@ -198,7 +211,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
       fetchCollection();
       fetchMaterial();
       fetchJewelryDetail();
-      setChoosedBrand(data?.brand?.name)
+      setChoosedBrand(data?.brand?.name);
       form.setFieldsValue({
         name: data?.name,
         description: data?.description,
@@ -341,13 +354,22 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                     ]}
                     className='!text-left'
                   >
-                    <Select
+                    {/* <Select
                       onChange={(value) => setChoosedBrand(value)}
                       showSearch
                       placeholder='Chọn hãng'
                       optionFilterProp='children'
                       filterOption={filterOption}
                       options={itemsBrand}
+                      className='!text-left'
+                    /> */}
+                    <AutoComplete
+                      options={optionsBrand}
+                      onSearch={(text) =>
+                        setOptionsBrand(getPanelValueBrand(text))
+                      }
+                      placeholder='Chọn hãng'
+                      onChange={(value) => setChoosedBrand(value)}
                       className='!text-left'
                     />
                   </Form.Item>
@@ -363,14 +385,23 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                     ]}
                     className='!text-left'
                   >
-                    <Select
+                    <AutoComplete
+                      options={optionsCollection}
+                      onSearch={(text) =>
+                        setOptionsCollection(getPanelValueCollection(text))
+                      }
+                      placeholder='Chọn bộ sưu tập'
+                      className='!text-left'
+                      disabled={!choosedBrand}
+                    />
+                    {/* <Select
                       showSearch
                       placeholder='Chọn bộ sưu tập'
                       optionFilterProp='children'
                       filterOption={filterOption}
                       options={itemsCollection}
                       className='!text-left'
-                    />
+                    /> */}
                   </Form.Item>
                 </Descriptions.Item>
                 <Descriptions.Item label='Chất lượng' span={1}>
@@ -470,7 +501,10 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                           placeholder='Chọn chất liệu'
                           optionFilterProp='children'
                           filterOption={filterOption}
-                          options={itemsMaterial}
+                          options={getFilteredMaterials(index)?.map((e) => ({
+                            label: e?.name,
+                            value: e?.id,
+                          }))}
                           className='!text-left !w-full'
                           onChange={(value) =>
                             handleMaterialChange(index, value)

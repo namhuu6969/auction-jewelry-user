@@ -6,7 +6,7 @@ export const getImage = async (imageUrl) => {
 };
 
 export const imageURL = (imageUrl) => {
-  return `http://167.71.212.203:8080/uploads/jewelry/${imageUrl}`;
+  return `http://apijewelryauction.techx.id.vn:8081/uploads/jewelry/${imageUrl}`;
 };
 
 export const formatDate = (date) => {
@@ -16,6 +16,22 @@ export const formatDate = (date) => {
     day: '2-digit',
   }).format(new Date(date));
   return formatted;
+};
+
+
+export const formatPriceVND = (price) =>
+  price?.toLocaleString('vi', { style: 'currency', currency: 'VND' });
+
+export const formatDateTime = (datetimeStr) => {
+  const date = new Date(datetimeStr);
+
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+
+  return `ngày ${day}/${month} vào ${hours}:${minutes}:${seconds}`;
 };
 
 export const formatPrice = (price) => {

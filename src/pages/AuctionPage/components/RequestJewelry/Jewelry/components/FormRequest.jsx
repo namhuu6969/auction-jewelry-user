@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { requestJewelryApi } from '../../../../../../services/api/RequestApi/requestJewelryApi';
-import { Button, Form, Input, InputNumber, Modal, Select, Upload } from 'antd';
+import {
+  AutoComplete,
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+  Upload,
+} from 'antd';
 import { UploadOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useNotification } from '../../../../../../hooks/useNotification';
 
@@ -28,6 +37,11 @@ export const FormRequest = () => {
   ]);
   const [choosedBrand, setChoosedBrand] = useState('');
   const [loading, setLoading] = useState(false);
+  const [optionsBrand, setOptionsBrand] = useState([]);
+  const [optionsCollection, setOptionsCollection] = useState([]);
+  const getPanelValueBrand = (searchText) => (!searchText ? [] : itemsBrand);
+  const getPanelValueCollection = (searchText) =>
+    !searchText ? [] : itemsCollection;
 
   const handleCancel = () => setPreviewVisible(false);
 
@@ -73,7 +87,9 @@ export const FormRequest = () => {
     }
     if (value < totalMaterialWeight) {
       return Promise.reject(
-        new Error('Tổng khối lượng chất liệu phải lớn hơn hoặc bằng khối lượng sản phẩm!')
+        new Error(
+          'Tổng khối lượng chất liệu phải lớn hơn hoặc bằng khối lượng sản phẩm!'
+        )
       );
     }
     return Promise.resolve();
@@ -218,10 +234,12 @@ export const FormRequest = () => {
     value: e?.id,
   }));
 
-  const itemsBrand = brand?.map((e) => ({
-    label: e?.name,
-    value: e?.name,
-  }));
+  const itemsBrand = brand
+    ?.filter((e) => e?.name !== null)
+    ?.map((e) => ({
+      label: e?.name,
+      value: e?.name,
+    }));
 
   const itemsCollection = collection
     ?.filter((item) => item.brand.name === choosedBrand)
@@ -346,7 +364,14 @@ export const FormRequest = () => {
             />
           </Form.Item>
           <Form.Item name={'brand'} label='Hãng' className='!text-left'>
-            <Select
+            <AutoComplete
+              options={optionsBrand}
+              onSearch={(text) => setOptionsBrand(getPanelValueBrand(text))}
+              placeholder='Chọn hãng'
+              onChange={(value) => setChoosedBrand(value)}
+              className='!text-left'
+            />
+            {/* <Select
               onChange={(value) => setChoosedBrand(value)}
               showSearch
               placeholder='Chọn hãng'
@@ -354,20 +379,23 @@ export const FormRequest = () => {
               filterOption={filterOption}
               options={itemsBrand}
               className='!text-left'
-            />
+            /> */}
           </Form.Item>
           <Form.Item
             name={'collection'}
             label='Bộ sưu tập (Vui lòng chọn hãng trước)'
-            rules={[
-              {
-                required: choosedBrand ? true : false,
-                message: 'Hãy chọn bộ sưu tập!',
-              },
-            ]}
             className='!text-left'
           >
-            <Select
+            <AutoComplete
+              options={optionsCollection}
+              onSearch={(text) =>
+                setOptionsCollection(getPanelValueCollection(text))
+              }
+              placeholder='Chọn bộ sưu tập'
+              className='!text-left'
+              disabled={!choosedBrand}
+            />
+            {/* <Select
               showSearch
               placeholder='Chọn bộ sưu tập'
               optionFilterProp='children'
@@ -375,7 +403,7 @@ export const FormRequest = () => {
               options={itemsCollection}
               className='!text-left'
               disabled={!choosedBrand}
-            />
+            /> */}
           </Form.Item>
           <Form.Item
             name={'sex'}

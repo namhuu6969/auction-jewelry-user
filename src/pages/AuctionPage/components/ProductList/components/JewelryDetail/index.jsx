@@ -1,12 +1,9 @@
-import { Avatar, Button, Divider, Flex, Image, Modal, Typography } from 'antd';
+import { Avatar, Button, Divider, Flex, Image, Modal, Typography, notification } from 'antd';
 import Breadcum from '@components/ui/Breadcum';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Carousel from '@components/ui/carousel/Carousel';
-import {
-  StarFilled,
-  UserOutlined,
-  ClockCircleOutlined,
-} from '@ant-design/icons';
+import { StarFilled, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { PiGavelFill } from 'react-icons/pi';
 import TabsContent from './Tabs/Tabs';
 import './index.css';
 import { useState, useEffect } from 'react';
@@ -15,6 +12,9 @@ import { BidModal } from './BidModal/BidModal'; // Adjust the import path as nee
 import { useNavigate } from 'react-router-dom';
 import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
 import { BiddingApi } from '@api/AuctionServices/BiddingApi/BiddingApi';
+import { BidHistory } from './BidHistory/BidHistory';
+import { formatPrice } from '@utils/utils';
+import { wishlistApi } from '../../../../../../services/api/WishlistApi/wishlistApi';
 
 const { Title } = Typography;
 
@@ -25,9 +25,12 @@ export const JewelryDetail = () => {
   const [jewelryData, setJewelryData] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [bidAmount, setBidAmount] = useState('');
+  const [bidAmount, setBidAmount] = useState('0');
   const [currentStep, setCurrentStep] = useState(0);
   const [step, setStep] = useState(0);
+  const [isWinner, setIsWinner] = useState(false); // State to check if user is winner
+
+  const userEmail = localStorage.getItem('fullName');
 
   useEffect(() => {
     const fetchAuctionData = async () => {
@@ -39,6 +42,7 @@ export const JewelryDetail = () => {
         id: 1,
         image: `http://167.71.212.203:8080/uploads/jewelry/${response.data.jewelry.jewelryImages[0]?.url}`, // Set the initial selected image
       });
+      setIsWinner(response.data.winner);
     };
     fetchAuctionData();
   }, [id]);
@@ -73,9 +77,7 @@ export const JewelryDetail = () => {
   };
 
   const increaseBidAmount = () => {
-    setBidAmount((prevBidAmount) =>
-      (parseInt(prevBidAmount) + step).toString()
-    );
+    setBidAmount((prevBidAmount) => (parseInt(prevBidAmount) + step).toString());
   };
 
   const decreaseBidAmount = () => {
@@ -150,6 +152,33 @@ export const JewelryDetail = () => {
     setSelectedImage(imageUrl);
   };
 
+  const handleAddToWishList = async (auctionId) => {
+    try {
+      const response = await wishlistApi.getWishlist();
+      const alreadyHasWishList = response.data.some((item) => item.auction.id == auctionId);
+      if (alreadyHasWishList) {
+        notification.warning({
+          message: 'Already in wishlist',
+        });
+        return;
+      } else {
+        await wishlistApi.addWishList(auctionId);
+        if (response.code === 200) {
+          notification.success({
+            message: 'Success',
+            description: 'Add to wishlist successfully',
+          });
+        }
+      }
+      // await wishlistApi.addWishList(auctionId);
+    } catch (err) {
+      notification.error({
+        message: 'Error',
+        description: err.message,
+      });
+    }
+  };
+
   if (!jewelryData) {
     return <div>Loading...</div>;
   }
@@ -165,7 +194,22 @@ export const JewelryDetail = () => {
         <Divider className='border-black' />
         <Flex gap={10}>
           <Flex vertical className='w-[50%] justify-center'>
-            <div>
+            {isWinner && (
+              <div className='overlay-winner'>
+                {isWinner.email === userEmail ? (
+                  <div>
+                    <p>Bạn đang là người đặt giá cao nhất</p>
+                    <BidHistory auctionId={id} size={5} />
+                  </div>
+                ) : (
+                  <div>
+                    <p>{`${isWinner.full_name} đang là người đặt giá cao nhất`}</p>
+                    <BidHistory auctionId={id} size={5} />
+                  </div>
+                )}
+              </div>
+            )}
+            <div className='overlay'>
               <Image
                 className='w-[100%] mx-auto !object-cover cursor-pointer'
                 src={selectedImage.image}
@@ -188,53 +232,40 @@ export const JewelryDetail = () => {
             </Title>
             <Flex className='items-center w-full'>
               <div className='grid grid-cols-2 gap-y-5'>
-                <Title
-                  className='!mr-4 !my-auto text-left font-sans !font-medium'
-                  level={4}
-                >
+                <Title className='!mr-4 !my-auto text-left font-sans !font-medium' level={4}>
                   Giá thầu hiện tại:
                 </Title>
-                <Title
-                  className='!m-0 !my-auto !text-red-600 text-left font-sans'
-                  level={3}
-                >
-                  {currentPrice} VND
+                <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
+                  {formatPrice(currentPrice)} VND
                 </Title>
-                <Title
-                  className='!m-0 !my-auto text-left font-sans !font-medium'
-                  level={4}
-                >
+                <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
                   Bước nhảy:
                 </Title>
-                <Title
-                  className='!m-0 !my-auto !text-red-600 text-left font-sans'
-                  level={3}
-                >
-                  {step} VND
+                <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
+                  {formatPrice(step)} VND
                 </Title>
-                <Title
-                  className='!m-0 !my-auto text-left font-sans !font-medium'
-                  level={4}
-                >
+                <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
                   Trạng thái:
                 </Title>
-                <Title
-                  className='!m-0 !my-auto !text-red-600 text-left font-sans'
-                  level={3}
-                >
+                <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
                   {status}
                 </Title>
               </div>
               <div className='w-[40%] p-5'>
                 <Button
+                  onClick={() => handleAddToWishList(id)}
                   icon={<StarFilled className='text-yellow-400' />}
                   className='font-sans !shadow-lg hover:!border-[1px] hover:!border-solid hover:!border-black hover:!text-black !border-black'
                 >
-                  Watch/Wishlist
+                  Add Watch/Wishlist
                 </Button>
               </div>
             </Flex>
             <Flex gap={15}>
+              <Flex className='items-center' gap={10}>
+                <PiGavelFill className='!text-3xl' />
+                <BidHistory auctionId={id} />
+              </Flex>
               <Flex className='items-center' gap={10}>
                 <UserOutlined className='!text-3xl' />
                 <Title level={4} className='!m-0 font-sans !font-thin'>
@@ -244,7 +275,7 @@ export const JewelryDetail = () => {
               <Flex className='items-center' gap={10}>
                 <ClockCircleOutlined className='!text-3xl' />
                 <Title level={4} className='!m-0 font-sans !font-thin'>
-                  {calculateDaysDifference(startTime, endTime)} days
+                  {calculateDaysDifference(startTime, endTime)} ngày
                 </Title>
               </Flex>
               <Flex className='items-center' gap={10}>
@@ -256,10 +287,7 @@ export const JewelryDetail = () => {
                 </Title>
               </Flex>
             </Flex>
-            <PrimaryButton
-              onClick={showModal}
-              className={'!text-2xl font-medium'}
-            >
+            <PrimaryButton onClick={showModal} className={'!text-2xl font-medium'}>
               Đấu giá
             </PrimaryButton>
             {staringPrice > 0 && (
@@ -287,11 +315,7 @@ export const JewelryDetail = () => {
             </div>
           </Flex>
         </Flex>
-        <TabsContent
-          jewelry={jewelryData}
-          startTime={startTime}
-          endTime={endTime}
-        />
+        <TabsContent jewelry={jewelryData} startTime={startTime} endTime={endTime} />
       </Flex>
       <BidModal
         open={isModalVisible}

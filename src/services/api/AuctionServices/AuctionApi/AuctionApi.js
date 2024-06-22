@@ -91,4 +91,13 @@ export const auctionApi = {
       throw error;
     }
   },
+  viewAuctionBidHistory: async (auctionId) => {
+    try {
+      const response = await api.get(`auction/bids/${auctionId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error viewing auction bid history:', error);
+      throw error;
+    }
+  },
 };

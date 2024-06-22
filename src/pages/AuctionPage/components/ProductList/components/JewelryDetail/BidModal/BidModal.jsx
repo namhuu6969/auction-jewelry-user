@@ -1,9 +1,15 @@
-import { Modal, Button, Input, Steps, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { Modal, Button, Input, Steps, Typography, Flex, Checkbox, Card } from 'antd';
+import { IoRemove, IoAdd } from 'react-icons/io5';
+import { useEffect, useState } from 'react';
+import { UserServices } from '../../../../../../../services/api/UserServices/UserServices';
 
 const { Step } = Steps;
 const { Title } = Typography;
 
+const onChange = (e) => {
+  console.log(`checked = ${e.target.checked}`);
+};
 export const BidModal = ({
   open,
   currentStep,
@@ -19,31 +25,48 @@ export const BidModal = ({
   next,
   prev
 }) => {
+  const [profileInfo, setProfileInfo] = useState({});
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const response = await UserServices.getProfile();
+      setProfileInfo(response.data);
+    };
+    fetchUserData();
+  }, []);
+
   const steps = [
     {
       title: 'Enter Bid Amount',
       content: (
         <div className='flex flex-col gap-4'>
           <label>Bid Amount (VND):</label>
-          <Input
-            type='number'
-            min='0'
-            step={step}
-            value={bidAmount}
-            onChange={handleBidAmountChange}
-            onBlur={handleBlur} // Pass handleBlur function here
-            placeholder={`Enter your bid amount (multiple of ${step})`}
-          />
-          <Button onClick={increaseBidAmount} type='primary'>
-            Increase by {step}
-          </Button>
-          <Button onClick={decreaseBidAmount} type='primary'>
-            Decrease by {step}
-          </Button>
-          {bidAmount % step !== 0 && ( // Display error message if bidAmount is not a multiple of step
-            <p style={{ color: 'red' }}>Bid amount must be a multiple of {step}</p>
-          )}
-          <p>Your Wallet Balance: {userWallet} VND</p> {/* Display wallet balance */}
+          <Flex justify='center' align='center'>
+            <Button className='!inline w-[10%]' onClick={decreaseBidAmount} type='primary'>
+              <IoRemove />
+            </Button>
+            <Input
+              className='w-[80%]'
+              type='number'
+              min='0'
+              step={step}
+              value={bidAmount}
+              onChange={handleBidAmountChange}
+              onBlur={handleBlur} // Pass handleBlur function here
+              placeholder={`Enter your bid amount (multiple of ${step})`}
+            />
+            <Button className='!inline w-[10%]' onClick={increaseBidAmount} type='primary'>
+              <IoAdd />
+            </Button>
+          </Flex>
+          <div>
+            {bidAmount % step !== 0 && ( // Display error message if bidAmount is not a multiple of step
+              <p style={{ color: 'red' }}>Bid amount must be a multiple of {step}</p>
+            )}
+          </div>
+          <Checkbox onChange={onChange}>Set this is auto bid</Checkbox>
+          <Card title={profileInfo.full_name} extra={<a href='#'>More</a>}>
+            <p>Your Wallet Balance: {userWallet} VND</p> {/* Display wallet balance */}
+          </Card>
         </div>
       ),
     },

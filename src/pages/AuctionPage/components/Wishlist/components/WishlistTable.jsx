@@ -2,25 +2,25 @@ import { Image, Table } from 'antd';
 import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
 import { useEffect, useState } from 'react';
 import { wishlistApi } from '../../../../../services/api/WishlistApi/wishlistApi';
-import { formatDate, getImage, imageURL } from '../../../../../utils/utils';
-import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
+import { formatDate, imageURL } from '../../../../../utils/utils';
 import useTableSearch from '../../../../../hooks/useTableSearch';
+import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
 
 export const WishlistTable = () => {
   const { getColumnSearchProps } = useTableSearch();
   const { getColumnSearchDateProps } = useTableSearchDate();
   const [dataSource, setDataSource] = useState([]);
-  const [images, setImages] = useState({});
   const [loading, setLoading] = useState(false);
   const columns = [
     {
       title: 'Ảnh',
+      dataIndex: ['auction', 'jewelry', 'thumbnail'],
       key: 'image',
       render: (data) => (
         <>
           <Image
             className='!w-[150px] !h-[150px]'
-            src={imageURL(images[data?.id])}
+            src={imageURL(data)}
             alt=''
           />
         </>
@@ -65,7 +65,7 @@ export const WishlistTable = () => {
     {
       title: 'Trạng thái',
       dataIndex: ['auction', 'status'],
-      key: 'startTime',
+      key: 'status',
     },
     {
       title: 'Hành dộng',
@@ -84,35 +84,24 @@ export const WishlistTable = () => {
         setLoading(true);
         const response = await wishlistApi.getWishlist();
         setDataSource(response.data);
-        if (response.data) {
-          fetchImages(response.data);
-        }
       } catch (error) {
         console.log(error);
       } finally {
         setLoading(false);
       }
     };
-    const fetchImages = async (jewelryData) => {
-      const imageMap = {};
-      for (const jewelry of jewelryData) {
-        const images = await getImage(jewelry.jewelry.id);
-        if (images.length > 0) {
-          imageMap[jewelry.id] = images[0].url;
-        }
-      }
-      setImages(imageMap);
-    };
     fetchData();
   }, []);
   return (
-    <Table
-      scroll={{
-        x: 2000,
-      }}
-      loading={loading}
-      dataSource={dataSource}
-      columns={columns}
-    />
+    <>
+      <Table
+        scroll={{
+          x: 2000,
+        }}
+        loading={loading}
+        dataSource={dataSource}
+        columns={columns}
+      />
+    </>
   );
 };
