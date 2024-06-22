@@ -18,6 +18,9 @@ export const formatDate = (date) => {
   return formatted;
 };
 
+export const formatPriceVND = (price) =>
+  price?.toLocaleString('vi', { style: 'currency', currency: 'VND' });
+
 export const formatPrice = (price) => {
   if (price > 0) {
     const priceInNumber = parseFloat(

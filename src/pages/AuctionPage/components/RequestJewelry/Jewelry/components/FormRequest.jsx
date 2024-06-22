@@ -42,6 +42,7 @@ export const FormRequest = () => {
   const getPanelValueBrand = (searchText) => (!searchText ? [] : itemsBrand);
   const getPanelValueCollection = (searchText) =>
     !searchText ? [] : itemsCollection;
+
   const handleCancel = () => setPreviewVisible(false);
 
   const handlePreview = async (file) => {
@@ -387,11 +388,12 @@ export const FormRequest = () => {
           >
             <AutoComplete
               options={optionsCollection}
-              onSearch={(text) => setOptionsCollection(getPanelValueCollection(text))}
-              placeholder='Chọn hãng'
+              onSearch={(text) =>
+                setOptionsCollection(getPanelValueCollection(text))
+              }
+              placeholder='Chọn bộ sưu tập'
               className='!text-left'
               disabled={!choosedBrand}
-  
             />
             {/* <Select
               showSearch
