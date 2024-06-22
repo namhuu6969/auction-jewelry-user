@@ -1,20 +1,20 @@
-# Stage 1: Build the React app
-FROM node as build
+# Use the official Node.js image as the base image
+FROM node:18.17.1
 
-# Set working directory
+# Set the working directory inside the container
 WORKDIR /user-frontend
 
-# Copy package.json and package-lock.json
-COPY package.json package-lock.json ./
+# Copy package.json and package-lock.json to the working directory
+COPY package*.json ./
 
-# Install dependencies
+# Install the dependencies
 RUN npm install
 
-# Copy the rest of the project files
+# Copy the rest of the project files to the working directory
 COPY . .
 
-# Expose port 80
-EXPOSE 3000
+# Expose the port the app runs on
+EXPOSE 5176
 
-# Command to run Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start the app in development mode
+CMD ["npm", "run", "dev"]
