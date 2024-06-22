@@ -18,6 +18,10 @@ export const formatDate = (date) => {
   return formatted;
 };
 
+
+export const formatPriceVND = (price) =>
+  price?.toLocaleString('vi', { style: 'currency', currency: 'VND' });
+
 export const formatDateTime = (datetimeStr) => {
   const date = new Date(datetimeStr);
 

@@ -95,11 +95,14 @@ export const MyJewelryTable = () => {
         disabled={
           status === 'ONLINE_VALUATED' ||
           status === 'OFFLINE_VALUATING' ||
-          status === 'AUCTIONING'
+          status === 'AUCTIONING' ||
+          status === 'STORED'
         }
         title={
-          (status === 'ONLINE_VALUATED' && 'Sản phẩm đang định giá') ||
-          (status === 'OFFLINE_VALUATING' && 'Sản phẩm đang định giá') ||
+          ((status === 'ONLINE_VALUATED' ||
+            status === 'OFFLINE_VALUATING' ||
+            status === 'STORED') &&
+            'Sản phẩm đang định giá') ||
           (status === 'AUCTIONING' && 'Sản phẩm đã được đấu giá')
         }
       >
@@ -110,7 +113,8 @@ export const MyJewelryTable = () => {
         disabled={
           status === 'ONLINE_VALUATED' ||
           status === 'OFFLINE_VALUATING' ||
-          status === 'AUCTIONING'
+          status === 'AUCTIONING' ||
+          status === 'STORED'
         }
         title={
           (status === 'ONLINE_VALUATED' && 'Sản phẩm đang định giá') ||
