@@ -23,7 +23,7 @@ export const BidModal = ({
   increaseBidAmount,
   decreaseBidAmount,
   next,
-  prev
+  prev,
 }) => {
   const [profileInfo, setProfileInfo] = useState({});
   useEffect(() => {
