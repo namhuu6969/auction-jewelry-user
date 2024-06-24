@@ -1,23 +1,22 @@
-import { Dropdown, Image, Menu, Popconfirm, Space, Spin, Table } from 'antd';
+import { Dropdown, Image, Menu, Space, Table } from 'antd';
 import useTableSearch from '@hooks/useTableSearch';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setMyAuctionData,
-  setRenderMyAuction,
 } from '@core/store/WishlistStore/MyAuctionStore/myAuction';
 import { myAuctionApi } from '@api/WishlistApi/myAuctionApi';
 import { useNavigate } from 'react-router-dom';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
-import { formatPrice, imageURL } from '../../../../../utils/utils';
-import { useNotification } from '../../../../../hooks/useNotification';
+import { formatPriceVND, imageURL } from '../../../../../utils/utils';
+import { ModalUpdateDate } from './components/ModalUpdateDate';
+import { setDataUpdate } from '../../../../../core/store/WishlistStore/MyAuctionStore/myAuction';
 
 export const MyAuctionTable = () => {
   const { getColumnSearchProps } = useTableSearch();
   const { getColumnSearchDateProps } = useTableSearchDate();
-  const { openNotification, contextHolder } = useNotification();
   const [loading, setLoading] = useState(false);
-  const [loadingUpdated, setLoadingUpdated] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const auctionData = useSelector((state) => state.myAuction.myAuctionData);
@@ -31,39 +30,12 @@ export const MyAuctionTable = () => {
     const now = new Date();
     const timeDiff = end - now;
     const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-    return daysDiff > 0 ? daysDiff : 'Phiên đã kết thúc';
-  };
-
-  const handleChangeStatusAuction = async (id, status) => {
-    try {
-      if (status === 'Cancel') {
-        setLoadingUpdated(true);
-      }
-      await myAuctionApi.updateMyAuction(id, status);
-      if (status === 'Cancel') {
-        openNotification({
-          type: 'success',
-          description: 'Hủy phiên thành công',
-        });
-      }
-      dispatch(setRenderMyAuction(true));
-    } catch (error) {
-      if (status === 'Cancel') {
-        openNotification({
-          type: 'error',
-          description: 'Hủy phiên thất bại',
-        });
-      }
-    } finally {
-      if (status === 'Cancel') {
-        setLoadingUpdated(false);
-      }
-    }
+    return daysDiff > 0 ? daysDiff : 'Is ending';
   };
 
   const columns = [
     {
-      title: 'Ảnh',
+      title: '',
       dataIndex: ['jewelry', 'thumbnail'],
       key: 'image',
       render: (data) => (
@@ -77,7 +49,7 @@ export const MyAuctionTable = () => {
       ),
     },
     {
-      title: 'Ngày tạo',
+      title: 'Created At',
       dataIndex: 'createdAt',
       key: 'createdAt',
       ...getColumnSearchDateProps('createdAt'),
@@ -92,7 +64,7 @@ export const MyAuctionTable = () => {
           : '',
     },
     {
-      title: 'Ngày bắt đầu',
+      title: 'Start Date',
       dataIndex: 'startTime',
       key: 'startTime',
       ...getColumnSearchDateProps('startTime'),
@@ -107,68 +79,72 @@ export const MyAuctionTable = () => {
           : '',
     },
     {
-      title: 'Tên sản phẩm',
+      title: 'Name',
       dataIndex: ['jewelry', 'name'],
       key: 'name',
       ...getColumnSearchProps('name'),
     },
     {
-      title: 'Giá khởi điểm',
+      title: 'Starting Price',
       dataIndex: ['jewelry', 'staringPrice'],
       key: 'staringPrice',
       sorter: (a, b) => a?.staringPrice - b?.staringPrice,
-      render: (data) => <p>{formatPrice(data)} VND</p>,
+      render: (data) => <p>{formatPriceVND(data)}</p>,
     },
     {
-      title: 'Giá hiện tại',
+      title: 'Current Price',
       dataIndex: 'currentPrice',
       key: 'currentPrice',
       sorter: (a, b) => a?.currentPrice - b?.currentPrice,
-      render: (data) => <p>{formatPrice(data)} VND</p>,
+      render: (data) => <p>{formatPriceVND(data)}</p>,
     },
     {
-      title: 'Bước nhảy',
+      title: 'Step',
       dataIndex: 'step',
       key: 'step',
       sorter: (a, b) => a?.step - b?.step,
-      render: (data) => <p>{formatPrice(data)} VND</p>,
+      render: (data) => <p>{formatPriceVND(data)}</p>,
     },
     {
-      title: 'Số người tham gia',
+      title: 'Total bidding',
       dataIndex: 'totalBids',
       key: 'totalBids',
       align: 'center',
       sorter: (a, b) => a?.totalBids - b?.totalBids,
     },
     {
-      title: 'Số ngày còn lại',
+      title: 'End Time',
       dataIndex: 'endTime',
       align: 'center',
       key: 'endTime',
       render: (data) =>
         data ? (
           <p>
-            {calculateRemainingDays(data) === 'Phiên đã kết thúc'
-              ? 'Phiên đã kết thúc'
-              : calculateRemainingDays(data) + ' ngày'}{' '}
+            {calculateRemainingDays(data) === 'dThe auction have been ende'
+              ? 'The auction have been ended'
+              : calculateRemainingDays(data) + ' days'}{' '}
           </p>
         ) : (
           'NaN'
         ),
-      sorter: (a, b) => calculateRemainingDays(a?.endTime) - calculateRemainingDays(b?.endTime),
+      sorter: (a, b) =>
+        calculateRemainingDays(a?.endTime) - calculateRemainingDays(b?.endTime),
     },
     {
-      title: 'Trạng thái',
+      title: 'Status',
       dataIndex: 'status',
       key: 'status',
     },
     {
-      title: 'Hành động',
+      title: 'Action',
       key: 'action',
       align: 'center',
       fixed: 'right',
       render: (data) => (
-        <Dropdown overlay={getMenu(data.id, data.status, data.totalBids)} trigger={['click']}>
+        <Dropdown
+          overlay={getMenu(data.id, data.status, data)}
+          trigger={['click']}
+        >
           <a onClick={(e) => e.preventDefault()}>
             <Space>
               <p className='text-2xl'>...</p>
@@ -179,37 +155,22 @@ export const MyAuctionTable = () => {
     },
   ];
 
-  const getMenu = (id, status, totalBids) => (
+  const handleUpdateOpen = (data) => {
+    setOpenUpdate(true),
+    dispatch(setDataUpdate(data))
+  }
+
+  const getMenu = (id, status, data) => (
     <Menu>
       <Menu.Item key='0'>
-        <a onClick={() => navigate(`/jewelry/detail/${id}`)}>Xem chi tiết đấu giá</a>
-      </Menu.Item>
-      <Menu.Item
-        key='1'
-        className={`${
-          status === 'Inprogess' || status === 'Completed' || status === 'Waiting'
-            ? '!hidden'
-            : '!block'
-        }`}
-      >
-        <a onClick={() => handleChangeStatusAuction(id, 'Waiting')}>
-          Mở phiên đấu giá {loadingUpdated ? <Spin /> : ''}
+        <a onClick={() => navigate(`/jewelry/detail/${id}`)}>
+          View detail session
         </a>
       </Menu.Item>
-      <Menu.Item
-        key='2'
-        className={`${status === 'Completed' || status === 'Cancel' ? '!hidden' : '!block'}`}
-        disabled={totalBids > 3 ? true : false}
-      >
-        <Popconfirm
-          title='Hủy phiên đấu giá'
-          description='Bạn có chắc là sẽ hủy phiên này?'
-          onConfirm={() => handleChangeStatusAuction(id, 'Cancel')}
-          okText='Có'
-          cancelText='Không'
-        >
-          <a className='!text-red-600'>Hủy phiên đấu giá {loadingUpdated ? <Spin /> : ''}</a>
-        </Popconfirm>
+      <Menu.Item key={'update'}>
+        <a onClick={() => handleUpdateOpen(data)}>
+          Update date range session
+        </a>
       </Menu.Item>
     </Menu>
   );
@@ -219,7 +180,7 @@ export const MyAuctionTable = () => {
       try {
         setLoading(true);
         const response = await myAuctionApi.getMyAuction();
-        console.log(response.data)
+        console.log(response.data);
         if (response.data) {
           dispatch(setMyAuctionData(response.data));
         }
@@ -238,7 +199,7 @@ export const MyAuctionTable = () => {
 
   return (
     <>
-      {contextHolder}
+      <ModalUpdateDate open={openUpdate} setOpen={setOpenUpdate} />
       <Table
         loading={loading}
         dataSource={auctionData}
