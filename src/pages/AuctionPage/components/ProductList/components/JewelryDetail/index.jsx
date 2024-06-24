@@ -48,6 +48,9 @@ export const JewelryDetail = () => {
   }, [id]);
 
   const showModal = () => {
+    if (!userEmail) {
+      navigator('/login');
+    }
     setIsModalVisible(true);
   };
 
@@ -233,19 +236,19 @@ export const JewelryDetail = () => {
             <Flex className='items-center w-full'>
               <div className='grid grid-cols-2 gap-y-5'>
                 <Title className='!mr-4 !my-auto text-left font-sans !font-medium' level={4}>
-                  Giá thầu hiện tại:
+                  Current Price
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
                   {formatPrice(currentPrice)} VND
                 </Title>
                 <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
-                  Bước nhảy:
+                  Step
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
                   {formatPrice(step)} VND
                 </Title>
                 <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
-                  Trạng thái:
+                  Status
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
                   {status}
@@ -275,7 +278,7 @@ export const JewelryDetail = () => {
               <Flex className='items-center' gap={10}>
                 <ClockCircleOutlined className='!text-3xl' />
                 <Title level={4} className='!m-0 font-sans !font-thin'>
-                  {calculateDaysDifference(startTime, endTime)} ngày
+                  {calculateDaysDifference(startTime, endTime)} days
                 </Title>
               </Flex>
               <Flex className='items-center' gap={10}>
@@ -288,7 +291,7 @@ export const JewelryDetail = () => {
               </Flex>
             </Flex>
             <PrimaryButton onClick={showModal} className={'!text-2xl font-medium'}>
-              Đấu giá
+              Place Bid
             </PrimaryButton>
             {staringPrice > 0 && (
               <div className='w-full p-5'>
@@ -317,21 +320,23 @@ export const JewelryDetail = () => {
         </Flex>
         <TabsContent jewelry={jewelryData} startTime={startTime} endTime={endTime} />
       </Flex>
-      <BidModal
-        open={isModalVisible}
-        currentStep={currentStep}
-        step={step}
-        bidAmount={bidAmount}
-        handleOk={handleOk}
-        userWallet={1000000000000000}
-        handleCancel={handleCancel}
-        handleBidAmountChange={handleBidAmountChange}
-        handleBlur={handleBlur}
-        increaseBidAmount={increaseBidAmount}
-        decreaseBidAmount={decreaseBidAmount}
-        next={next}
-        prev={prev}
-      />
+      {userEmail && (
+        <BidModal
+          open={isModalVisible}
+          currentStep={currentStep}
+          step={step}
+          bidAmount={bidAmount}
+          handleOk={handleOk}
+          userWallet={1000000000000000}
+          handleCancel={handleCancel}
+          handleBidAmountChange={handleBidAmountChange}
+          handleBlur={handleBlur}
+          increaseBidAmount={increaseBidAmount}
+          decreaseBidAmount={decreaseBidAmount}
+          next={next}
+          prev={prev}
+        />
+      )}
     </div>
   );
 };
