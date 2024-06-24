@@ -25,7 +25,7 @@ const WishlistPage = () => {
       link: '/',
     },
     {
-      name: 'Quản lý',
+      name: 'Dashboard',
       link: '/wishlist',
     },
   ];
@@ -33,32 +33,32 @@ const WishlistPage = () => {
   const items = [
     {
       key: 1,
-      label: 'Trang sức của tôi',
+      label: 'My Jewelry',
       children: <MyJewelryTable />,
     },
     {
       key: 2,
-      label: 'Định giá',
+      label: 'My Valuating',
       children: <ValuatingTable />,
     },
     {
       key: 3,
-      label: 'Phiên của tôi',
+      label: 'My Auction',
       children: <MyAuctionTable />,
     },
     {
       key: 4,
-      label: 'Mong muốn',
+      label: 'My Wishlist',
       children: <WishlistTable />,
     },
     {
       key: 5,
-      label: 'Đấu giá',
+      label: 'My Bidding',
       children: <BiddingTable />,
     },
     {
       key: 6,
-      label: 'Đấu giá thắng',
+      label: 'My Winning',
       children: <WinningTable />,
     },
 

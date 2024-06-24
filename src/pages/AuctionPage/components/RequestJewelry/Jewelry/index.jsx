@@ -13,7 +13,7 @@ export const RequestJewelry = () => {
       link: '/',
     },
     {
-      name: 'Yêu cầu trang sức',
+      name: 'Request jewelry',
       link: '/request/jewelry',
     },
   ];
@@ -24,7 +24,7 @@ export const RequestJewelry = () => {
         <Divider className='border-black' />
       </Flex>
       <PolicyRequest />
-      <Title level={4} className='font-serif'>Thông tin của trang sức</Title>
+      <Title level={4} className='font-serif'>Information of jewelry</Title>
       <FormRequest />
     </div>
   ) : (
