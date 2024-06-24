@@ -1,8 +1,22 @@
 import { Button, List } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { formatPriceVND } from '@utils/utils';
 
 export const AuctionList = ({ data, Card }) => {
   const navigate = useNavigate();
+  const handleShowStatus = (item) => {
+    if (item.status === 'InProgress') {
+      return <span style={{ color: '#0000FF' }}>In Progress</span>;
+    } else if (item.status === 'Completed') {
+      return <span style={{ color: '#008000' }}>Completed</span>;
+    } else if (item.status === 'Waiting') {
+      return <span style={{ color: '#808080' }}>Waiting</span>;
+    } else if (item.status === 'Cancel') {
+      return <span style={{ color: '#FFA500' }}>Cancel</span>;
+    } else {
+      return <span style={{ color: '#FF0000' }}>Fail</span>;
+    }
+  };
 
   return (
     <List
@@ -21,13 +35,11 @@ export const AuctionList = ({ data, Card }) => {
           >
             <div className='text-start'>
               <p>{item.jewelry.name}</p>
+              <p style={{ fontWeight: '500' }}>Status: {handleShowStatus(item)}</p>
+            </div>
+            <div className='text-start'>
               <p style={{ fontWeight: '500' }}>
-                Trạng thái:{' '}
-                {item.status === 'Waiting' ? (
-                  <span style={{ color: 'green' }}>Đang chờ</span>
-                ) : (
-                  <span style={{ color: 'red' }}>Đã kết thúc</span>
-                )}
+                Current Price: {formatPriceVND(item.currentPrice)}
               </p>
             </div>
             <div className='text-end mt-4'>

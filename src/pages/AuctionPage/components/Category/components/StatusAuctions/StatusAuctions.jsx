@@ -3,19 +3,19 @@ import { Typography, Checkbox } from 'antd';
 
 const status = [
   {
-    label: 'Tất cả',
+    label: 'All',
     value: 'all',
   },
   {
-    label: 'Đang diễn ra',
+    label: 'In Progress',
     value: 'inprogress',
   },
   {
-    label: 'Sắp diễn ra',
+    label: 'Up Coming',
     value: 'upcoming',
   },
   {
-    label: 'Đã Kết thúc',
+    label: 'Ended',
     value: 'ended',
   },
 ];
@@ -25,7 +25,7 @@ export const StatusAuctions = ({ onChange }) => {
   return (
     <div className='m-4 p-4 shadow-lg rounded-md flex flex-col items-start'>
       <Title level={3}>
-        Trạng Thái Tài Sản
+        Status
         <div className='mt-2 mb-4 border-b-2 border-black w-30' />
       </Title>
       <div className='w-full mb-4 text-start'>
