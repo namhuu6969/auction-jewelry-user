@@ -64,7 +64,7 @@ export const MyJewelryTable = () => {
       dispatch(setJewelryData(updatedJewelry));
       openNotification({
         type: 'success',
-        description: 'Xóa thành công',
+        description: 'Delete successfully',
       });
     } catch (error) {
       console.log(error);
@@ -88,7 +88,7 @@ export const MyJewelryTable = () => {
   const getMenu = (id, status) => (
     <Menu>
       <Menu.Item key='0'>
-        <a onClick={() => handleOpenDetail(id)}>Xem chi tiết</a>
+        <a onClick={() => handleOpenDetail(id)}>View Detail</a>
       </Menu.Item>
       <Menu.Item
         key='1'
@@ -102,11 +102,11 @@ export const MyJewelryTable = () => {
           ((status === 'ONLINE_VALUATED' ||
             status === 'OFFLINE_VALUATING' ||
             status === 'STORED') &&
-            'Sản phẩm đang định giá') ||
-          (status === 'AUCTIONING' && 'Sản phẩm đã được đấu giá')
+            'Jewelry is valuating') ||
+          (status === 'AUCTIONING' && 'Jewelry is auctioned')
         }
       >
-        <a onClick={() => handleOpenValuate(id)}>Định giá sản phẩm</a>
+        <a onClick={() => handleOpenValuate(id)}>Valuate Jewelry</a>
       </Menu.Item>
       <Menu.Item
         key='2'
@@ -117,19 +117,19 @@ export const MyJewelryTable = () => {
           status === 'STORED'
         }
         title={
-          (status === 'ONLINE_VALUATED' && 'Sản phẩm đang định giá') ||
-          (status === 'OFFLINE_VALUATING' && 'Sản phẩm đang định giá') ||
-          (status === 'AUCTIONING' && 'Sản phẩm đã được đấu giá')
+          (status === 'ONLINE_VALUATED' && 'Jewelry is valuating') ||
+          (status === 'OFFLINE_VALUATING' && 'Jewelry is valuating') ||
+          (status === 'AUCTIONING' && 'Jewelry is auctioned')
         }
       >
-        <a onClick={() => handleConfirmDelete(id)}>Xóa trang sức</a>
+        <a onClick={() => handleConfirmDelete(id)}>Delete Jewelry</a>
       </Menu.Item>
     </Menu>
   );
 
   const columns = [
     {
-      title: 'Ảnh',
+      title: '',
       dataIndex: 'thumbnail',
       key: 'image',
       render: (data) => (
@@ -143,7 +143,7 @@ export const MyJewelryTable = () => {
       ),
     },
     {
-      title: 'Ngày tạo',
+      title: 'Created At',
       dataIndex: 'createdAt',
       key: 'createdAt',
       ...getColumnSearchDateProps('createdAt'),
@@ -158,13 +158,13 @@ export const MyJewelryTable = () => {
           : '',
     },
     {
-      title: 'Tên sản phẩm',
+      title: 'Name',
       dataIndex: 'name',
       key: 'name',
       ...getColumnSearchProps('name'),
     },
     {
-      title: 'Danh mục',
+      title: 'Category',
       dataIndex: 'category',
       key: 'category',
       filters: category.map((e) => ({
@@ -178,7 +178,7 @@ export const MyJewelryTable = () => {
       ),
     },
     {
-      title: 'Hãng',
+      title: 'Brand',
       dataIndex: 'brand',
       key: 'brand',
       filters: brand.map((e) => ({
@@ -188,11 +188,11 @@ export const MyJewelryTable = () => {
       onFilter: (value, record) => record?.brand?.name?.startsWith(value),
       filterSearch: true,
       render: (e, index) => (
-        <p key={index}>{e?.name ? e?.name : 'Không biết'}</p>
+        <p key={index}>{e?.name ? e?.name : 'Other'}</p>
       ),
     },
     {
-      title: 'Bộ sưu tập',
+      title: 'Collection',
       dataIndex: 'collection',
       key: 'collection',
       filters: collection.map((e) => ({
@@ -202,11 +202,11 @@ export const MyJewelryTable = () => {
       onFilter: (value, record) => record?.collection?.name?.startsWith(value),
       filterSearch: true,
       render: (e, index) => (
-        <p key={index}>{e?.name ? e?.name : 'Không biết'}</p>
+        <p key={index}>{e?.name ? e?.name : 'Other'}</p>
       ),
     },
     {
-      title: 'Chất liệu',
+      title: 'Materials',
       dataIndex: 'jewelryMaterials',
       key: 'jewelryMaterials',
       filters: material.map((e) => ({
@@ -229,12 +229,12 @@ export const MyJewelryTable = () => {
       ),
     },
     {
-      title: 'Trạng thái',
+      title: 'Status',
       dataIndex: 'status',
       key: 'status',
     },
     {
-      title: 'Hành động',
+      title: 'Action',
       key: 'action',
       align: 'center',
       fixed: 'right',

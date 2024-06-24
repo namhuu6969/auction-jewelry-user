@@ -35,7 +35,7 @@ export const ModalValuate = ({ setOpen, open }) => {
       await myValuatingApi.valuateTheJewelry(data);
       openNotification({
         type: 'success',
-        description: 'Định giá sản phẩm thành công',
+        description: 'Send valuation successfully',
       });
       dispatch(setRender(true));
       handleClose();
@@ -68,7 +68,7 @@ export const ModalValuate = ({ setOpen, open }) => {
             className={'text-md px-5'}
             key='cancel'
           >
-            Hủy
+            Cancel
           </SecondaryButton>,
           <PrimaryButton
             onClick={handleSubmit}
@@ -77,7 +77,7 @@ export const ModalValuate = ({ setOpen, open }) => {
             type='primary'
             loading={loading}
           >
-            Gửi định giá
+            Send valuation
           </PrimaryButton>,
         ]}
       >
@@ -89,7 +89,7 @@ export const ModalValuate = ({ setOpen, open }) => {
           }}
         >
           <Title level={5} className='font-sans !font-medium'>
-            Bạn muốn định giá sản phẩm online không?
+            Choose type of valuation you want
           </Title>
           <div className='flex gap-2 !items-center'>
             <Title
@@ -98,7 +98,7 @@ export const ModalValuate = ({ setOpen, open }) => {
                 !online ? '!text-[#946257]' : ''
               }`}
             >
-              Không
+              No
             </Title>
             <Form.Item name='online' valuePropName='checked' noStyle>
               <Switch
@@ -113,7 +113,7 @@ export const ModalValuate = ({ setOpen, open }) => {
                 online ? '!text-[#946257]' : ''
               }`}
             >
-              Có
+              Yes
             </Title>
           </div>
         </Form>
