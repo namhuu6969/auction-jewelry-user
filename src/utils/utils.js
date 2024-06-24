@@ -18,6 +18,10 @@ export const formatDate = (date) => {
   return formatted;
 };
 
+
+export const formatPriceVND = (price) =>
+  price?.toLocaleString('vi', { style: 'currency', currency: 'VND' });
+
 export const formatDateTime = (datetimeStr) => {
   const date = new Date(datetimeStr);
 
@@ -49,3 +53,21 @@ export const formatPrice = (price) => {
     return 0;
   }
 };
+
+export const formatDateToYMDHM = (dateString) => {
+  const date = new Date(dateString);
+  
+  const padZero = (num) => num.toString().padStart(2, '0');
+
+  const year = date.getFullYear();
+  const month = padZero(date.getMonth() + 1);
+  const day = padZero(date.getDate());
+  const hours = padZero(date.getHours());
+  const minutes = padZero(date.getMinutes());
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
+// Example usage
+const formattedDate = formatDateToYMDHM("2024-06-19T00:00:00.000+07:00");
+console.log(formattedDate); // Output: "2024-06-19 00:00"

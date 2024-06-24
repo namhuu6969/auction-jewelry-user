@@ -1,5 +1,5 @@
 import { Card, Typography } from 'antd';
-import { formatPrice } from '@utils/utils';
+import { formatPriceVND } from '@utils/utils';
 
 const { Title } = Typography;
 
@@ -27,7 +27,7 @@ const MiniCard = ({ imageSrc, title, price }) => {
             {truncateTitle(title)}
           </Title>
           <p className='text-[0.75rem]' style={{ fontWeight: '500' }}>
-            Giá khởi điểm: {formatPrice(price)} VNĐ
+            Starting Price: {formatPriceVND(price)}
           </p>
         </div>
       </div>

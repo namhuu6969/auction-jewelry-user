@@ -5,19 +5,25 @@ import { setMyValuation } from '../../../../../core/store/WishlistStore/MyValuat
 import { Dropdown, Image, Menu, Space, Table } from 'antd';
 import { setJewelryId } from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { ModalAddAuction } from './components/ModalAddAuction';
-import { imageURL } from '../../../../../utils/utils';
+import { formatDate, imageURL } from '../../../../../utils/utils';
+import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
+// import { myAuctionApi } from '@api/WishlistApi/myAuctionApi';
+// import { setMyAuctionData } from '@core/store/WishlistStore/MyAuctionStore/myAuction';
 
 export const ValuatingTable = () => {
   const dataSource = useSelector((state) => state.myValuation.myValuationData);
+  const { getColumnSearchDateProps } = useTableSearchDate();
   const [open, setOpen] = useState(false);
   const render = useSelector((state) => state.jewelryMe.render);
+  // const auctionData = useSelector((state) => state.myAuction.myAuctionData);
+  // const [checkAuctioning, setCheckAuctioning] = useState(false);
   const dispatch = useDispatch();
   const formatPriceVND = (price) =>
     price.toLocaleString('vi', { style: 'currency', currency: 'VND' });
 
   const columns = [
     {
-      title: 'Ảnh',
+      title: '',
       dataIndex: ['jewelry', 'thumbnail'],
       key: 'image',
       render: (data) => (
@@ -31,43 +37,50 @@ export const ValuatingTable = () => {
       ),
     },
     {
-      title: 'Tên sản phẩm',
+      title: 'Created At',
+      dataIndex: 'createdAt',
+      ...getColumnSearchDateProps('createdAt'),
+      key: 'created',
+      render: (data) => formatDate(data),
+    },
+    {
+      title: 'Name',
       dataIndex: ['jewelry', 'name'],
       key: 'name',
     },
     {
-      title: 'Nhân viên định giá',
+      title: 'Valuation Staff',
       dataIndex: ['staff', 'full_name'],
       key: 'staff',
     },
     {
-      title: 'Giá trị định giá',
+      title: 'Vauation Value',
       dataIndex: 'valuation_value',
       key: 'valuation_value',
       render: (data) => formatPriceVND(data),
     },
     {
-      title: 'Phí định giá',
+      title: 'Valuation Fee',
       dataIndex: 'valuationFee',
       key: 'valuationFee',
     },
     {
-      title: 'Định giá',
+      title: 'Valuation Type',
       dataIndex: 'online',
       key: 'online',
       render: (data) => (data ? 'Online' : 'Offline'),
     },
     {
-      title: 'Trạng thái',
+      title: 'Valuation Status',
       dataIndex: 'status',
       key: 'status',
     },
     {
-      title: 'Hành động',
+      title: 'Action',
       key: 'action',
       render: (data) => (
         <Dropdown
-          overlay={getMenu(data.id, data.status, data.jewelry.staringPrice)}
+          overlay={getMenu(data.jewelry.id, data.status, data.jewelry.staringPrice, data.jewelry.status)}
           trigger={['click']}
         >
           <a onClick={(e) => e.preventDefault()}>
@@ -79,17 +92,19 @@ export const ValuatingTable = () => {
       ),
     },
   ];
-  const getMenu = (id, status, startingPrice) => (
+  const getMenu = (id, status, startingPrice, statusJewelry) => (
     <Menu>
       <Menu.Item
         key='0'
-        disabled={status === 'REQUEST' || startingPrice === 0}
+        disabled={
+          status === 'REQUEST' || status === 'VALUATING' || statusJewelry === 'AUCTIONING'
+        }
         title={
-          (status === 'REQUEST' && 'Sản phẩm đang được định giá') ||
-          (startingPrice === 0 && 'Nhân viên chưa đặt giá khởi điểm')
+          (status === 'REQUEST' && 'Staff is valuating this jewelry') ||
+          (startingPrice === 0 && 'Staff do not set starting price yet')
         }
       >
-        <a onClick={() => handleAddAuctionClick(id)}>Thêm vào đấu giá</a>
+        <a onClick={() => handleAddAuctionClick(id)}>Put up auction</a>
       </Menu.Item>
     </Menu>
   );
@@ -100,16 +115,24 @@ export const ValuatingTable = () => {
   useEffect(() => {
     const fetchMyValuation = async () => {
       const response = await myValuatingApi.getValuatingMe();
+      console.log(response.data);
       dispatch(setMyValuation(response.data));
     };
+    // const fetchData = async () => {
+    //   const response = await myAuctionApi.getMyAuction();
+    //   console.log(response.data);
+    //   if (response.data) {
+    //     dispatch(setMyAuctionData(response.data));
+    //   }
+    // };
     fetchMyValuation();
+    // fetchData();      
     if (render) {
       fetchMyValuation();
     }
   }, [dispatch, render]);
   return (
     <>
-      {console.log(dataSource)}
       <ModalAddAuction open={open} setOpen={setOpen} />
       <Table
         scroll={{

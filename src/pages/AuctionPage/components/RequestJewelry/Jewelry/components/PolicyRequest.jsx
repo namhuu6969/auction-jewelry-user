@@ -4,23 +4,26 @@ const { Title } = Typography;
 const PolicyRequest = () => {
   return (
     <Card
-      title={<Title level={3} className='font-serif'>Chính sách yêu cầu sản phẩm</Title>}
+      title={
+        <Title level={3} className='font-serif'>
+          Policies of send request jewelry
+        </Title>
+      }
       className='!text-left text-red-600 text-base'
       bordered={false}
       style={{ width: '100%', margin: '20px 0' }}
     >
       <p>
         <strong>
-          * Mọi sản phẩm được gửi yêu cầu phải chính xác với sản phẩm vật lý
-          100%
+          * Every jewelry that is send have to match the physical jewelry 100%
         </strong>
       </p>
       <p>
         <strong>
-          * Sản phẩm được đăng ký phải là sản phẩm hợp pháp, có giấy tờ đầy đủ.
+          * Registered jewelries must be legal products with complete documents.
         </strong>{' '}
-        (Trong trường hợp sản phẩm không có giấy tờ, quý khách hàng phải gửi sản
-        phẩm tới công ty của chúng tôi để tiến hành thẩm định)
+        (In case the jewelry does not have documents, the customer must send the
+        jewelry to our company for valuating)
       </p>
     </Card>
   );

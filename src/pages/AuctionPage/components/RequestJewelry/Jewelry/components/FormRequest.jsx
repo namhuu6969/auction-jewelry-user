@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { requestJewelryApi } from '../../../../../../services/api/RequestApi/requestJewelryApi';
 import {
-  AutoComplete,
+  // AutoComplete,
   Button,
   Form,
   Input,
@@ -37,11 +37,12 @@ export const FormRequest = () => {
   ]);
   const [choosedBrand, setChoosedBrand] = useState('');
   const [loading, setLoading] = useState(false);
-  const [optionsBrand, setOptionsBrand] = useState([]);
-  const [optionsCollection, setOptionsCollection] = useState([]);
-  const getPanelValueBrand = (searchText) => (!searchText ? [] : itemsBrand);
-  const getPanelValueCollection = (searchText) =>
-    !searchText ? [] : itemsCollection;
+  // const [optionsBrand, setOptionsBrand] = useState([]);
+  // const [optionsCollection, setOptionsCollection] = useState([]);
+  // const getPanelValueBrand = (searchText) => (!searchText ? [] : itemsBrand);
+  // const getPanelValueCollection = (searchText) =>
+  //   !searchText ? [] : itemsCollection;
+
   const handleCancel = () => setPreviewVisible(false);
 
   const handlePreview = async (file) => {
@@ -70,7 +71,7 @@ export const FormRequest = () => {
     if (!isJpgOrPng) {
       openNotification({
         type: 'error',
-        description: 'Bạn chỉ có thể upload file PNG/JPG !',
+        description: 'File image must be JPG/PNG/JPEG !',
       });
     }
     return isJpgOrPng || Upload.LIST_IGNORE;
@@ -87,7 +88,7 @@ export const FormRequest = () => {
     if (value < totalMaterialWeight) {
       return Promise.reject(
         new Error(
-          'Tổng khối lượng chất liệu phải lớn hơn hoặc bằng khối lượng sản phẩm!'
+          'The total weight of material must be greater than or equal to the weight of the product!'
         )
       );
     }
@@ -159,7 +160,7 @@ export const FormRequest = () => {
       setMaterialsInput([{ idMaterial: null, weight: 0 }]);
       openNotification({
         type: 'success',
-        description: 'Đăng sản phẩm thành công',
+        description: 'Post jewelry success',
       });
     } catch (error) {
       openNotification({
@@ -214,8 +215,8 @@ export const FormRequest = () => {
   }, []);
   const itemsGender = useMemo(
     () => [
-      { label: 'Nam', value: 'Male' },
-      { label: 'Nữ', value: 'Female' },
+      { label: 'Male', value: 'Male' },
+      { label: 'Female', value: 'Female' },
       { label: 'Unisex', value: 'Unisex' },
     ],
     []
@@ -223,7 +224,7 @@ export const FormRequest = () => {
 
   const itemsCondition = useMemo(
     () => [
-      { label: 'New', value: 'New' },
+      { label: 'Half New', value: 'New' },
       { label: 'Used', value: 'Used' },
     ],
     []
@@ -271,11 +272,11 @@ export const FormRequest = () => {
         <div className='grid grid-cols-3 gap-y-7 gap-x-5'>
           <Form.Item
             name={'name'}
-            label='Tên trang sức'
+            label='Jewelry name'
             rules={[
               {
                 required: true,
-                message: 'Hãy nhập tên trang sức!',
+                message: 'Must not be empty!',
               },
             ]}
             className='!text-left col-span-1'
@@ -284,11 +285,11 @@ export const FormRequest = () => {
           </Form.Item>
           <Form.Item
             name={'weight'}
-            label='Cân nặng (g)'
+            label='Weight (g)'
             rules={[
               {
                 required: true,
-                message: 'Hãy nhập cân nặng!',
+                message: 'Must not be empty!',
               },
               {
                 validator: validateWeightMaterial,
@@ -300,11 +301,11 @@ export const FormRequest = () => {
           </Form.Item>
           <Form.Item
             name={'size'}
-            label='Kích thước'
+            label='Size'
             rules={[
               {
                 required: true,
-                message: 'Hãy nhập kích thước!',
+                message: 'Must not be empty!',
               },
             ]}
             className='!text-left'
@@ -313,11 +314,11 @@ export const FormRequest = () => {
           </Form.Item>
           <Form.Item
             name={'color'}
-            label='Màu'
+            label='Color'
             rules={[
               {
                 required: true,
-                message: 'Hãy nhập màu!',
+                message: 'Must not be empty!',
               },
             ]}
             className='!text-left'
@@ -326,97 +327,98 @@ export const FormRequest = () => {
           </Form.Item>
           <Form.Item
             name={'jewelryCondition'}
-            label='Chất lượng'
+            label='Condition'
             rules={[
               {
                 required: true,
-                message: 'Hãy nhập chất lượng!',
+                message: 'Must not be empty!',
               },
             ]}
             className='!text-left'
           >
             <Select
               defaultValue={'New'}
-              placeholder='Chọn chất lượng'
+              placeholder='Choose condition'
               options={itemsCondition}
               className='!text-left'
             />
           </Form.Item>
           <Form.Item
             name={'category'}
-            label='Danh mục'
+            label='Category'
             rules={[
               {
                 required: true,
-                message: 'Hãy chọn danh mục!',
+                message: 'Must not be empty!',
               },
             ]}
             className='!text-left'
           >
             <Select
               showSearch
-              placeholder='Chọn danh mục'
+              placeholder='Choose category'
               optionFilterProp='children'
               filterOption={filterOption}
               options={itemsCategory}
               className='!text-left'
             />
           </Form.Item>
-          <Form.Item name={'brand'} label='Hãng' className='!text-left'>
-            <AutoComplete
+          <Form.Item name={'brand'} label='Brand' className='!text-left'>
+            {/* <AutoComplete
               options={optionsBrand}
               onSearch={(text) => setOptionsBrand(getPanelValueBrand(text))}
-              placeholder='Chọn hãng'
+              placeholder='Choose brand'
               onChange={(value) => setChoosedBrand(value)}
               className='!text-left'
-            />
-            {/* <Select
+            /> */}
+            <Select
               onChange={(value) => setChoosedBrand(value)}
               showSearch
-              placeholder='Chọn hãng'
+              placeholder='Choose brand'
               optionFilterProp='children'
               filterOption={filterOption}
               options={itemsBrand}
               className='!text-left'
-            /> */}
+            />
           </Form.Item>
           <Form.Item
             name={'collection'}
-            label='Bộ sưu tập (Vui lòng chọn hãng trước)'
+            label='Collection (Please select the brand first)'
             className='!text-left'
           >
-            <AutoComplete
+            {/* <AutoComplete
               options={optionsCollection}
-              onSearch={(text) => setOptionsCollection(getPanelValueCollection(text))}
-              placeholder='Chọn hãng'
+              onSearch={(text) =>
+                setOptionsCollection(getPanelValueCollection(text))
+              }
+              placeholder='Chọn bộ sưu tập'
               className='!text-left'
               disabled={!choosedBrand}
-  
-            />
-            {/* <Select
+            /> */}
+            <Select
               showSearch
-              placeholder='Chọn bộ sưu tập'
+              placeholder='Choose collection'
               optionFilterProp='children'
               filterOption={filterOption}
               options={itemsCollection}
               className='!text-left'
               disabled={!choosedBrand}
-            /> */}
+            />
           </Form.Item>
           <Form.Item
             name={'sex'}
-            label='Giới tính'
+            label='Gender'
             rules={[
               {
                 required: true,
-                message: 'Hãy nhập giới tính!',
+                message: 'Must not be empty!',
               },
             ]}
             className='!text-left'
           >
             <Select
               showSearch
-              placeholder='Chọn giới tính'
+              placeholder='Choose gender'
               optionFilterProp='children'
               filterOption={filterOption}
               options={itemsGender}
@@ -429,18 +431,18 @@ export const FormRequest = () => {
           <div key={index} className='grid grid-cols-3 gap-4'>
             <Form.Item
               name={`material_${index}`}
-              label='Chất liệu'
+              label='Material'
               className='!text-left'
               rules={[
                 {
                   required: true,
-                  message: 'Hãy nhập chất liệu!',
+                  message: 'Must not be empty!',
                 },
               ]}
             >
               <Select
                 showSearch
-                placeholder='Chọn chất liệu'
+                placeholder='Choose material'
                 optionFilterProp='children'
                 filterOption={filterOption}
                 options={getFilteredMaterials(index)?.map((e) => ({
@@ -452,15 +454,17 @@ export const FormRequest = () => {
               />
             </Form.Item>
             <Form.Item
-              label='Cân nặng (g)'
+              label={`Weight of material ${
+                material.idMaterial === 3 ? '(karat)' : '(g)'
+              }`}
               name={`weight_${index}`}
               className='!text-left'
               rules={[
-                { required: true, message: 'Hãy nhập cân nặng của vật liệu' },
+                { required: true, message: 'Must not be empty!' },
                 {
                   type: 'number',
                   min: 0.00000000000000001,
-                  message: 'Cân nặng phải lớn hơn 0!',
+                  message: 'Weight must be greater than 0!',
                 },
               ]}
             >
@@ -489,16 +493,16 @@ export const FormRequest = () => {
           onClick={addMaterialInput}
           className='w-2/3 flex justify-center'
         >
-          Thêm chất liệu
+          Add more material
         </Button>
         <Form.Item
           name={'description'}
-          label='Mô tả sản phẩm'
+          label='Description'
           className='!text-left'
           rules={[
             {
               required: true,
-              message: 'Hãy nhập mô tả sản phẩm!',
+              message: 'Must not be empty!',
             },
           ]}
         >
@@ -506,10 +510,10 @@ export const FormRequest = () => {
         </Form.Item>
         <Form.Item
           name='imagesFile'
-          label='Đăng ảnh sản phẩm (Ảnh đầu tiên sẽ là ảnh bìa sản phẩm)'
+          label='Upload jewelry image (The first image will be thumbnail)'
           valuePropName='fileList'
           getValueFromEvent={normFile}
-          rules={[{ required: true, message: 'Hãy đăng ảnh sản phẩm' }]}
+          rules={[{ required: true, message: 'Must not be empty!' }]}
           className='!text-left'
         >
           <Upload
@@ -523,7 +527,7 @@ export const FormRequest = () => {
             {fileList.length >= 8 ? null : (
               <div>
                 <UploadOutlined />
-                <div style={{ marginTop: 8 }}>Tải ảnh</div>
+                <div style={{ marginTop: 8 }}>Upload</div>
               </div>
             )}
           </Upload>
@@ -535,7 +539,7 @@ export const FormRequest = () => {
             htmlType='submit'
             loading={loading}
           >
-            Gửi yêu cầu
+            Send jewelry
           </Button>
         </Form.Item>
       </Form>
