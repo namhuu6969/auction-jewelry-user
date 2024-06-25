@@ -1,19 +1,46 @@
-import { Image, Table } from 'antd';
-import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
+import { Dropdown, Image, Menu, Space, Table } from 'antd';
 import { useEffect, useState } from 'react';
 import { wishlistApi } from '../../../../../services/api/WishlistApi/wishlistApi';
 import { formatDate, imageURL } from '../../../../../utils/utils';
 import useTableSearch from '../../../../../hooks/useTableSearch';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
+import { useNotification } from '../../../../../hooks/useNotification';
 
 export const WishlistTable = () => {
   const { getColumnSearchProps } = useTableSearch();
   const { getColumnSearchDateProps } = useTableSearchDate();
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
+  const {contextHolder, openNotification} = useNotification()
+  const handleDeleteWishlist = async (id) => {
+    try {
+      setLoading(true)
+      await wishlistApi.deleteWishlist(id)
+      openNotification({
+        type: 'success',
+        title: 'Delete success'
+      })
+    } catch(error) {
+      openNotification({
+        title: 'Failed',
+        type: 'error'
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+  const getMenu = (id) => (
+    <Menu>
+      <Menu.Item
+        key='0'
+      >
+        <a onClick={() => handleDeleteWishlist(id)}>Put up auction</a>
+      </Menu.Item>
+    </Menu>
+  );
   const columns = [
     {
-      title: 'Ảnh',
+      title: '',
       dataIndex: ['auction', 'jewelry', 'thumbnail'],
       key: 'image',
       render: (data) => (
@@ -27,57 +54,65 @@ export const WishlistTable = () => {
       ),
     },
     {
-      title: 'Ngày tạo',
+      title: 'Createđ At',
       dataIndex: ['auction', 'createdAt'],
       key: 'createdAt',
-      ...getColumnSearchDateProps('createdAt'),
+      ...getColumnSearchDateProps('auction', 'createdAt'),
       sorter: (a, b) => new Date(a?.createdAt) - new Date(b?.createdAt),
       render: (data) => formatDate(data),
     },
     {
-      title: 'Tên sản phẩm',
+      title: 'Name',
       dataIndex: ['auction', 'jewelry', 'name'],
       key: 'name',
       ...getColumnSearchProps('name'),
     },
     {
-      title: 'Danh mục',
+      title: 'Category',
       dataIndex: ['auction', 'jewelry', 'category', 'name'],
       key: 'category',
     },
     {
-      title: 'Hãng',
+      title: 'Brand',
       dataIndex: ['auction', 'jewelry', 'brand', 'name'],
       key: 'brand',
       ...getColumnSearchProps('brand'),
     },
     {
-      title: 'Bộ sưu tập',
+      title: 'Collection',
       dataIndex: ['auction', 'jewelry', 'collection', 'name'],
       key: 'collection',
     },
     {
-      title: 'Thời gian bắt đầu',
+      title: 'Start Time',
       dataIndex: ['auction', 'startTime'],
       key: 'startTime',
       render: (data) => formatDate(data),
     },
     {
-      title: 'Trạng thái',
+      title: 'Status',
       dataIndex: ['auction', 'status'],
       key: 'status',
     },
     {
-      title: 'Hành dộng',
+      title: 'Action',
       key: 'action',
       fixed: 'right',
-      render: () => (
-        <PrimaryButton onClick={() => console.log('Success')}>
-          Xem
-        </PrimaryButton>
+      render: (data) => (
+        <Dropdown
+          overlay={getMenu(data.id)}
+          trigger={['click']}
+        >
+          <a>
+            <Space>
+              <p className='text-2xl'>...</p>
+            </Space>
+          </a>
+        </Dropdown>
       ),
     },
   ];
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -94,6 +129,7 @@ export const WishlistTable = () => {
   }, []);
   return (
     <>
+    {contextHolder}
       <Table
         scroll={{
           x: 2000,

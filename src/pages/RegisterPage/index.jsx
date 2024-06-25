@@ -57,7 +57,7 @@ export const Register = () => {
           className='font-serif !my-auto'
           level={3}
         >
-          Đăng ký
+          Sign Up
         </Title>
       </Flex>
       <div className='w-[100vw] h-[100vh] lg:py-5 flex justify-center items-center relative'>
@@ -75,7 +75,7 @@ export const Register = () => {
             className='relative bg-white rounded lg:w-[700px] lg:px-5 lg:py-4 px-2 w-full'
           >
             <Title level={3} className='!my-5 !font-serif'>
-              Đăng ký tài khoản
+              Sign up your account
             </Title>
             <Form
               initialValues={{
@@ -92,18 +92,18 @@ export const Register = () => {
               <div className='lg:grid lg:grid-cols-2 lg:gap-5'>
                 {/* Full name */}
                 <Form.Item
-                  label='Họ và tên'
+                  label='Full Name'
                   name='fullName'
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập tên họ và tên!',
+                      message: 'Must not be empty!',
                     },
                   ]}
                   className='lg:h-[50px]'
                 >
                   <Input
-                    placeholder='E.g: Tên của bạn'
+                    placeholder='E.g: Your name'
                     className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
                   />
                 </Form.Item>
@@ -114,7 +114,7 @@ export const Register = () => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập email!',
+                      message: 'Must not be empty!',
                     },
                   ]}
                   className='lg:h-[50px]'
@@ -127,16 +127,16 @@ export const Register = () => {
                 </Form.Item>
                 {/* Phone number */}
                 <Form.Item
-                  label='Số điện thoại'
+                  label='Phone Number'
                   name='phone'
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập số điện thoại!',
+                      message: 'Must not be empty!',
                     },
                     {
                       pattern: /^\d{10}$/,
-                      message: 'Số điện thoại phải có 10 số',
+                      message: 'At least 10 numbers',
                     },
                   ]}
                   className='lg:h-[50px]'
@@ -149,12 +149,12 @@ export const Register = () => {
                 </Form.Item>
                 {/* Date of birth */}
                 <Form.Item
-                  label='Ngày sinh'
+                  label='Date of birth'
                   name='dob'
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập ngày sinh!',
+                      message: 'Must not be empty!',
                     },
                   ]}
                   className='lg:h-[50px]'
@@ -167,54 +167,54 @@ export const Register = () => {
                 </Form.Item>
                 {/* Address */}
                 <Form.Item
-                  label='Địa chỉ'
+                  label='Address'
                   name='address'
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập địa chỉ!',
+                      message: 'Must not be empty!',
                     },
                   ]}
                   className='lg:h-[50px] col-span-2'
                 >
                   <Input
                     type='text'
-                    placeholder='E.g: 01 Đường Điện Biên Phủ, Quận 1, TP.HCM, Việt Nam'
+                    placeholder='E.g: 01 Dien Bien Phu Street, Ward 1, HCMC, Vietnam'
                     className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
                   />
                 </Form.Item>
                 {/* Password */}
                 <Form.Item
-                  label='Mật khẩu'
+                  label='Password'
                   name='password'
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập mật khẩu!',
+                      message: 'Must not be empty',
                     },
                     {
                       min: 6,
-                      message: 'Tối thiểu 6 kí tự',
+                      message: 'At least 6 characters',
                     },
                   ]}
                   className='lg:h-[50px]'
                 >
                   <Input.Password
-                    placeholder='Tối thiểu 6 kí tự'
+                    placeholder='At least 6 characters'
                     className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
                   />
                 </Form.Item>
                 {/* Cnfirmed Password */}
                 <Form.Item
                   name='confirmPassword'
-                  label='Xác nhận mật khẩu'
+                  label='Confirm Password'
                   dependencies={['password']}
                   className='lg:h-[50px]'
                   hasFeedback
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập xác nhận mật khẩu!',
+                      message: 'Must not be empty!',
                     },
                     ({ getFieldValue }) => ({
                       validator(_, value) {
@@ -222,7 +222,7 @@ export const Register = () => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error('Mật khẩu không trùng! Hãy nhập lại!')
+                          new Error('Password is not match!')
                         );
                       },
                     }),
@@ -240,12 +240,12 @@ export const Register = () => {
                   htmlType='submit'
                   loading={loading}
                 >
-                  Đăng ký
+                  Sign Up
                 </Button>
               </Form.Item>
             </Form>
             <Link to={'/login'} className='!w-fit mx-auto'>
-              Tôi đã có tài khoản
+              I have an account
             </Link>
           </Flex>
         </Flex>

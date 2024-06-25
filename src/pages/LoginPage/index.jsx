@@ -36,9 +36,8 @@ export const Login = () => {
       dispatch(setToken({ accessToken, refreshToken, fullName }));
       navigate('/');
     } catch (error) {
-      console.log(error);
       const msg = error.response.data.message;
-      openNotification('top', msg, 'Đăng nhập thất bại');
+      openNotification('top', msg, 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -61,7 +60,7 @@ export const Login = () => {
           className='font-serif !my-auto'
           level={3}
         >
-          Đăng nhập
+          Sign In
         </Title>
       </Flex>
       <div className='w-[100vw] h-[100vh] flex justify-center items-center relative overflow-hidden'>
@@ -80,10 +79,10 @@ export const Login = () => {
             gap={5}
           >
             <Title level={2} className='!m-0 !font-serif'>
-              Chào mừng
+              Welcome,
             </Title>
             <Title level={3} className='!my-5 !font-serif'>
-              Đăng nhập vào tài khoản của bạn
+              Login with your account
             </Title>
             <Form
               initialValues={{
@@ -100,29 +99,33 @@ export const Login = () => {
                 rules={[
                   {
                     required: true,
-                    message: 'Hãy nhập email!',
+                    message: 'Must not be empty !',
                   },
                 ]}
                 className='!m-0 h-[50px]'
               >
                 <Input
                   type='email'
+                  placeholder='Enter your email...'
                   className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
                 />
               </Form.Item>
 
               <Form.Item
-                label='Mật khẩu'
+                label='Password'
                 name='password'
                 rules={[
                   {
                     required: true,
-                    message: 'Hãy nhập mật khẩu!',
+                    message: 'Must not be empty!',
                   },
                 ]}
                 className='!m-0 h-[50px]'
               >
-                <Input.Password className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black' />
+                <Input.Password
+                  placeholder='Enter your password...'
+                  className='rounded-none border-0 border-b-[1px] border-black focus:border-b-[1px] focus:border-b-black'
+                />
               </Form.Item>
 
               {/* <Form.Item
@@ -136,7 +139,7 @@ export const Login = () => {
                 className='hover:text-blue-600 text-blue-600 underline'
                 onClick={() => setOpenForgot(true)}
               >
-                Quên mật khẩu?
+                Forgot password?
               </Link>
 
               <Form.Item className='w-full !m-0'>
@@ -146,13 +149,13 @@ export const Login = () => {
                   type='primary'
                   htmlType='submit'
                 >
-                  Đăng nhập
+                  Sign In
                 </Button>
               </Form.Item>
             </Form>
-            <Divider className='!border-solid !border-[#B5B5B5]'>hoặc</Divider>
+            <Divider className='!border-solid !border-[#B5B5B5]'>or</Divider>
             <Title className='text-center font-sans' level={5}>
-              Bạn không có tài khoản?
+              You do not have an account?
             </Title>
             <Button
               className='w-full bg-[#946257] font-serif hover:!bg-[#946257] hover:!shadow-none'
@@ -160,7 +163,7 @@ export const Login = () => {
               htmlType='submit'
               onClick={() => navigate('/register')}
             >
-              Đăng ký 
+              Sign Up
             </Button>
           </Flex>
         </Flex>
