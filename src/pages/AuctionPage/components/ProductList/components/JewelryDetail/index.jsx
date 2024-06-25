@@ -188,6 +188,7 @@ export const JewelryDetail = () => {
   }
 
   const { name, jewelryImages, staringPrice, sellerId } = jewelryData;
+  console.log(sellerId);
 
   const { currentPrice, totalBids, endTime, startTime, status } = auctionData;
 
@@ -285,26 +286,35 @@ export const JewelryDetail = () => {
               </Flex>
               <Flex className='items-center' gap={10}>
                 <UserOutlined className='!text-3xl' />
-                <Title level={4} className='!m-0 font-sans !font-thin'>
-                  {totalBids}
+                <Title level={4} className='!m-0 font-sans !font-thin text-start'>
+                  Number of Participants {totalBids}
                 </Title>
               </Flex>
               <Flex className='items-center' gap={10}>
                 <ClockCircleOutlined className='!text-3xl' />
-                <Title level={4} className='!m-0 font-sans !font-thin'>
-                  {calculateDaysDifference(startTime, endTime)} days
+                <Title level={4} className='!m-0 font-sans !font-thin text-start'>
+                  Auction Duration: {calculateDaysDifference(startTime, endTime)} days
                 </Title>
               </Flex>
             </Flex>
-            {isWinner.email === userEmail ? (
-              <PrimaryButton onClick={showModal} className={'!text-2xl font-medium'}>
-                Auto Bid
-              </PrimaryButton>
-            ) : (
-              <PrimaryButton onClick={showModal} className={'!text-2xl font-medium'}>
-                Place Bid
-              </PrimaryButton>
-            )}
+            {userEmail !== sellerId.email &&
+              (isWinner.email === userEmail ? (
+                <PrimaryButton
+                  disabled={status !== 'InProgress' ? true : false}
+                  onClick={showModal}
+                  className={'!text-2xl font-medium'}
+                >
+                  Auto Bid
+                </PrimaryButton>
+              ) : (
+                <PrimaryButton
+                  disabled={status !== 'InProgress' ? true : false}
+                  onClick={showModal}
+                  className={'!text-2xl font-medium'}
+                >
+                  Place Bid
+                </PrimaryButton>
+              ))}
             {staringPrice > 0 && (
               <div className='w-full p-5'>
                 <Button
