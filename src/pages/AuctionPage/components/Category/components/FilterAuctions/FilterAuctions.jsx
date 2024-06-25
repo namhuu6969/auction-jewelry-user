@@ -38,7 +38,7 @@ export const FilterAuctions = ({ category, brands, data, setFilteredData, handle
   return (
     <div className='m-4 p-4 shadow-lg rounded-md flex flex-col items-start'>
       <Title level={3}>
-        Tìm Kiếm Trang Sức
+        Search Jewelry
         <div className='mt-2 mb-4 border-b-2 border-black w-30' />
       </Title>
 
@@ -56,7 +56,7 @@ export const FilterAuctions = ({ category, brands, data, setFilteredData, handle
 
       <div className='w-full mb-4'>
         <Title level={3}>
-          Loại Trang Sức
+          Types
           <div className='mt-2 mb-4 border-b-2 border-black w-30' />
         </Title>
         <Checkbox.Group
@@ -69,7 +69,7 @@ export const FilterAuctions = ({ category, brands, data, setFilteredData, handle
 
       <div className='w-full my-4'>
         <Title level={3}>
-          Theo Hãng
+          Brands
           <div className='mt-2 mb-4 border-b-2 border-black w-30' />
         </Title>
         <Checkbox.Group options={brands} defaultValue={['Option 1']} onChange={onChange} />
@@ -77,12 +77,12 @@ export const FilterAuctions = ({ category, brands, data, setFilteredData, handle
 
       <div className='w-full my-4'>
         <Title level={3}>
-          Tình Trạng
+          Condition
           <div className='mt-2 mb-4 border-b-2 border-black w-30' />
         </Title>
         <Checkbox.Group
           className='!justify-start'
-          options={['Mới', 'Đã qua sử dụng']}
+          options={['New', 'Used', 'Like New']}
           defaultValue={['Option 1']}
           onChange={onChange}
         />
@@ -90,15 +90,11 @@ export const FilterAuctions = ({ category, brands, data, setFilteredData, handle
 
       <div className='w-full my-4'>
         <Space direction='vertical' size={12}>
-          <RangePicker
-            placeholder={['Từ Ngày', 'Đến Ngày']}
-            onChange={onDateChange}
-            style={{ width: '100%' }}
-          />
+          <RangePicker onChange={onDateChange} style={{ width: '100%' }} />
         </Space>
       </div>
       <Flex className='w-full' justify='end'>
-        <Button>Lọc</Button>
+        <Button>Submit</Button>
       </Flex>
     </div>
   );

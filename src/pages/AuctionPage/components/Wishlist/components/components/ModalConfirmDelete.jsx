@@ -1,8 +1,8 @@
-import { Modal } from 'antd';
+import { Modal, Typography } from 'antd';
 import { SecondaryButton } from '../../../../../../components/ui/SecondaryButton';
 import { PrimaryButton } from '../../../../../../components/ui/PrimaryButton';
 import { useEffect } from 'react';
-
+const { Title } = Typography;
 export const ModalConfirmDelete = ({
   open,
   setOpen,
@@ -18,14 +18,14 @@ export const ModalConfirmDelete = ({
   useEffect(() => {
     const handleConfirm = () => {
       try {
-        setLoading(true)
+        setLoading(true);
         deleteFunction();
         setOpen(false);
         setConfirm(false);
       } catch (error) {
         console.log(error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
     if (confirm) {
@@ -35,7 +35,7 @@ export const ModalConfirmDelete = ({
   return (
     <Modal
       width={500}
-      title={'Bạn có muốn xóa?'}
+      title={'Do you want delete this jewelry'}
       open={open}
       footer={[
         <SecondaryButton
@@ -43,7 +43,7 @@ export const ModalConfirmDelete = ({
           className={'text-md px-5'}
           key='cancel'
         >
-          Hủy
+          Cancel
         </SecondaryButton>,
         <PrimaryButton
           onClick={() => setConfirm(true)}
@@ -52,12 +52,14 @@ export const ModalConfirmDelete = ({
           type='primary'
           loading={loading}
         >
-          Xóa
+          Delete
         </PrimaryButton>,
       ]}
       centered
     >
-      Hãy chắc chắn khi bạn bấm xóa ! Thao tác không thể hoàn tác
+      <Title level={5} className='!text-red-600'>
+        Please sure for this action! It will delete this jewelry forever
+      </Title>
     </Modal>
   );
 };

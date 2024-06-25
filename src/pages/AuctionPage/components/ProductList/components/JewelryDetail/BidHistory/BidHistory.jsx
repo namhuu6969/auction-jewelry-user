@@ -2,22 +2,23 @@ import { Button, Modal, Spin, Table, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
 import { formatDateTime, formatPrice } from '@utils/utils';
+import { formatPriceVND } from '../../../../../../../utils/utils';
 const { Title } = Typography;
 
 const columns = [
   {
-    title: 'Họ và Tên Chủ Thầu',
+    title: 'Full Name',
     dataIndex: 'userName',
     key: 'userName',
     render: (text) => <a>{text}</a>,
   },
   {
-    title: 'Thời Gian',
+    title: 'Time',
     dataIndex: `bidTime`,
     key: 'bidTime',
   },
   {
-    title: 'Giá Tiền Dự Thầu',
+    title: 'Bid Amount (VND)',
     dataIndex: 'bidAmount',
     key: 'bidAmount',
   },
@@ -36,7 +37,7 @@ export const BidHistory = ({ auctionId, size = 4 }) => {
       response.data.map((item) => ({
         ...item,
         bidTime: formatDateTime(item.bidTime),
-        bidAmount: `${formatPrice(item.bidAmount)} VNĐ`,
+        bidAmount: `${formatPriceVND(item.bidAmount)}`,
       }))
     );
     if (response.code === 200) {
@@ -60,11 +61,11 @@ export const BidHistory = ({ auctionId, size = 4 }) => {
         className='!m-0 font-sans !font-thin hover:underline hover:cursor-pointer'
         onClick={showLoading}
       >
-        Xem Lịch Sử
+        Show Bid History
       </Title>
       <Modal
         width={800}
-        title={<p>Lịch Sử Đấu Giá</p>}
+        title={<p>Bid History</p>}
         footer={
           <Button type='primary' onClick={fetchData}>
             Reload

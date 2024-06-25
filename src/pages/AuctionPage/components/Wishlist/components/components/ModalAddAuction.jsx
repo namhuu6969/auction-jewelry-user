@@ -22,7 +22,7 @@ export const ModalAddAuction = ({ open, setOpen }) => {
       return Promise.resolve();
     }
     return Promise.reject(
-      new Error('Vui lòng chọn ngày và giờ lớn hơn ngày giờ hiện tại')
+      new Error('Please choose date that is greater than now date')
     );
   };
 
@@ -36,7 +36,7 @@ export const ModalAddAuction = ({ open, setOpen }) => {
       return Promise.resolve();
     }
     return Promise.reject(
-      new Error('Vui lòng chọn ngày và giờ lớn hơn ngày giờ bắt đầu')
+      new Error('Please choose start time and end time for auction')
     );
   };
   const validateDateRange = (_, value) => {
@@ -46,12 +46,12 @@ export const ModalAddAuction = ({ open, setOpen }) => {
       const daysDiff = selectedEndDate.diff(selectedStartDate, 'days');
       if (daysDiff > 7) {
         return Promise.reject(
-          new Error('Khoảng thời gian không được vượt quá 7 ngày')
+          new Error('The range of start date and end date must be 7 days')
         );
       }
       return Promise.resolve();
     }
-    return Promise.reject(new Error('Vui lòng chọn khoảng thời gian hợp lệ'));
+    return Promise.reject(new Error('Please choose valid range of date'));
   };
   const disabled7DaysDate = (current, { from }) => {
     if (from) {
@@ -81,12 +81,12 @@ export const ModalAddAuction = ({ open, setOpen }) => {
       setOpen(false);
       openNotification({
         type: 'success',
-        description: 'Đã đưa lên sàn đấu giá thành công',
+        description: 'Put up to the auction success',
       });
     } catch (error) {
       openNotification({
         type: 'error',
-        description: 'Sản phẩm đã đưa lên sàn đấu giá',
+        description: 'This jewelry is existed in auction',
       });
     } finally {
       setLoading(false);
@@ -99,7 +99,7 @@ export const ModalAddAuction = ({ open, setOpen }) => {
   return (
     <Modal
       width={700}
-      title={'Điền thông tin'}
+      title={'Enter information'}
       open={open}
       onCancel={handleClose}
       footer={false}
@@ -114,10 +114,10 @@ export const ModalAddAuction = ({ open, setOpen }) => {
         onFinish={onFinish}
       >
         <Form.Item
-          label='Chọn ngày đấu giá sản phẩm'
+          label='Choose date range for auction'
           name='dateRange'
           rules={[
-            { required: true, message: 'Hãy nhập ngày đấu giá!' },
+            { required: true, message: 'Must not be empty!' },
             { validator: validateStartDate },
             { validator: validateEndDate },
             { validator: validateDateRange },
@@ -126,7 +126,7 @@ export const ModalAddAuction = ({ open, setOpen }) => {
           <RangePicker
             showTime={{ format: 'HH:mm' }}
             format='YYYY-MM-DD HH:mm'
-            placeholder={['Thời gian bắt đầu', 'Thời gian kết thúc']}
+            placeholder={['Start date', 'End date']}
             className='!w-full'
             needConfirm={false}
             disabledDate={disabled7DaysDate}
@@ -134,12 +134,12 @@ export const ModalAddAuction = ({ open, setOpen }) => {
         </Form.Item>
 
         <Form.Item
-          label='Nhập bước nhảy'
+          label='Step'
           name='step'
           rules={[
             {
               required: true,
-              message: 'Hãy nhập bước nhảy!',
+              message: 'Must not be empty!',
             },
           ]}
         >
@@ -147,7 +147,7 @@ export const ModalAddAuction = ({ open, setOpen }) => {
         </Form.Item>
         <Form.Item className='flex justify-center'>
           <PrimaryButton loading={loading} htmlType='submit'>
-            Gửi yêu cầu
+            Send to auction
           </PrimaryButton>
         </Form.Item>
       </Form>

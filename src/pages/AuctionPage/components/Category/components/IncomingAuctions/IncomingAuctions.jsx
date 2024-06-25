@@ -8,7 +8,7 @@ export const IncomingAuctions = ({ data }) => {
   return (
     <div className='m-4 p-4 shadow-lg rounded-md flex flex-col items-start'>
       <Title level={3}>
-        Trạng Thái Tài Sản
+        Suggesst
         <div className='mt-2 mb-4 border-b-2 border-black w-30' />
       </Title>
       <Flex vertical>

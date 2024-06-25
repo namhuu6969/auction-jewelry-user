@@ -23,7 +23,7 @@ export const ValuatingTable = () => {
 
   const columns = [
     {
-      title: 'Ảnh',
+      title: '',
       dataIndex: ['jewelry', 'thumbnail'],
       key: 'image',
       render: (data) => (
@@ -37,46 +37,46 @@ export const ValuatingTable = () => {
       ),
     },
     {
-      title: 'Ngày tạo',
+      title: 'Created At',
       dataIndex: 'createdAt',
       ...getColumnSearchDateProps('createdAt'),
       key: 'created',
       render: (data) => formatDate(data),
     },
     {
-      title: 'Tên sản phẩm',
+      title: 'Name',
       dataIndex: ['jewelry', 'name'],
       key: 'name',
     },
     {
-      title: 'Nhân viên định giá',
+      title: 'Valuation Staff',
       dataIndex: ['staff', 'full_name'],
       key: 'staff',
     },
     {
-      title: 'Giá trị định giá',
+      title: 'Vauation Value',
       dataIndex: 'valuation_value',
       key: 'valuation_value',
       render: (data) => formatPriceVND(data),
     },
     {
-      title: 'Phí định giá',
+      title: 'Valuation Fee',
       dataIndex: 'valuationFee',
       key: 'valuationFee',
     },
     {
-      title: 'Định giá',
+      title: 'Valuation Type',
       dataIndex: 'online',
       key: 'online',
       render: (data) => (data ? 'Online' : 'Offline'),
     },
     {
-      title: 'Trạng thái',
+      title: 'Valuation Status',
       dataIndex: 'status',
       key: 'status',
     },
     {
-      title: 'Hành động',
+      title: 'Action',
       key: 'action',
       render: (data) => (
         <Dropdown
@@ -97,14 +97,14 @@ export const ValuatingTable = () => {
       <Menu.Item
         key='0'
         disabled={
-          status === 'REQUEST' || startingPrice === 0 || status === 'VALUATING' || statusJewelry === 'AUCTIONING'
+          status === 'REQUEST' || status === 'VALUATING' || statusJewelry === 'AUCTIONING'
         }
         title={
-          (status === 'REQUEST' && 'Sản phẩm đang được định giá') ||
-          (startingPrice === 0 && 'Nhân viên chưa đặt giá khởi điểm')
+          (status === 'REQUEST' && 'Staff is valuating this jewelry') ||
+          (startingPrice === 0 && 'Staff do not set starting price yet')
         }
       >
-        <a onClick={() => handleAddAuctionClick(id)}>Thêm vào đấu giá</a>
+        <a onClick={() => handleAddAuctionClick(id)}>Put up auction</a>
       </Menu.Item>
     </Menu>
   );

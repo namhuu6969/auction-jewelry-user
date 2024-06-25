@@ -1,6 +1,6 @@
 import { Avatar, Button, Divider, Flex, Image, Modal, Typography, notification } from 'antd';
 import Breadcum from '@components/ui/Breadcum';
-import { Link, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Carousel from '@components/ui/carousel/Carousel';
 import { StarFilled, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { PiGavelFill } from 'react-icons/pi';
@@ -9,12 +9,13 @@ import './index.css';
 import { useState, useEffect } from 'react';
 import { PrimaryButton } from '@components/ui/PrimaryButton';
 import { BidModal } from './BidModal/BidModal'; // Adjust the import path as needed
-import { useNavigate } from 'react-router-dom';
 import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
 import { BiddingApi } from '@api/AuctionServices/BiddingApi/BiddingApi';
 import { BidHistory } from './BidHistory/BidHistory';
 import { formatPrice } from '@utils/utils';
 import { wishlistApi } from '../../../../../../services/api/WishlistApi/wishlistApi';
+import { CountdownTimer } from './CountdownTimer/CountdownTimer';
+import { formatPriceVND, handleStatus } from '../../../../../../utils/utils';
 
 const { Title } = Typography;
 
@@ -48,6 +49,9 @@ export const JewelryDetail = () => {
   }, [id]);
 
   const showModal = () => {
+    if (!userEmail) {
+      navigator('/login');
+    }
     setIsModalVisible(true);
   };
 
@@ -231,27 +235,39 @@ export const JewelryDetail = () => {
               {name}
             </Title>
             <Flex className='items-center w-full'>
-              <div className='grid grid-cols-2 gap-y-5'>
-                <Title className='!mr-4 !my-auto text-left font-sans !font-medium' level={4}>
-                  Giá thầu hiện tại:
+              <div className='w-[80%] grid grid-cols-2 gap-y-5'>
+                <Title className='!mr-4 !my-auto text-left font-sans !font-medium' level={3}>
+                  Current Price:
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
-                  {formatPrice(currentPrice)} VND
+                  {formatPriceVND(currentPrice)}
                 </Title>
-                <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
-                  Bước nhảy:
+                <Title className='!mr-4 !my-auto text-left font-sans !font-medium' level={3}>
+                  Start Time:
+                </Title>
+                <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
+                  {formatedDateTime(startTime)}
+                </Title>
+                <Title className='!mr-4 !my-auto text-left font-sans !font-medium' level={3}>
+                  Eding Time:
+                </Title>
+                <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
+                  {formatedDateTime(endTime)}
+                </Title>
+                <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={3}>
+                  Step:
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
                   {formatPrice(step)} VND
                 </Title>
-                <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={4}>
-                  Trạng thái:
+                <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={3}>
+                  Status:
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
-                  {status}
+                  {handleStatus(status)}
                 </Title>
               </div>
-              <div className='w-[40%] p-5'>
+              <div className='w-[10%] p-5'>
                 <Button
                   onClick={() => handleAddToWishList(id)}
                   icon={<StarFilled className='text-yellow-400' />}
@@ -261,6 +277,7 @@ export const JewelryDetail = () => {
                 </Button>
               </div>
             </Flex>
+            <CountdownTimer targetDate={endTime} />
             <Flex gap={15}>
               <Flex className='items-center' gap={10}>
                 <PiGavelFill className='!text-3xl' />
@@ -275,21 +292,19 @@ export const JewelryDetail = () => {
               <Flex className='items-center' gap={10}>
                 <ClockCircleOutlined className='!text-3xl' />
                 <Title level={4} className='!m-0 font-sans !font-thin'>
-                  {calculateDaysDifference(startTime, endTime)} ngày
-                </Title>
-              </Flex>
-              <Flex className='items-center' gap={10}>
-                <Title
-                  level={5}
-                  className='bg-[#DED6D6] !m-0 px-2 font-sans !font-medium rounded-md'
-                >
-                  Session end at {formatedDateTime(endTime)}
+                  {calculateDaysDifference(startTime, endTime)} days
                 </Title>
               </Flex>
             </Flex>
-            <PrimaryButton onClick={showModal} className={'!text-2xl font-medium'}>
-              Đấu giá
-            </PrimaryButton>
+            {isWinner.email === userEmail ? (
+              <PrimaryButton onClick={showModal} className={'!text-2xl font-medium'}>
+                Auto Bid
+              </PrimaryButton>
+            ) : (
+              <PrimaryButton onClick={showModal} className={'!text-2xl font-medium'}>
+                Place Bid
+              </PrimaryButton>
+            )}
             {staringPrice > 0 && (
               <div className='w-full p-5'>
                 <Button
@@ -307,7 +322,11 @@ export const JewelryDetail = () => {
               <Flex gap={30}>
                 <Avatar size={64} icon={<UserOutlined />} />
                 <Flex vertical className='justify-center'>
-                  <Title level={4} className='font-sans !font-medium'>
+                  <Title
+                    onClick={() => navigator(`/profile/${sellerId.id}`)}
+                    level={4}
+                    className='font-sans !font-medium'
+                  >
                     {sellerId.full_name}
                   </Title>
                 </Flex>
@@ -317,21 +336,23 @@ export const JewelryDetail = () => {
         </Flex>
         <TabsContent jewelry={jewelryData} startTime={startTime} endTime={endTime} />
       </Flex>
-      <BidModal
-        open={isModalVisible}
-        currentStep={currentStep}
-        step={step}
-        bidAmount={bidAmount}
-        handleOk={handleOk}
-        userWallet={1000000000000000}
-        handleCancel={handleCancel}
-        handleBidAmountChange={handleBidAmountChange}
-        handleBlur={handleBlur}
-        increaseBidAmount={increaseBidAmount}
-        decreaseBidAmount={decreaseBidAmount}
-        next={next}
-        prev={prev}
-      />
+      {userEmail && (
+        <BidModal
+          open={isModalVisible}
+          currentStep={currentStep}
+          step={step}
+          bidAmount={bidAmount}
+          handleOk={handleOk}
+          userWallet={1000000000000000}
+          handleCancel={handleCancel}
+          handleBidAmountChange={handleBidAmountChange}
+          handleBlur={handleBlur}
+          increaseBidAmount={increaseBidAmount}
+          decreaseBidAmount={decreaseBidAmount}
+          next={next}
+          prev={prev}
+        />
+      )}
     </div>
   );
 };
