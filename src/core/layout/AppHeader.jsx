@@ -8,19 +8,19 @@ import { UserOutlined } from '@ant-design/icons';
 import { clearToken } from '../store/Auth/auth';
 
 const services = [
-  { title: 'Hỗ trợ', link: '/support' },
-  { title: 'Dịch vụ', link: '/support' },
-  { title: 'Về chúng tôi', link: '/about' },
-  { title: 'Chính sách', link: '/support' },
-  { title: 'Ngôn ngữ', link: '/support', icon: <icon /> },
+  { title: 'Support', link: '/support' },
+  { title: 'Service', link: '/support' },
+  { title: 'About', link: '/about' },
+  { title: 'Policy', link: '/support' },
+  { title: 'Language', link: '/support', icon: <icon /> },
 ];
 
 const navLink = [
-  { title: 'Đấu giá', link: '/auction' },
-  { title: 'Đề xuất', link: '/jewelry' },
+  { title: 'Auction', link: '/auction' },
+  { title: 'Suggest', link: '/jewelry' },
   { title: 'Blog', link: '/blog' },
-  { title: 'Bày bán', link: '/sell' },
-  { title: 'Định giá', link: '/valuation' },
+  { title: 'On Sale', link: '/sell' },
+  { title: 'Valuation', link: '/valuation' },
 ];
 
 const AppHeader = () => {
@@ -39,7 +39,7 @@ const AppHeader = () => {
     {
       label: (
         <Link to={'/profile'} className='font-sans'>
-          Thông tin cá nhân
+          My Profile
         </Link>
       ),
       key: 'profile',
@@ -47,7 +47,7 @@ const AppHeader = () => {
     {
       label: (
         <Link to={'/request/jewelry'} className='font-sans'>
-          Yêu cầu trang sức
+          Request Jewelry
         </Link>
       ),
       key: 'requestjewelry',
@@ -55,7 +55,7 @@ const AppHeader = () => {
     {
       label: (
         <Link to={'/wishlist'} className='font-sans'>
-          Quản lý đấu giá
+          Manage Jewelry
         </Link>
       ),
       key: 'wishlist',
@@ -63,7 +63,7 @@ const AppHeader = () => {
     {
       label: (
         <p className='font-sans' onClick={handleLogout}>
-          Đăng xuất
+          Logout
         </p>
       ),
       key: 'logout',
@@ -126,7 +126,7 @@ const AppHeader = () => {
               type='primary'
               onClick={() => navigate('/login')}
             >
-              Đăng nhập
+              Login
             </Button>
           )}
         </Flex>

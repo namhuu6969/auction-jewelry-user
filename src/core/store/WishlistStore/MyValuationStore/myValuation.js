@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   myValuationData: [],
-  renderMyValuation: false
+  renderMyValuation: false,
+  onlineValuation: {}
 };
 
 const myValuationSlice = createSlice({
@@ -14,6 +15,9 @@ const myValuationSlice = createSlice({
     },
     setRenderMyValuation: (state, action) => {
       state.renderMyValuation = action.payload
+    },
+    setOnlineValuation: (state, action) => {
+      state.onlineValuation = action.payload
     }
   }
 })
@@ -21,6 +25,7 @@ const myValuationSlice = createSlice({
 export const {
   setMyValuation,
   setRenderMyValuation,
+  setOnlineValuation
 } = myValuationSlice.actions;
 
 export default myValuationSlice.reducer;
