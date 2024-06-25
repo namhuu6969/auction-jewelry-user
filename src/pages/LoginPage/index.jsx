@@ -1,18 +1,13 @@
-import {
-  Button,
-  Divider,
-  Flex,
-  Form,
-  Input,
-  Typography,
-  notification,
-} from 'antd';
+import { Button, Divider, Flex, Form, Input, Typography, notification } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../../services/api/auth/authApi';
 import { useDispatch } from 'react-redux';
 import { setToken } from '../../core/store/Auth/auth';
 import { useState } from 'react';
 import { ForgotPassword } from './components/ForgotPassword';
+import { setUserData } from '../../core/store/PersonalStore/personal';
+import { UserServices } from '../../services/api/UserServices/UserServices';
+
 const { Title } = Typography;
 
 export const Login = () => {
@@ -33,7 +28,11 @@ export const Login = () => {
       setLoading(true);
       const response = await authApi.signInApi(values);
       const { accessToken, refreshToken, fullName } = response.data;
+
       dispatch(setToken({ accessToken, refreshToken, fullName }));
+      const userInfo = await UserServices.getProfile();
+      const { money, user } = userInfo.data;
+      dispatch(setUserData({ money, user }));
       navigate('/');
     } catch (error) {
       const msg = error.response.data.message;
@@ -55,11 +54,7 @@ export const Login = () => {
             JEWELRY AUCTION
           </Link>
         </Title>
-        <Title
-          style={{ marginBottom: '0' }}
-          className='font-serif !my-auto'
-          level={3}
-        >
+        <Title style={{ marginBottom: '0' }} className='font-serif !my-auto' level={3}>
           Sign In
         </Title>
       </Flex>
@@ -73,11 +68,7 @@ export const Login = () => {
             className='lg:block hidden'
             src='https://sahirajewelrydesign.com/cdn/shop/products/tara-clover-necklace-sahira-jewelry-design-290449_grande.jpg?v=1648775322'
           />
-          <Flex
-            vertical
-            className='text-left justify-between !font-serif w-[350px] p-5'
-            gap={5}
-          >
+          <Flex vertical className='text-left justify-between !font-serif w-[350px] p-5' gap={5}>
             <Title level={2} className='!m-0 !font-serif'>
               Welcome,
             </Title>

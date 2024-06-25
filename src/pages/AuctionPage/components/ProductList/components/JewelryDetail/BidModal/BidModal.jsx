@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { Modal, Button, Input, Steps, Typography, Flex, Checkbox, Card } from 'antd';
+import { Modal, Button, Input, Steps, Typography, Flex, Card } from 'antd';
 import { IoRemove, IoAdd } from 'react-icons/io5';
 import { useEffect, useState } from 'react';
 import { UserServices } from '../../../../../../../services/api/UserServices/UserServices';
+import { useSelector } from 'react-redux';
 
 const { Step } = Steps;
 const { Title } = Typography;
@@ -12,7 +13,6 @@ export const BidModal = ({
   currentStep,
   step,
   bidAmount,
-  userWallet,
   handleOk,
   handleCancel,
   handleBidAmountChange,
@@ -22,6 +22,10 @@ export const BidModal = ({
   next,
   prev,
 }) => {
+  const userData = useSelector((state) => state.personal.user);
+  const money = useSelector((state) => state.personal.money);
+  console.log(userData);
+  console.log(money);
   const [profileInfo, setProfileInfo] = useState({});
   useEffect(() => {
     const fetchUserData = async () => {
@@ -61,7 +65,7 @@ export const BidModal = ({
             )}
           </div>
           <Card title={profileInfo.full_name} extra={<a href='#'>More</a>}>
-            <p>Your Wallet Balance: {userWallet} VND</p> {/* Display wallet balance */}
+            <p>Your Wallet Balance: {money} VND</p> {/* Display wallet balance */}
           </Card>
         </div>
       ),
@@ -72,7 +76,7 @@ export const BidModal = ({
         <div className='flex flex-col gap-4'>
           <Title level={4}>Please confirm your bid:</Title>
           <p>Bid Amount: {bidAmount} VND</p>
-          <p>Your Wallet Balance: {userWallet} VND</p> {/* Display wallet balance */}
+          <p>Your Wallet Balance: {money} VND</p> {/* Display wallet balance */}
         </div>
       ),
     },
@@ -81,7 +85,7 @@ export const BidModal = ({
   const navigator = useNavigate();
 
   const checkWallet = () => {
-    if (userWallet < bidAmount) {
+    if (money < bidAmount) {
       Modal.confirm({
         title: 'Insufficient Funds',
         content: `Your wallet balance is not sufficient`,

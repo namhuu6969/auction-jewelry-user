@@ -2,20 +2,19 @@
 import { Layout, Avatar, Row, Col, Card, Flex } from 'antd';
 import { useEffect, useState } from 'react';
 import { EditOutlined } from '@ant-design/icons';
-import { UserServices } from '@api/UserServices/UserServices';
 import { GoIssueClosed } from 'react-icons/go';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { useSelector } from 'react-redux';
 
 const { Content } = Layout;
 const { Meta } = Card;
 
 export const ProfilePage = () => {
   const [userInfo, setUserInfo] = useState({});
+  const user = useSelector((state) => state.personal.user);
+  const money = useSelector((state) => state.personal.money);
   useEffect(() => {
     const fetchData = async () => {
-      const response = await UserServices.getProfile();
-      const { user } = response.data;
-      const { money } = response.data;
       setUserInfo({
         username: user.full_name,
         profilePic: user.imageUrl,
@@ -26,7 +25,6 @@ export const ProfilePage = () => {
         date_of_birth: user.date_of_birth,
         wallet: money,
       });
-      console.log(response.data);
     };
     fetchData();
   }, []);
