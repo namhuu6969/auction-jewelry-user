@@ -1,8 +1,8 @@
 import { Button, Modal, Spin, Table, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
-import { formatDateTime, formatPrice } from '@utils/utils';
-import { formatPriceVND } from '../../../../../../../utils/utils';
+import { formatDateTime } from '@utils/utils';
+import { formatPriceVND } from '@utils/utils';
 const { Title } = Typography;
 
 const columns = [
@@ -32,7 +32,6 @@ export const BidHistory = ({ auctionId, size = 4 }) => {
   const fetchData = async () => {
     setLoading(true);
     const response = await auctionApi.viewAuctionBidHistory(auctionId);
-    console.log(response.data);
     setBidHistory(
       response.data.map((item) => ({
         ...item,
@@ -58,7 +57,7 @@ export const BidHistory = ({ auctionId, size = 4 }) => {
     <>
       <Title
         level={size}
-        className='!m-0 font-sans !font-thin hover:underline hover:cursor-pointer'
+        className='text-start !m-0 font-sans !font-thin hover:underline hover:cursor-pointer'
         onClick={showLoading}
       >
         Show Bid History

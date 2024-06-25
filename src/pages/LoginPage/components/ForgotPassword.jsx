@@ -28,7 +28,7 @@ export const ForgotPassword = ({ openForgot, setOpenForgot }) => {
       openNotificationWithIcon('success', response.message);
       handleClose();
     } catch (error) {
-      console.log(error)
+      console.log(error);
       openNotificationWithIcon('error', error.response.data.message);
     } finally {
       setLoading(false);
@@ -36,13 +36,13 @@ export const ForgotPassword = ({ openForgot, setOpenForgot }) => {
   };
   return (
     <Modal
-      title='Quên mật khẩu'
+      title='Forgot Password'
       open={openForgot}
       onCancel={handleClose}
       footer={() => (
         <>
           <PrimaryButton loading={loading} onClick={handleSubmit}>
-            Gửi
+            Send
           </PrimaryButton>
         </>
       )}
@@ -57,16 +57,16 @@ export const ForgotPassword = ({ openForgot, setOpenForgot }) => {
         onFinish={handleFinish}
       >
         <Form.Item
-          label='Nhập Email của bạn'
+          label='Email'
           name='email'
           rules={[
             {
               required: true,
-              message: 'Hãy nhập email',
+              message: 'Must not be empty!',
             },
           ]}
         >
-          <Input type='email' />
+          <Input type='email' placeholder='Enter your email...' />
         </Form.Item>
       </Form>
     </Modal>

@@ -48,7 +48,7 @@ export const AuctionList = ({ data, Card }) => {
                 type='primary'
                 key='bid'
               >
-                Chi Tiết
+                More Detail
               </Button>
             </div>
           </Card>

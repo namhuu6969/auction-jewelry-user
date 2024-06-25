@@ -1,64 +1,88 @@
-import { Form, Modal, Switch, Typography } from 'antd';
+import { Divider, Flex, Modal, Spin, Table, Typography } from 'antd';
 import { SecondaryButton } from '../../../../../../components/ui/SecondaryButton';
-import { PrimaryButton } from '../../../../../../components/ui/PrimaryButton';
-import { useState } from 'react';
-import { myValuatingApi } from '../../../../../../services/api/WishlistApi/myValuatingApi';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNotification } from '../../../../../../hooks/useNotification';
-import { setRender } from '../../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
-
+import { formatPriceVND } from '../../../../../../utils/utils';
+import { myValuatingApi } from '../../../../../../services/api/WishlistApi/myValuatingApi';
 const { Title } = Typography;
 
 export const ModalValuate = ({ setOpen, open }) => {
-  const [form] = Form.useForm();
-  const [online, setOnline] = useState(false);
-  const jewelryId = useSelector((state) => state.jewelryMe.jewelryId);
   const [loading, setLoading] = useState(false);
+  const jewelryId = useSelector((state) => state.jewelryMe.jewelryId);
+  const [dataSource, setDataSource] = useState([]);
+  const [data, setData] = useState({});
   const { openNotification, contextHolder } = useNotification();
-  const dispatch = useDispatch();
-  const handleChangeOnline = (checked) => {
-    setOnline(checked);
-  };
-
-  const onFinish = async (values) => {
-    const { online } = values;
-    const data = {
-      online: online,
-      jewelryId: jewelryId,
-      desiredPrice: 0,
-      paymentMethod: 'VNPAY',
-      notes: 'string',
-      valuatingMethod: 'DIRECTLY_VALUATION',
-    };
-    try {
-      setLoading(true);
-      await myValuatingApi.valuateTheJewelry(data);
-      openNotification({
-        type: 'success',
-        description: 'Send valuation successfully',
-      });
-      dispatch(setRender(true));
-      handleClose();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = () => {
-    form.submit();
-  };
-
+  const columns = [
+    {
+      title: 'Material',
+      dataIndex: ['material', 'name'],
+      key: 'material',
+    },
+    {
+      title: 'Weight',
+      key: 'weight',
+      render: (data) => (
+        <>
+          {data.weight} {data.material.name === 'Diamond' ? 'karat' : 'g'}
+        </>
+      ),
+    },
+    {
+      title: 'Price Per Material',
+      dataIndex: ['price'],
+      key: 'pricePerWeight',
+      render: (data) => formatPriceVND(data),
+    },
+    {
+      title: 'Total',
+      dataIndex: ['sum'],
+      key: 'totalPerMaterial',
+      render: (data) => formatPriceVND(data),
+    },
+  ];
   const handleClose = () => {
     setOpen(false);
   };
-
+  useEffect(() => {
+    const fetchMaterial = async () => {
+      const data = {
+        jewelryId: jewelryId,
+        desiredPrice: 0,
+        paymentMethod: 'VNPAY',
+        notes: 'string',
+        valuatingMethod: 'DIRECTLY_VALUATION',
+        online: true,
+      };
+      try {
+        setLoading(true);
+        const response = await myValuatingApi.valuateTheJewelry(data);
+        setData(response.data);
+        setDataSource(response.data.materialPriceResponse);
+      } catch (error) {
+        openNotification({
+          type: 'error',
+          message: 'Error',
+          description: 'Failed to fetch',
+        });
+      } finally {
+        setLoading(false)
+      }
+    };
+    if (jewelryId && open) {
+      fetchMaterial();
+    }
+  }, [open]);
   return (
     <>
+    {console.log(data)}
       {contextHolder}
       <Modal
-        title={'Định giá sản phẩm'}
+        title={
+          <Title level={4} className='font-sans !font-semibold'>
+            Online Valuate
+          </Title>
+        }
         open={open}
         onCancel={() => setOpen(false)}
         centered
@@ -68,55 +92,38 @@ export const ModalValuate = ({ setOpen, open }) => {
             className={'text-md px-5'}
             key='cancel'
           >
-            Cancel
+            Close
           </SecondaryButton>,
-          <PrimaryButton
-            onClick={handleSubmit}
-            className={'text-md px-5'}
-            key='save'
-            type='primary'
-            loading={loading}
-          >
-            Send valuation
-          </PrimaryButton>,
         ]}
+        width={750}
       >
-        <Form
-          form={form}
-          onFinish={onFinish}
-          labelCol={{
-            span: 24,
-          }}
-        >
-          <Title level={5} className='font-sans !font-medium'>
-            Choose type of valuation you want
-          </Title>
-          <div className='flex gap-2 !items-center'>
-            <Title
-              level={5}
-              className={`font-sans mt-2 !font-medium !w-fit ${
-                !online ? '!text-[#946257]' : ''
-              }`}
-            >
-              No
+        <Divider className='!my-4 !mx-0 border-gray-200 w-full' />
+        {loading ? (
+          <Spin />
+        ) : (
+          <>
+            <Title level={5} className='font-sans !font-semibold mt-2'>
+              Name: <span className='text-red-500'>{data &&   data?.jewelry?.name}</span>
             </Title>
-            <Form.Item name='online' valuePropName='checked' noStyle>
-              <Switch
-                checked={online}
-                onChange={handleChangeOnline}
-                className={`${online ? '!bg-[#946257]' : ''}`}
-              />
-            </Form.Item>
-            <Title
-              level={5}
-              className={`font-sans mt-2 !font-medium !w-fit ${
-                online ? '!text-[#946257]' : ''
-              }`}
-            >
-              Yes
-            </Title>
-          </div>
-        </Form>
+            <Table
+              pagination={false}
+              columns={columns}
+              dataSource={data && dataSource}
+              size='large'
+            />
+            <Flex className='mt-5' vertical gap={15}>
+              <Title className='!m-0' level={5}>
+                Total Weight: {data && data?.jewelry?.weight} g
+              </Title>
+              <Title className='!m-0' level={5}>
+                Total Valuate:{' '}
+                <span className='text-red-500 font-bold '>
+                  {formatPriceVND(data && data?.valuation_value)}
+                </span>
+              </Title>
+            </Flex>
+          </>
+        )}
       </Modal>
     </>
   );

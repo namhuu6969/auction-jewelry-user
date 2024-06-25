@@ -33,4 +33,8 @@ export const wishlistApi = {
     const response = await api.get('wishlist');
     return response.data;
   },
+  deleteWishlist: async (id) => {
+    const response = await api.delete(`wishlist/${id}`)
+    return response.data
+  }
 };
