@@ -7,9 +7,6 @@ import { UserServices } from '../../../../../../../services/api/UserServices/Use
 const { Step } = Steps;
 const { Title } = Typography;
 
-const onChange = (e) => {
-  console.log(`checked = ${e.target.checked}`);
-};
 export const BidModal = ({
   open,
   currentStep,
@@ -63,7 +60,6 @@ export const BidModal = ({
               <p style={{ color: 'red' }}>Bid amount must be a multiple of {step}</p>
             )}
           </div>
-          <Checkbox onChange={onChange}>Set this is auto bid</Checkbox>
           <Card title={profileInfo.full_name} extra={<a href='#'>More</a>}>
             <p>Your Wallet Balance: {userWallet} VND</p> {/* Display wallet balance */}
           </Card>

@@ -2,6 +2,7 @@ import { Button, Modal, Spin, Table, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
 import { formatDateTime, formatPrice } from '@utils/utils';
+import { formatPriceVND } from '../../../../../../../utils/utils';
 const { Title } = Typography;
 
 const columns = [
@@ -36,7 +37,7 @@ export const BidHistory = ({ auctionId, size = 4 }) => {
       response.data.map((item) => ({
         ...item,
         bidTime: formatDateTime(item.bidTime),
-        bidAmount: `${formatPrice(item.bidAmount)} VNĐ`,
+        bidAmount: `${formatPriceVND(item.bidAmount)}`,
       }))
     );
     if (response.code === 200) {
