@@ -18,12 +18,27 @@ export const formatDate = (date) => {
   return formatted;
 };
 
+export const handleStatus = (status) => {
+  switch (status) {
+    case 'InProgress':
+      return 'In Progress';
+    case 'Completed':
+      return 'Completed';
+    case 'Waiting':
+      return 'Waiting';
+    case 'Cancel':
+      return 'Cancel';
+    default:
+      return 'Fail';
+  }
+};
 
 export const formatPriceVND = (price) =>
   price?.toLocaleString('vi', { style: 'currency', currency: 'VND' });
 
 export const formatDateTime = (datetimeStr) => {
   const date = new Date(datetimeStr);
+  const year = date.getFullYear();
 
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
@@ -31,14 +46,12 @@ export const formatDateTime = (datetimeStr) => {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
 
-  return `ngày ${day}/${month} vào ${hours}:${minutes}:${seconds}`;
+  return `${day}/${month}/${year} in ${hours}:${minutes}:${seconds}`;
 };
 
 export const formatPrice = (price) => {
   if (price > 0) {
-    const priceInNumber = parseFloat(
-      price?.toString().replace('$', '').replace(',', '')
-    );
+    const priceInNumber = parseFloat(price?.toString().replace('$', '').replace(',', ''));
     if (priceInNumber >= 1000000000) {
       const billion = Math.floor(priceInNumber / 1000000000);
       const million = Math.floor((priceInNumber % 1000000000) / 1000000);
@@ -56,7 +69,7 @@ export const formatPrice = (price) => {
 
 export const formatDateToYMDHM = (dateString) => {
   const date = new Date(dateString);
-  
+
   const padZero = (num) => num.toString().padStart(2, '0');
 
   const year = date.getFullYear();
@@ -66,8 +79,8 @@ export const formatDateToYMDHM = (dateString) => {
   const minutes = padZero(date.getMinutes());
 
   return `${year}-${month}-${day} ${hours}:${minutes}`;
-}
+};
 
 // Example usage
-const formattedDate = formatDateToYMDHM("2024-06-19T00:00:00.000+07:00");
+const formattedDate = formatDateToYMDHM('2024-06-19T00:00:00.000+07:00');
 console.log(formattedDate); // Output: "2024-06-19 00:00"
