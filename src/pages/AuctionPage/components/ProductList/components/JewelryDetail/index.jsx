@@ -203,12 +203,12 @@ export const JewelryDetail = () => {
               <div className='overlay-winner'>
                 {isWinner.email === userEmail ? (
                   <div>
-                    <p>Bạn đang là người đặt giá cao nhất</p>
+                    <p>You are winner right now</p>
                     <BidHistory auctionId={id} size={5} />
                   </div>
                 ) : (
                   <div>
-                    <p>{`${isWinner.full_name} đang là người đặt giá cao nhất`}</p>
+                    <p>{`${isWinner.full_name} are winner right now`}</p>
                     <BidHistory auctionId={id} size={5} />
                   </div>
                 )}
