@@ -353,7 +353,6 @@ export const JewelryDetail = () => {
           step={step}
           bidAmount={bidAmount}
           handleOk={handleOk}
-          userWallet={1000000000000000}
           handleCancel={handleCancel}
           handleBidAmountChange={handleBidAmountChange}
           handleBlur={handleBlur}

@@ -59,7 +59,7 @@ const CardContent = ({ element = {} }) => {
             level={5}
             className='!flex-1 !text-[#898989] !font-medium text-left font-sans'
           >
-            Giá hiện tại:
+            The current:
           </Title>
           <Title
             level={5}
@@ -76,7 +76,7 @@ const CardContent = ({ element = {} }) => {
             {element?.status.toUpperCase()}
           </Title>
           <Button className='px-8 !border-black font-semibold !text-black hover:!bg-[#946257] hover:!text-[#fff] font-serif shadow-md'>
-            Đấu giá
+            Bid
           </Button>
         </Flex>
       </Flex>

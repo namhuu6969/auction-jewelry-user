@@ -90,23 +90,8 @@ export const MyJewelryTable = () => {
       <Menu.Item key='0'>
         <a onClick={() => handleOpenDetail(id)}>View Detail</a>
       </Menu.Item>
-      <Menu.Item
-        key='1'
-        disabled={
-          status === 'ONLINE_VALUATED' ||
-          status === 'OFFLINE_VALUATING' ||
-          status === 'AUCTIONING' ||
-          status === 'STORED'
-        }
-        title={
-          ((status === 'ONLINE_VALUATED' ||
-            status === 'OFFLINE_VALUATING' ||
-            status === 'STORED') &&
-            'Jewelry is valuating') ||
-          (status === 'AUCTIONING' && 'Jewelry is auctioned')
-        }
-      >
-        <a onClick={() => handleOpenValuate(id)}>Valuate Jewelry</a>
+      <Menu.Item key='1' disabled={status === 'AUCTIONING'}>
+        <a onClick={() => handleOpenValuate(id)}>Online Valuate Jewelry</a>
       </Menu.Item>
       <Menu.Item
         key='2'
@@ -187,9 +172,7 @@ export const MyJewelryTable = () => {
       })),
       onFilter: (value, record) => record?.brand?.name?.startsWith(value),
       filterSearch: true,
-      render: (e, index) => (
-        <p key={index}>{e?.name ? e?.name : 'Other'}</p>
-      ),
+      render: (e, index) => <p key={index}>{e?.name ? e?.name : 'Other'}</p>,
     },
     {
       title: 'Collection',
@@ -201,9 +184,7 @@ export const MyJewelryTable = () => {
       })),
       onFilter: (value, record) => record?.collection?.name?.startsWith(value),
       filterSearch: true,
-      render: (e, index) => (
-        <p key={index}>{e?.name ? e?.name : 'Other'}</p>
-      ),
+      render: (e, index) => <p key={index}>{e?.name ? e?.name : 'Other'}</p>,
     },
     {
       title: 'Materials',
