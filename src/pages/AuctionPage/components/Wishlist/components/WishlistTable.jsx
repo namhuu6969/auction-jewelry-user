@@ -118,7 +118,10 @@ export const WishlistTable = () => {
       try {
         setLoading(true);
         const response = await wishlistApi.getWishlist();
-        setDataSource(response.data);
+        const sortedData = response.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setDataSource(sortedData);
       } catch (error) {
         console.log(error);
       } finally {

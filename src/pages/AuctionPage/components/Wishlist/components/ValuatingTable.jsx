@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { myValuatingApi } from '../../../../../services/api/WishlistApi/myValuatingApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMyValuation } from '../../../../../core/store/WishlistStore/MyValuationStore/myValuation';
-import { Dropdown, Image, Menu, Space, Table } from 'antd';
+import { Dropdown, Image, Menu, Popover, Space, Table, Tooltip } from 'antd';
 import { setJewelryId } from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { ModalAddAuction } from './components/ModalAddAuction';
 import { formatDate, imageURL } from '../../../../../utils/utils';
@@ -76,11 +76,22 @@ export const ValuatingTable = () => {
       key: 'status',
     },
     {
+      title: 'Status',
+      dataIndex: ['jewelry', 'status'],
+      key: 'status',
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (data) => (
         <Dropdown
-          overlay={getMenu(data.jewelry.id, data.status, data.jewelry.staringPrice, data.jewelry.status)}
+          overlay={getMenu(
+            data.jewelry.id,
+            data.status,
+            data.jewelry.staringPrice,
+            data.jewelry.status,
+            data.online
+          )}
           trigger={['click']}
         >
           <a onClick={(e) => e.preventDefault()}>
@@ -92,19 +103,39 @@ export const ValuatingTable = () => {
       ),
     },
   ];
-  const getMenu = (id, status, startingPrice, statusJewelry) => (
+  const handleError = (status, startingPrice, valuationType) => {
+    const error = [];
+    if (status === 'REQUEST') {
+      error.push('Staff is valuating this jewelry');
+    }
+    if (startingPrice === 0) {
+      error.push('Staff has not set the starting price yet');
+    }
+    if (valuationType === true) {
+      error.push(
+        'Online Valuated jewelry cannot be put up for auction! Please valuate this jewelry offline'
+      );
+    }
+    return error.join('\n');
+  };
+
+  const getMenu = (id, status, startingPrice, statusJewelry, valuationType) => (
     <Menu>
       <Menu.Item
         key='0'
         disabled={
-          status === 'REQUEST' || status === 'VALUATING' || statusJewelry === 'AUCTIONING'
-        }
-        title={
-          (status === 'REQUEST' && 'Staff is valuating this jewelry') ||
-          (startingPrice === 0 && 'Staff do not set starting price yet')
+          status === 'REQUEST' ||
+          status === 'VALUATING' ||
+          statusJewelry === 'AUCTIONING' ||
+          valuationType === true ||
+          startingPrice === 0
         }
       >
-        <a onClick={() => handleAddAuctionClick(id)}>Put up auction</a>
+        <Tooltip title={handleError(status, startingPrice, valuationType)} overlayStyle={{ whiteSpace: 'pre-line' }}>
+          <span>
+            <a onClick={() => handleAddAuctionClick(id)}>Put up auction</a>
+          </span>
+        </Tooltip>
       </Menu.Item>
     </Menu>
   );
@@ -115,8 +146,10 @@ export const ValuatingTable = () => {
   useEffect(() => {
     const fetchMyValuation = async () => {
       const response = await myValuatingApi.getValuatingMe();
-      console.log(response.data);
-      dispatch(setMyValuation(response.data));
+      const sortedData = response.data.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      dispatch(setMyValuation(sortedData));
     };
     // const fetchData = async () => {
     //   const response = await myAuctionApi.getMyAuction();
@@ -126,7 +159,7 @@ export const ValuatingTable = () => {
     //   }
     // };
     fetchMyValuation();
-    // fetchData();      
+    // fetchData();
     if (render) {
       fetchMyValuation();
     }
