@@ -1,9 +1,8 @@
-import { Image, Table } from 'antd';
-import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
+import { Table } from 'antd';
 import useTableSearch from '../../../../../hooks/useTableSearch';
 import { useEffect, useState } from 'react';
 import { myBiddingApi } from '../../../../../services/api/WishlistApi/myBiddingApi';
-import { formatDate, formatPrice, formatPriceVND } from '../../../../../utils/utils';
+import { formatDate, formatPriceVND } from '../../../../../utils/utils';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
 
 export const BiddingTable = () => {
@@ -19,13 +18,13 @@ export const BiddingTable = () => {
   }, []);
   const columns = [
     {
-      title: 'Tên sản phẩm',
+      title: 'Name',
       dataIndex: 'jewelryName',
       key: 'jewelryName',
       ...getColumnSearchProps('jewelryName'),
     },
     {
-      title: 'Thời gian bắt đầu',
+      title: 'Start Time',
       dataIndex: 'startTime',
       key: 'startTime',
       ...getColumnSearchDateProps('startTime'),
@@ -33,7 +32,7 @@ export const BiddingTable = () => {
       sorter: (a, b) => a.startTime - b.startTime,
     },
     {
-      title: 'Thời gian kết thúc',
+      title: 'End Time',
       dataIndex: 'endTime',
       key: 'endTime',
       ...getColumnSearchDateProps('endTime'),
@@ -41,14 +40,14 @@ export const BiddingTable = () => {
       sorter: (a, b) => a.endTime - b.endTime,
     },
     {
-      title: 'Giá hiện tại',
+      title: 'Current Price',
       dataIndex: 'currentPrice',
       key: 'currentPrice',
       sorter: (a, b) => a.currentPrice - b.currentPrice,
       render: (data) => formatPriceVND(data)
     },
     {
-      title: 'Trạng thái',
+      title: 'Status',
       dataIndex: 'status',
       key: 'status',
     },
