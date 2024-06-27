@@ -3,15 +3,20 @@ import { requestJewelryApi } from '../../../../../../services/api/RequestApi/req
 import {
   // AutoComplete,
   Button,
+  Divider,
   Form,
   Input,
   InputNumber,
   Modal,
   Select,
+  Tooltip,
+  Typography,
   Upload,
 } from 'antd';
 import { UploadOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useNotification } from '../../../../../../hooks/useNotification';
+import { dataColor } from '../../../../../../utils/colorData/colorUtil';
+const { Title } = Typography;
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -35,7 +40,7 @@ export const FormRequest = () => {
   const [materialsInput, setMaterialsInput] = useState([
     { idMaterial: null, weight: 0 },
   ]);
-  const [choosedBrand, setChoosedBrand] = useState('');
+  const [choosedBrand, setChoosedBrand] = useState(0);
   const [loading, setLoading] = useState(false);
   // const [optionsBrand, setOptionsBrand] = useState([]);
   // const [optionsCollection, setOptionsCollection] = useState([]);
@@ -121,7 +126,6 @@ export const FormRequest = () => {
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      console.log(values);
       const formData = new FormData();
       if (values?.name) formData.append('name', values.name);
       if (values?.description)
@@ -238,14 +242,14 @@ export const FormRequest = () => {
     ?.filter((e) => e?.name !== null)
     ?.map((e) => ({
       label: e?.name,
-      value: e?.name,
+      value: e?.id,
     }));
 
   const itemsCollection = collection
-    ?.filter((item) => item.brand.name === choosedBrand)
+    ?.filter((item) => item.brand.id === choosedBrand)
     .map((e) => ({
       label: e?.name,
-      value: e?.name,
+      value: e?.id,
     }));
   useEffect(() => {
     if (itemsCategory.length > 0) {
@@ -269,83 +273,35 @@ export const FormRequest = () => {
         size='large'
         form={form}
       >
-        <div className='grid grid-cols-3 gap-y-7 gap-x-5'>
-          <Form.Item
-            name={'name'}
-            label='Jewelry name'
-            rules={[
-              {
-                required: true,
-                message: 'Must not be empty!',
-              },
-            ]}
-            className='!text-left col-span-1'
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name={'weight'}
-            label='Weight (g)'
-            rules={[
-              {
-                required: true,
-                message: 'Must not be empty!',
-              },
-              {
-                validator: validateWeightMaterial,
-              },
-            ]}
-            className='!text-left h-24'
-          >
-            <InputNumber controls={false} className='w-full' />
-          </Form.Item>
-          <Form.Item
-            name={'size'}
-            label='Size'
-            rules={[
-              {
-                required: true,
-                message: 'Must not be empty!',
-              },
-            ]}
-            className='!text-left'
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name={'color'}
-            label='Color'
-            rules={[
-              {
-                required: true,
-                message: 'Must not be empty!',
-              },
-            ]}
-            className='!text-left'
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name={'jewelryCondition'}
-            label='Condition'
-            rules={[
-              {
-                required: true,
-                message: 'Must not be empty!',
-              },
-            ]}
-            className='!text-left'
-          >
-            <Select
-              defaultValue={'New'}
-              placeholder='Choose condition'
-              options={itemsCondition}
-              className='!text-left'
-            />
-          </Form.Item>
+        <Form.Item
+          name={'name'}
+          label={
+            <Title level={4} className='!mb-0 font-sans !font-normal'>
+              Name
+            </Title>
+          }
+          rules={[
+            {
+              required: true,
+              message: 'Must not be empty!',
+            },
+          ]}
+          className='!text-left col-span-1'
+        >
+          <Input />
+        </Form.Item>
+        <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
+          Category of jewelry
+        </Title>
+        <Divider className='!my-3' />
+        <div className='flex gap-5'>
           <Form.Item
             name={'category'}
-            label='Category'
+            label={
+              <Title level={4} className='!mb-0 font-sans !font-normal'>
+                Category
+              </Title>
+            }
             rules={[
               {
                 required: true,
@@ -363,51 +319,82 @@ export const FormRequest = () => {
               className='!text-left'
             />
           </Form.Item>
-          <Form.Item name={'brand'} label='Brand' className='!text-left'>
-            {/* <AutoComplete
-              options={optionsBrand}
-              onSearch={(text) => setOptionsBrand(getPanelValueBrand(text))}
-              placeholder='Choose brand'
-              onChange={(value) => setChoosedBrand(value)}
-              className='!text-left'
-            /> */}
-            <Select
-              onChange={(value) => setChoosedBrand(value)}
-              showSearch
-              placeholder='Choose brand'
-              optionFilterProp='children'
-              filterOption={filterOption}
-              options={itemsBrand}
-              className='!text-left'
-            />
-          </Form.Item>
           <Form.Item
-            name={'collection'}
-            label='Collection (Please select the brand first)'
+            name={'size'}
+            label={
+              <Title level={4} className='!mb-0 font-sans !font-normal'>
+                Size
+              </Title>
+            }
+            rules={[
+              {
+                required: true,
+                message: 'Must not be empty!',
+              },
+            ]}
             className='!text-left'
           >
-            {/* <AutoComplete
-              options={optionsCollection}
-              onSearch={(text) =>
-                setOptionsCollection(getPanelValueCollection(text))
-              }
-              placeholder='Chọn bộ sưu tập'
-              className='!text-left'
-              disabled={!choosedBrand}
-            /> */}
+            <Input />
+          </Form.Item>
+        </div>
+        <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
+          Information of jewelry
+        </Title>
+        <Divider className='!my-3' />
+        <div className='grid grid-cols-5 gap-5'>
+          <Form.Item
+            name={'color'}
+            label={
+              <Title level={4} className='!mb-0 font-sans !font-normal'>
+                Color
+              </Title>
+            }
+            rules={[
+              {
+                required: true,
+                message: 'Must not be empty!',
+              },
+            ]}
+            className='!text-left'
+          >
             <Select
-              showSearch
-              placeholder='Choose collection'
+              options={dataColor}
+              placeholder='Choose color'
               optionFilterProp='children'
               filterOption={filterOption}
-              options={itemsCollection}
-              className='!text-left'
-              disabled={!choosedBrand}
+              showSearch
             />
           </Form.Item>
           <Form.Item
+            name={'jewelryCondition'}
+            label={
+              <Title level={4} className='!mb-0 font-sans !font-normal'>
+                Condition
+              </Title>
+            }
+            rules={[
+              {
+                required: true,
+                message: 'Must not be empty!',
+              },
+            ]}
+            className='!text-left'
+          >
+            <Select
+              defaultValue={'New'}
+              placeholder='Choose condition'
+              options={itemsCondition}
+              className='!text-left'
+            />
+          </Form.Item>
+
+          <Form.Item
             name={'sex'}
-            label='Gender'
+            label={
+              <Title level={4} className='!mb-0 font-sans !font-normal'>
+                Gender
+              </Title>
+            }
             rules={[
               {
                 required: true,
@@ -425,13 +412,88 @@ export const FormRequest = () => {
               className='!text-left'
             />
           </Form.Item>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: 'Must not be empty!',
+              },
+            ]}
+            name={'brand'}
+            label={
+              <Title level={4} className='!mb-0 font-sans !font-normal'>
+                Brand
+              </Title>
+            }
+            className='!text-left'
+          >
+            {/* <AutoComplete
+                options={optionsBrand}
+                onSearch={(text) => setOptionsBrand(getPanelValueBrand(text))}
+                placeholder='Choose brand'
+                onChange={(value) => setChoosedBrand(value)}
+                className='!text-left'
+              /> */}
+            <Select
+              onChange={(value) => setChoosedBrand(value)}
+              showSearch
+              placeholder='Choose brand'
+              optionFilterProp='children'
+              filterOption={filterOption}
+              options={itemsBrand}
+              className='!text-left'
+            />
+          </Form.Item>
+          <Form.Item
+            name={'collection'}
+            label={
+              <Title level={4} className='!mb-0 font-sans !font-normal'>
+                Collection
+              </Title>
+            }
+            className='!text-left'
+            rules={[
+              {
+                required: true,
+                message: 'Must not be empty!',
+              },
+            ]}
+          >
+            {/* <AutoComplete
+                options={optionsCollection}
+                onSearch={(text) =>
+                  setOptionsCollection(getPanelValueCollection(text))
+                }
+                placeholder='Chọn bộ sưu tập'
+                className='!text-left'
+                disabled={!choosedBrand}
+              /> */}
+            <Tooltip title={!choosedBrand && 'Please select brand first'}>
+              <Select
+                showSearch
+                placeholder='Choose collection'
+                optionFilterProp='children'
+                filterOption={filterOption}
+                options={itemsCollection}
+                className='!text-left'
+                disabled={!choosedBrand}
+              />
+            </Tooltip>
+          </Form.Item>
         </div>
-
+        <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
+          Weight of jewelry
+        </Title>
+        <Divider className='!my-3' />
         {materialsInput.map((material, index) => (
           <div key={index} className='grid grid-cols-3 gap-4'>
             <Form.Item
               name={`material_${index}`}
-              label='Material'
+              label={
+                <Title level={4} className='!mb-0 font-sans !font-normal'>
+                  Material
+                </Title>
+              }
               className='!text-left'
               rules={[
                 {
@@ -454,9 +516,14 @@ export const FormRequest = () => {
               />
             </Form.Item>
             <Form.Item
-              label={`Weight of material ${
-                material.idMaterial === 3 ? '(karat)' : '(g)'
-              }`}
+              label={
+                <Title
+                  level={4}
+                  className='!mb-0 font-sans !font-normal'
+                >{`Weight of material ${
+                  material.idMaterial === 3 ? '(karat)' : '(g)'
+                }`}</Title>
+              }
               name={`weight_${index}`}
               className='!text-left'
               rules={[
@@ -491,13 +558,37 @@ export const FormRequest = () => {
         <Button
           type='dashed'
           onClick={addMaterialInput}
-          className='w-2/3 flex justify-center'
+          className='w-2/3 flex justify-center font-sans !font-normal'
         >
           Add more material
         </Button>
         <Form.Item
+          name={'weight'}
+          label={
+            <Title level={4} className='!mb-0 font-sans !font-normal'>
+              Weight (g)
+            </Title>
+          }
+          rules={[
+            {
+              required: true,
+              message: 'Must not be empty!',
+            },
+            {
+              validator: validateWeightMaterial,
+            },
+          ]}
+          className='!text-left h-24'
+        >
+          <InputNumber controls={false} className='w-1/5' />
+        </Form.Item>
+        <Form.Item
           name={'description'}
-          label='Description'
+          label={
+            <Title level={4} className='!mb-0 font-sans !font-normal'>
+              Description
+            </Title>
+          }
           className='!text-left'
           rules={[
             {
@@ -510,7 +601,11 @@ export const FormRequest = () => {
         </Form.Item>
         <Form.Item
           name='imagesFile'
-          label='Upload jewelry image (The first image will be thumbnail)'
+          label={
+            <Title level={4} className='!mb-0 font-sans !font-normal'>
+              Upload jewelry image (The first image will be thumbnail){' '}
+            </Title>
+          }
           valuePropName='fileList'
           getValueFromEvent={normFile}
           rules={[{ required: true, message: 'Must not be empty!' }]}
@@ -527,7 +622,12 @@ export const FormRequest = () => {
             {fileList.length >= 8 ? null : (
               <div>
                 <UploadOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
+                <div
+                  style={{ marginTop: 8 }}
+                  className='font-sans !font-normal'
+                >
+                  Upload
+                </div>
               </div>
             )}
           </Upload>
