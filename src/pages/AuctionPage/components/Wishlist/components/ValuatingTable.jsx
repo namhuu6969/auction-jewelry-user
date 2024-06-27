@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { myValuatingApi } from '../../../../../services/api/WishlistApi/myValuatingApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMyValuation } from '../../../../../core/store/WishlistStore/MyValuationStore/myValuation';
-import { Dropdown, Image, Menu, Popover, Space, Table, Tooltip } from 'antd';
+import { Dropdown, Image, Menu, Space, Table, Tooltip } from 'antd';
 import { setJewelryId } from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { ModalAddAuction } from './components/ModalAddAuction';
 import { formatDate, imageURL } from '../../../../../utils/utils';
@@ -61,8 +61,9 @@ export const ValuatingTable = () => {
     },
     {
       title: 'Valuation Fee',
-      dataIndex: 'valuationFee',
+      dataIndex: 'valuatingFee',
       key: 'valuationFee',
+      render: (data) => formatPriceVND(data)
     },
     {
       title: 'Valuation Type',

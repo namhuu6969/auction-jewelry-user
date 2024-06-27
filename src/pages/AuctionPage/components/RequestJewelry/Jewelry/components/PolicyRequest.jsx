@@ -5,11 +5,11 @@ const PolicyRequest = () => {
   return (
     <Card
       title={
-        <Title level={3} className='font-serif'>
+        <Title level={2} className='font-serif'>
           Policies of send request jewelry
         </Title>
       }
-      className='!text-left text-red-600 text-base'
+      className='!text-left text-red-600 text-base font-sans !font-normal'
       bordered={false}
       style={{ width: '100%', margin: '20px 0' }}
     >

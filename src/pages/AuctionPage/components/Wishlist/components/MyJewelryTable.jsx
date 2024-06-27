@@ -1,4 +1,4 @@
-import { Dropdown, Image, Menu, Space, Table, Tag } from 'antd';
+import { Dropdown, Image, Menu, Space, Table, Tag, Tooltip } from 'antd';
 import useTableSearch from '../../../../../hooks/useTableSearch';
 import { useEffect, useState } from 'react';
 import { wishlistApi } from '../../../../../services/api/WishlistApi/wishlistApi';
@@ -40,8 +40,10 @@ export const MyJewelryTable = () => {
       try {
         setLoading(true);
         const response = await wishlistApi.getJewelryByMe();
-        const sortedData = response.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        dispatch(setJewelryData(sortedData)); 
+        const sortedData = response.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        dispatch(setJewelryData(sortedData));
       } catch (error) {
         console.log(error);
       } finally {
@@ -103,28 +105,70 @@ export const MyJewelryTable = () => {
       openNotification({
         type: 'success',
         description: 'Your request is send',
-      })
+      });
     } catch (error) {
       openNotification({
         type: 'error',
         description: 'Failed to fetch',
       });
     } finally {
-      setLoading(false)
-      dispatch(setRender(true))
+      setLoading(false);
+      dispatch(setRender(true));
     }
-  }
+  };
+
+  const handleErrorForSendValuate = (status) => {
+    let error = '';
+    switch (status) {
+      case 'AUCTIONING':
+        return (error = 'This jewelry is auctioning');
+      case 'OFFLINE_VALUATING':
+        return (error = 'You have send request for offline valuate');
+    }
+    return error;
+  };
+
+  const handleErroDelete = (status) => {
+    let error = '';
+    switch (status) {
+      case 'ONLINE_VALUATED':
+        return (error = 'Jewelry is valuating');
+      case 'OFFLINE_VALUATING':
+        return (error = 'Jewelry is valuating');
+      case 'AUCTIONING':
+        return (error = 'Jewelry is auctioning');
+      case 'STORED':
+        return (error = 'Jewelry is waited to auction');
+    }
+    return error;
+  };
 
   const getMenu = (id, status) => (
     <Menu>
       <Menu.Item key='0'>
         <a onClick={() => handleOpenDetail(id)}>View Detail</a>
       </Menu.Item>
-      <Menu.Item key='online' disabled={status === 'AUCTIONING'}>
+      <Menu.Item
+        key='online'
+        disabled={status === 'AUCTIONING'}
+        title={status === 'AUCTIONING' && 'This jewelry is auctioning'}
+      >
         <a onClick={() => handleOpenValuate(id)}>Online Valuate Jewelry</a>
       </Menu.Item>
-      <Menu.Item key='offline' disabled={status === 'AUCTIONING'}>
-        <a onClick={() => handleOfflineValuate(id)}>Offline Valuate Jewelry</a>
+      <Menu.Item
+        key='offline'
+        disabled={status === 'AUCTIONING' || status === 'OFFLINE_VALUATING'}
+      >
+        <Tooltip
+          title={handleErrorForSendValuate(status)}
+          overlayStyle={{ whiteSpace: 'pre-line' }}
+        >
+          <span>
+            <a onClick={() => handleOfflineValuate(id)}>
+              Offline Valuate Jewelry
+            </a>
+          </span>
+        </Tooltip>
       </Menu.Item>
       <Menu.Item
         key='2'
@@ -134,13 +178,15 @@ export const MyJewelryTable = () => {
           status === 'AUCTIONING' ||
           status === 'STORED'
         }
-        title={
-          (status === 'ONLINE_VALUATED' && 'Jewelry is valuating') ||
-          (status === 'OFFLINE_VALUATING' && 'Jewelry is valuating') ||
-          (status === 'AUCTIONING' && 'Jewelry is auctioned')
-        }
       >
-        <a onClick={() => handleConfirmDelete(id)}>Delete Jewelry</a>
+        <Tooltip
+          title={handleErroDelete(status)}
+          overlayStyle={{ whiteSpace: 'pre-line' }}
+        >
+          <span>
+            <a onClick={() => handleConfirmDelete(id)}>Delete Jewelry</a>
+          </span>
+        </Tooltip>
       </Menu.Item>
     </Menu>
   );
