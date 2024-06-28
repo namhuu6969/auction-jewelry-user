@@ -43,7 +43,7 @@ export const JewelryDetail = () => {
         id: 1,
         image: `http://167.71.212.203:8080/uploads/jewelry/${response.data.jewelry.jewelryImages[0]?.url}`, // Set the initial selected image
       });
-      setIsWinner(response.data.winner);
+      if (response.data.winner) setIsWinner(response.data.winner);
     };
     fetchAuctionData();
   }, [id]);
@@ -198,7 +198,7 @@ export const JewelryDetail = () => {
         <Breadcum linkBreadcum={breadcumLink} />
         <Divider className='border-black' />
         <Flex gap={10}>
-          <Flex vertical className='w-[50%] justify-center'>
+          <Flex vertical className='w-[50%]'>
             {isWinner && (
               <div className='overlay-winner'>
                 {isWinner.email === userEmail ? (
