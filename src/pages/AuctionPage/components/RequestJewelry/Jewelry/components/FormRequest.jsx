@@ -9,13 +9,14 @@ import {
   InputNumber,
   Modal,
   Select,
-  Tooltip,
+  Spin,
   Typography,
   Upload,
 } from 'antd';
 import { UploadOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useNotification } from '../../../../../../hooks/useNotification';
 import { dataColor } from '../../../../../../utils/colorData/colorUtil';
+import { InputCategoryRequest } from '../../../../../../components/ui/InputCategoryRequest';
 const { Title } = Typography;
 
 const getBase64 = (file) =>
@@ -37,16 +38,13 @@ export const FormRequest = () => {
   const [brand, setBrand] = useState([]);
   const [collection, setCollection] = useState([]);
   const [material, setMaterial] = useState([]);
+  const [choosedCategory, setChoosedCategory] = useState(null);
   const [materialsInput, setMaterialsInput] = useState([
     { idMaterial: null, weight: 0 },
   ]);
-  const [choosedBrand, setChoosedBrand] = useState(0);
+  const [choosedBrand, setChoosedBrand] = useState(null);
   const [loading, setLoading] = useState(false);
-  // const [optionsBrand, setOptionsBrand] = useState([]);
-  // const [optionsCollection, setOptionsCollection] = useState([]);
-  // const getPanelValueBrand = (searchText) => (!searchText ? [] : itemsBrand);
-  // const getPanelValueCollection = (searchText) =>
-  //   !searchText ? [] : itemsCollection;
+  const [loadingRender, setLoadingRender] = useState(false);
 
   const handleCancel = () => setPreviewVisible(false);
 
@@ -100,26 +98,6 @@ export const FormRequest = () => {
     return Promise.resolve();
   };
 
-  const fetchApiCategory = async () => {
-    const response = await requestJewelryApi.getCategory();
-    setCategory(response.data);
-  };
-
-  const fetchBrand = async () => {
-    const response = await requestJewelryApi.getBrand();
-    setBrand(response.data);
-  };
-
-  const fetchCollection = async () => {
-    const response = await requestJewelryApi.getCollection();
-    setCollection(response.data);
-  };
-
-  const fetchMaterial = async () => {
-    const response = await requestJewelryApi.getMaterial();
-    setMaterial(response.data);
-  };
-
   const filterOption = (input, option) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
@@ -162,6 +140,8 @@ export const FormRequest = () => {
       await requestJewelryApi.addRequestJewelry(formData);
       form.resetFields();
       setMaterialsInput([{ idMaterial: null, weight: 0 }]);
+      setChoosedBrand(null);
+      setChoosedCategory(null);
       openNotification({
         type: 'success',
         description: 'Post jewelry success',
@@ -185,14 +165,7 @@ export const FormRequest = () => {
     const updatedMaterials = materialsInput.filter((_, idx) => idx !== index);
     setMaterialsInput(updatedMaterials);
     form.resetFields([`material_${index}`, `weight_${index}`]);
-    form.validateFields(['weight']);
-  };
-
-  const handleMaterialChange = (index, idMaterial) => {
-    const updatedMaterials = materialsInput.map((material, idx) =>
-      idx === index ? { ...material, idMaterial } : material
-    );
-    setMaterialsInput(updatedMaterials);
+    handleWeightTotalChange(updatedMaterials);
     form.validateFields(['weight']);
   };
 
@@ -203,28 +176,31 @@ export const FormRequest = () => {
     return material?.filter((mat) => !selectedMaterials.includes(mat.id));
   };
 
+  const handleMaterialChange = (index, idMaterial) => {
+    const updatedMaterials = materialsInput.map((material, idx) =>
+      idx === index ? { ...material, idMaterial } : material
+    );
+    setMaterialsInput(updatedMaterials);
+    handleWeightTotalChange(updatedMaterials);
+    form.validateFields(['weight']);
+  };
+
   const handleWeightChange = (index, weight) => {
     const updatedMaterials = materialsInput.map((material, idx) =>
       idx === index ? { ...material, weight } : material
     );
     setMaterialsInput(updatedMaterials);
+    handleWeightTotalChange(updatedMaterials);
     form.validateFields(['weight']);
   };
 
-  useEffect(() => {
-    fetchApiCategory();
-    fetchBrand();
-    fetchCollection();
-    fetchMaterial();
-  }, []);
-  const itemsGender = useMemo(
-    () => [
-      { label: 'Male', value: 'Male' },
-      { label: 'Female', value: 'Female' },
-      { label: 'Unisex', value: 'Unisex' },
-    ],
-    []
-  );
+  const handleWeightTotalChange = (materials) => {
+    const totalWeight = materials.reduce(
+      (total, material) => total + material.weight,
+      0
+    );
+    form.setFieldsValue({ weight: totalWeight });
+  };
 
   const itemsCondition = useMemo(
     () => [
@@ -242,26 +218,73 @@ export const FormRequest = () => {
     ?.filter((e) => e?.name !== null)
     ?.map((e) => ({
       label: e?.name,
-      value: e?.id,
+      value: e?.name,
     }));
 
   const itemsCollection = collection
-    ?.filter((item) => item.brand.id === choosedBrand)
+    ?.filter((item) => item.brand.name === choosedBrand)
     .map((e) => ({
       label: e?.name,
-      value: e?.id,
+      value: e?.name,
     }));
-  useEffect(() => {
-    if (itemsCategory.length > 0) {
-      form.setFieldsValue({
-        category: itemsCategory[0].value,
-        sex: itemsGender[0].value,
-        jewelryCondition: itemsCondition[0].value,
-      });
-    }
-  }, [form, itemsCategory, itemsCondition, itemsGender]);
 
-  return (
+  const itemsGender = useMemo(
+    () => [
+      { label: 'Male', value: 'Male' },
+      { label: 'Female', value: 'Female' },
+      { label: 'Unisex', value: 'Unisex' },
+    ],
+    []
+  );
+
+  const handleSetValueOfCategory = (value) => {
+    form.setFieldsValue({ category: value });
+    setChoosedCategory(value);
+  };
+
+  useEffect(() => {
+    const fetchApiCategory = async () => {
+      try {
+        setLoadingRender(true);
+        const response = await requestJewelryApi.getCategory();
+        setCategory(response.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoadingRender(false);
+      }
+    };
+
+    const fetchBrand = async () => {
+      const response = await requestJewelryApi.getBrand();
+      setBrand(response.data);
+    };
+
+    const fetchCollection = async () => {
+      const response = await requestJewelryApi.getCollection();
+      setCollection(response.data);
+    };
+
+    const fetchMaterial = async () => {
+      const response = await requestJewelryApi.getMaterial();
+      setMaterial(response.data);
+    };
+    fetchApiCategory();
+    fetchBrand();
+    fetchCollection();
+    fetchMaterial();
+  }, []);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      sex: itemsGender[0].value,
+      jewelryCondition: itemsCondition[0].value,
+    });
+  }, []);
+
+  return loadingRender ? (
+    <Spin />
+  ) : (
     <>
       {contextHolder}
       <Form
@@ -276,7 +299,7 @@ export const FormRequest = () => {
         <Form.Item
           name={'name'}
           label={
-            <Title level={4} className='!mb-0 font-sans !font-normal'>
+            <Title level={5} className='!mb-0 font-sans !font-normal'>
               Name
             </Title>
           }
@@ -288,17 +311,17 @@ export const FormRequest = () => {
           ]}
           className='!text-left col-span-1'
         >
-          <Input />
+          <Input placeholder='Enter jewelry name...' className='!w-1/2' />
         </Form.Item>
         <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
           Category of jewelry
         </Title>
         <Divider className='!my-3' />
-        <div className='flex gap-5'>
+        <div className='grid gap-5 grid-cols-3 !w-1/2'>
           <Form.Item
             name={'category'}
             label={
-              <Title level={4} className='!mb-0 font-sans !font-normal'>
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
                 Category
               </Title>
             }
@@ -308,7 +331,7 @@ export const FormRequest = () => {
                 message: 'Must not be empty!',
               },
             ]}
-            className='!text-left'
+            className='!text-left col-span-1'
           >
             <Select
               showSearch
@@ -316,26 +339,11 @@ export const FormRequest = () => {
               optionFilterProp='children'
               filterOption={filterOption}
               options={itemsCategory}
-              className='!text-left'
+              className='!text-left !w-full'
+              onSelect={handleSetValueOfCategory}
             />
           </Form.Item>
-          <Form.Item
-            name={'size'}
-            label={
-              <Title level={4} className='!mb-0 font-sans !font-normal'>
-                Size
-              </Title>
-            }
-            rules={[
-              {
-                required: true,
-                message: 'Must not be empty!',
-              },
-            ]}
-            className='!text-left'
-          >
-            <Input />
-          </Form.Item>
+          <InputCategoryRequest category={choosedCategory} form={form} />
         </div>
         <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
           Information of jewelry
@@ -345,7 +353,7 @@ export const FormRequest = () => {
           <Form.Item
             name={'color'}
             label={
-              <Title level={4} className='!mb-0 font-sans !font-normal'>
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
                 Color
               </Title>
             }
@@ -368,7 +376,7 @@ export const FormRequest = () => {
           <Form.Item
             name={'jewelryCondition'}
             label={
-              <Title level={4} className='!mb-0 font-sans !font-normal'>
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
                 Condition
               </Title>
             }
@@ -391,7 +399,7 @@ export const FormRequest = () => {
           <Form.Item
             name={'sex'}
             label={
-              <Title level={4} className='!mb-0 font-sans !font-normal'>
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
                 Gender
               </Title>
             }
@@ -421,19 +429,12 @@ export const FormRequest = () => {
             ]}
             name={'brand'}
             label={
-              <Title level={4} className='!mb-0 font-sans !font-normal'>
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
                 Brand
               </Title>
             }
             className='!text-left'
           >
-            {/* <AutoComplete
-                options={optionsBrand}
-                onSearch={(text) => setOptionsBrand(getPanelValueBrand(text))}
-                placeholder='Choose brand'
-                onChange={(value) => setChoosedBrand(value)}
-                className='!text-left'
-              /> */}
             <Select
               onChange={(value) => setChoosedBrand(value)}
               showSearch
@@ -447,8 +448,8 @@ export const FormRequest = () => {
           <Form.Item
             name={'collection'}
             label={
-              <Title level={4} className='!mb-0 font-sans !font-normal'>
-                Collection
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
+                Collection (Choose brand first)
               </Title>
             }
             className='!text-left'
@@ -459,26 +460,15 @@ export const FormRequest = () => {
               },
             ]}
           >
-            {/* <AutoComplete
-                options={optionsCollection}
-                onSearch={(text) =>
-                  setOptionsCollection(getPanelValueCollection(text))
-                }
-                placeholder='Chọn bộ sưu tập'
-                className='!text-left'
-                disabled={!choosedBrand}
-              /> */}
-            <Tooltip title={!choosedBrand && 'Please select brand first'}>
-              <Select
-                showSearch
-                placeholder='Choose collection'
-                optionFilterProp='children'
-                filterOption={filterOption}
-                options={itemsCollection}
-                className='!text-left'
-                disabled={!choosedBrand}
-              />
-            </Tooltip>
+            <Select
+              showSearch
+              placeholder='Choose collection'
+              optionFilterProp='children'
+              filterOption={filterOption}
+              options={itemsCollection}
+              className='!text-left'
+              disabled={!choosedBrand}
+            />
           </Form.Item>
         </div>
         <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
@@ -490,7 +480,7 @@ export const FormRequest = () => {
             <Form.Item
               name={`material_${index}`}
               label={
-                <Title level={4} className='!mb-0 font-sans !font-normal'>
+                <Title level={5} className='!mb-0 font-sans !font-normal'>
                   Material
                 </Title>
               }
@@ -518,7 +508,7 @@ export const FormRequest = () => {
             <Form.Item
               label={
                 <Title
-                  level={4}
+                  level={5}
                   className='!mb-0 font-sans !font-normal'
                 >{`Weight of material ${
                   material.idMaterial === 3 ? '(karat)' : '(g)'
@@ -536,6 +526,7 @@ export const FormRequest = () => {
               ]}
             >
               <InputNumber
+                placeholder='Enter material weight...'
                 controls={false}
                 value={material.weight}
                 onChange={(e) => handleWeightChange(index, e)}
@@ -565,7 +556,7 @@ export const FormRequest = () => {
         <Form.Item
           name={'weight'}
           label={
-            <Title level={4} className='!mb-0 font-sans !font-normal'>
+            <Title level={5} className='!mb-0 font-sans !font-normal'>
               Weight (g)
             </Title>
           }
@@ -580,12 +571,17 @@ export const FormRequest = () => {
           ]}
           className='!text-left h-24'
         >
-          <InputNumber controls={false} className='w-1/5' />
+          <InputNumber
+            placeholder='Total of material weight'
+            readOnly
+            controls={false}
+            className='w-1/5'
+          />
         </Form.Item>
         <Form.Item
           name={'description'}
           label={
-            <Title level={4} className='!mb-0 font-sans !font-normal'>
+            <Title level={5} className='!mb-0 font-sans !font-normal'>
               Description
             </Title>
           }
@@ -597,12 +593,12 @@ export const FormRequest = () => {
             },
           ]}
         >
-          <Input.TextArea rows={4} />
+          <Input.TextArea placeholder='Enter jewelry description...' rows={4} />
         </Form.Item>
         <Form.Item
           name='imagesFile'
           label={
-            <Title level={4} className='!mb-0 font-sans !font-normal'>
+            <Title level={5} className='!mb-0 font-sans !font-normal'>
               Upload jewelry image (The first image will be thumbnail){' '}
             </Title>
           }

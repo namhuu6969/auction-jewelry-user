@@ -1,6 +1,6 @@
 import { Card, Typography } from 'antd';
 const { Title } = Typography;
-
+import './policy.css';
 const PolicyRequest = () => {
   return (
     <Card
@@ -13,17 +13,19 @@ const PolicyRequest = () => {
       bordered={false}
       style={{ width: '100%', margin: '20px 0' }}
     >
-      <p>
-        <strong>
+      <p className='!mb-3'>
+        <strong className='text-xl font-sans !font-normal '>
           * Every jewelry that is send have to match the physical jewelry 100%
         </strong>
       </p>
       <p>
-        <strong>
+        <strong className='text-xl font-sans !font-normal '>
           * Registered jewelries must be legal products with complete documents.
         </strong>{' '}
-        (In case the jewelry does not have documents, the customer must send the
-        jewelry to our company for valuating)
+        <span className='text-xl font-sans !font-normal '>
+          (In case the jewelry does not have documents, the customer must send the
+          jewelry to our company for valuating)
+        </span>
       </p>
     </Card>
   );

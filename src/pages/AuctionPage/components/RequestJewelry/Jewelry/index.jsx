@@ -24,7 +24,10 @@ export const RequestJewelry = () => {
         <Divider className='border-black' />
       </Flex>
       <PolicyRequest />
-      <Title level={2} className='font-serif'>Information of jewelry</Title>
+      <div>
+        <Title level={2} className='font-serif !text-left !m-0'>Information of jewelry</Title>
+        <Title level={4} className='font-sans !text-left !font-normal !m-0'>( Please fill your jewelry information )</Title>
+      </div>
       <FormRequest />
     </div>
   ) : (

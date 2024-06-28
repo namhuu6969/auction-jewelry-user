@@ -28,5 +28,9 @@ export const myAuctionApi = {
   updateTimeAuction: async (id, data) => {
     const response = await api.put(`auction/time/${id}`, data)
     return response.data
+  },
+  getMyWinningAuction: async () => {
+    const response = await api.get('auction/win')
+    return response.data
   }
 };
