@@ -72,6 +72,11 @@ export const JewelryDetail = () => {
       });
       setCurrentStep(0);
       setBidAmount(''); // Reset bid amount after successful bid
+    } else {
+      Modal.error({
+        title: 'Bid Failed',
+        content: response.message,
+      });
     }
   };
 
