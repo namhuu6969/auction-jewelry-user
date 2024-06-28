@@ -57,7 +57,7 @@ export const BidHistory = ({ auctionId, size = 4 }) => {
     <>
       <Title
         level={size}
-        className='!m-0 font-sans !font-thin hover:underline hover:cursor-pointer'
+        className='text-start !m-0 font-sans !font-thin hover:underline hover:cursor-pointer'
         onClick={showLoading}
       >
         Show Bid History
