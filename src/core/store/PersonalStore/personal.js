@@ -12,6 +12,8 @@ const personalSlice = createSlice({
     setUserData: (state, action) => {
       state.user = action.payload.user;
       state.money = action.payload.money;
+      localStorage.setItem('money', action.payload.money);
+      localStorage.setItem('user', JSON.parse(action.payload.user));
     },
     clearUserData: (state) => {
       state.user = null;
