@@ -17,7 +17,7 @@ const MiniCard = ({ imageSrc, title, price }) => {
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ flex: '1' }}>
           <img
-            src={`http://localhost:8080/uploads/jewelry/${imageSrc}`}
+            src={`http://167.71.212.203:8080/uploads/jewelry/${imageSrc}`}
             alt={truncateTitle(title, 3)}
             style={{ width: '100%', height: 'auto' }}
           />
