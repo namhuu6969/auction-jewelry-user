@@ -1,13 +1,15 @@
 import { Result } from 'antd';
 import { PrimaryButton } from '../../components/ui/PrimaryButton';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export const VerifiedPage = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState(false);
-  const { token, userId } = useParams();
+  const [searchParams] = useSearchParams()
+  const userId = searchParams.get('userId')
+  const token = searchParams.get('token')
   const [message, setMessage] = useState('');
   useEffect(() => {
     const fetchVerify = async () => {
