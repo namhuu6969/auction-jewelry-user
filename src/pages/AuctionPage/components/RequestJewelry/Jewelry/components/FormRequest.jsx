@@ -17,6 +17,7 @@ import { UploadOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useNotification } from '../../../../../../hooks/useNotification';
 import { dataColor } from '../../../../../../utils/colorData/colorUtil';
 import { InputCategoryRequest } from '../../../../../../components/ui/InputCategoryRequest';
+import { useNavigate } from 'react-router-dom';
 const { Title } = Typography;
 
 const getBase64 = (file) =>
@@ -45,6 +46,7 @@ export const FormRequest = () => {
   const [choosedBrand, setChoosedBrand] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingRender, setLoadingRender] = useState(false);
+  const navigate = useNavigate()
 
   const handleCancel = () => setPreviewVisible(false);
 
@@ -146,6 +148,7 @@ export const FormRequest = () => {
         type: 'success',
         description: 'Post jewelry success',
       });
+      navigate('/wishlist')
     } catch (error) {
       openNotification({
         type: 'error',

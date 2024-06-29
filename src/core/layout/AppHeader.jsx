@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserOutlined } from '@ant-design/icons';
 import { clearToken } from '../store/Auth/auth';
+import { clearUserData } from '../store/PersonalStore/personal';
 
 const services = [
   { title: 'Support', link: '/support' },
@@ -33,6 +34,7 @@ const AppHeader = () => {
   const dispatch = useDispatch();
   const handleLogout = async () => {
     dispatch(clearToken());
+    dispatch(clearUserData())
     window.location.href = '/login';
   };
   const items = [
