@@ -105,8 +105,8 @@ export const Category = () => {
 
   return (
     <Layout style={{ minHeight: '100vh', width: '100%' }}>
-      <Header style={{ background: '#fff', padding: 0, textAlign: 'center' }}>
-        <h1>Categories Page</h1>
+      <Header style={{ background: '#fff', padding: 0, textAlign: 'center', height: 400 }}>
+        <img src='images/banner.png' alt='banner' width={'100%'} className='object-cover' />
       </Header>
       <Layout>
         <Sider className='!flex-col !justify-between' width={'25%'} style={{ background: '#fff' }}>
