@@ -4,6 +4,7 @@ const initialState = {
   myAuctionData: [],
   renderMyAuction: false,
   dataUpdate: {},
+  myWinningData: [],
 };
 
 const myAuctionSlice = createSlice({
@@ -19,10 +20,17 @@ const myAuctionSlice = createSlice({
     setDataUpdate: (state, action) => {
       state.dataUpdate = action.payload;
     },
+    setMyWinning: (state, action) => {
+      state.myWinningData = action.payload;
+    },
   },
 });
 
-export const { setMyAuctionData, setRenderMyAuction, setDataUpdate } =
-  myAuctionSlice.actions;
+export const {
+  setMyAuctionData,
+  setRenderMyAuction,
+  setDataUpdate,
+  setMyWinning,
+} = myAuctionSlice.actions;
 
 export default myAuctionSlice.reducer;

@@ -1,6 +1,5 @@
 import {
   Modal,
-  Descriptions,
   Image,
   Row,
   Col,
@@ -9,7 +8,7 @@ import {
   InputNumber,
   Select,
   Button,
-  AutoComplete,
+  Spin,
 } from 'antd';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +20,9 @@ import { MinusCircleOutlined } from '@ant-design/icons';
 import { useNotification } from '../../../../../../hooks/useNotification';
 import { myJewelryApi } from '../../../../../../services/api/WishlistApi/myJewelryApi';
 import { setRender } from '../../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
+import { dataColor } from '../../../../../../utils/colorData/colorUtil';
+import TitleLabel from '../../../../../../components/ui/TitleLabel';
+import { InputCategoryUpdate } from '../../../../../../components/ui/InputCategoryUpdate';
 
 export const ModalJewelryDetail = ({ open, setOpen }) => {
   const jewelryId = useSelector((state) => state.jewelryMe.jewelryId);
@@ -34,16 +36,12 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
   const [choosedBrand, setChoosedBrand] = useState('');
   const [material, setMaterial] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingRendeer, setLoadingRender] = useState(false);
+  const [choosedCategory, setChoosedCategory] = useState(null);
   const [materialsInput, setMaterialsInput] = useState([
     { idMaterial: null, weight: 0 },
   ]);
   const [form] = Form.useForm();
-  const [optionsBrand, setOptionsBrand] = useState([]);
-  const [optionsCollection, setOptionsCollection] = useState([]);
-  const getPanelValueBrand = (searchText) => (!searchText ? [] : itemsBrand);
-  const getPanelValueCollection = (searchText) =>
-    !searchText ? [] : itemsCollection;
-
   const handleSaveChange = () => {
     form.submit();
   };
@@ -64,6 +62,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
     const updatedMaterials = materialsInput.filter((_, idx) => idx !== index);
     setMaterialsInput(updatedMaterials);
     form.resetFields([`material_${index}`, `weight_${index}`]);
+    handleWeightTotalChange(updatedMaterials);
     form.validateFields(['weight']);
   };
 
@@ -72,6 +71,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
       idx === index ? { ...material, idMaterial } : material
     );
     setMaterialsInput(updatedMaterials);
+    handleWeightTotalChange(updatedMaterials);
     form.validateFields(['weight']);
   };
 
@@ -98,6 +98,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
       idx === index ? { ...material, weight } : material
     );
     setMaterialsInput(updatedMaterials);
+    handleWeightTotalChange(updatedMaterials);
     form.validateFields(['weight']);
   };
 
@@ -139,6 +140,8 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
   const handleSubmit = async (values) => {
     const data = {
       ...values,
+    };
+    const dataMaterials = {
       materials: materialsInput?.map((e) => ({
         idMaterial: e.idMaterial,
         weight: e.weight,
@@ -147,6 +150,10 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
     try {
       setLoading(true);
       await myJewelryApi.updateJewelry(jewelryId, data);
+      await myJewelryApi.updateMaterialJewelry(
+        jewelryId,
+        dataMaterials.materials
+      );
       openNotification({
         type: 'success',
         description: 'Cập nhật thành công',
@@ -155,11 +162,18 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
     } catch (error) {
       openNotification({
         type: 'error',
-        description: error.message,
+        description: 'Updated failed',
       });
     } finally {
       setLoading(false);
     }
+  };
+  const handleWeightTotalChange = (materials) => {
+    const totalWeight = materials.reduce(
+      (total, material) => total + material.weight,
+      0
+    );
+    form.setFieldsValue({ weight: totalWeight });
   };
 
   const getFilteredMaterials = (index) => {
@@ -195,14 +209,36 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
     };
 
     const fetchJewelryDetail = async () => {
-      const response = await myJewelryApi.getJewelryById(jewelryId);
-      setData(response.data);
-      setMaterialsInput(
-        response.data?.jewelryMaterials?.map((e) => ({
-          idMaterial: e.material.id,
-          weight: e.weight,
-        }))
-      );
+      try {
+        setLoadingRender(true);
+        const response = await myJewelryApi.getJewelryById(jewelryId);
+        setData(response.data);
+        setMaterialsInput(
+          response.data?.jewelryMaterials?.map((e) => ({
+            idMaterial: e.material.id,
+            weight: e.weight,
+          }))
+        );
+        form.setFieldsValue({
+          name: data?.name,
+          description: data?.description,
+          category: data?.category?.id,
+          weight: data?.weight,
+          size: data?.size,
+          color: data?.color,
+          sex: data?.sex,
+          brand: data?.brand?.name,
+          jewelryCondition: data?.jewelryCondition,
+          collection: data?.collection?.name,
+        });
+      } catch (error) {
+        openNotification({
+          type: 'error',
+          description: 'fetch failed',
+        });
+      } finally {
+        setLoadingRender(false);
+      }
     };
     if (open) {
       fetchImages();
@@ -212,19 +248,9 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
       fetchMaterial();
       fetchJewelryDetail();
       setChoosedBrand(data?.brand?.name);
-      form.setFieldsValue({
-        name: data?.name,
-        description: data?.description,
-        category: data?.category?.id,
-        weight: data?.weight,
-        size: data?.size,
-        color: data?.color,
-        sex: data?.sex,
-        brand: data?.brand?.name,
-        jewelryCondition: data?.jewelryCondition,
-        collection: data?.collection?.name,
-      });
+      setChoosedCategory(data?.category?.id);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     jewelryId,
     open,
@@ -246,6 +272,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
       width={1800}
       title={`Chi tiết của ${data?.name}`}
       open={open}
+      loading={loadingRendeer}
       onCancel={handleClose}
       footer={[
         <SecondaryButton
@@ -267,25 +294,26 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
       ]}
       centered
     >
-      {data && (
-        <Form form={form} onFinish={handleSubmit}>
-          {contextHolder}
-          <Row gutter={16}>
-            <Col span={6} className='grid grid-cols-2 !h-fit gap-y-8'>
-              {images?.map((e) => (
-                <Image
-                  key={e.id}
-                  width='200px'
-                  height={'200px'}
-                  src={imageURL(e?.url)}
-                  alt={data.name}
-                />
-              ))}
-            </Col>
-            <Col span={18}>
-              <Descriptions title='Thông tin chi tiết' bordered column={3}>
-                <Descriptions.Item label='Tên' span={1}>
+      {!loadingRendeer ? (
+        data && (
+          <Form form={form} onFinish={handleSubmit} labelCol={{ span: 24 }}>
+            {contextHolder}
+            <Row gutter={16}>
+              <Col span={6} className='grid grid-cols-2 !h-fit gap-y-8'>
+                {images?.map((e) => (
+                  <Image
+                    key={e.id}
+                    width='200px'
+                    height={'200px'}
+                    src={imageURL(e?.url)}
+                    alt={data.name}
+                  />
+                ))}
+              </Col>
+              <Col span={18}>
+                <div className='grid grid-cols-3 gap-5'>
                   <Form.Item
+                    label={<TitleLabel>Name</TitleLabel>}
                     name='name'
                     rules={[
                       {
@@ -296,35 +324,14 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                   >
                     <Input />
                   </Form.Item>
-                </Descriptions.Item>
-                <Descriptions.Item label='Màu sắc' span={1}>
-                  <Form.Item
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Hãy nhập tên màu sắc',
-                      },
-                    ]}
-                    name='color'
-                  >
-                    <Input controls={false} className='w-full' />
+                  <Form.Item label={<TitleLabel>Status</TitleLabel>}>
+                    {data.status}
                   </Form.Item>
-                </Descriptions.Item>
-                <Descriptions.Item label='Kích thước' span={1}>
+                </div>
+
+                <div className='grid grid-cols-3 gap-5'>
                   <Form.Item
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Hãy nhập kích thước!',
-                      },
-                    ]}
-                    name='size'
-                  >
-                    <Input controls={false} className='w-full' />
-                  </Form.Item>
-                </Descriptions.Item>
-                <Descriptions.Item label='Danh mục' span={1}>
-                  <Form.Item
+                    label={<TitleLabel>Category</TitleLabel>}
                     name={'category'}
                     rules={[
                       {
@@ -340,165 +347,147 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                       filterOption={filterOption}
                       options={itemsCategory}
                       className='w-full'
+                      onChange={(e) => setChoosedCategory(e)}
                     />
                   </Form.Item>
-                </Descriptions.Item>
-                <Descriptions.Item label='Hãng' span={1}>
+                  <InputCategoryUpdate
+                    value={form.getFieldsValue() && form.getFieldsValue().size}
+                    category={choosedCategory}
+                    form={form}
+                  />
+                </div>
+
+                <div className='grid grid-cols-5 gap-5'>
                   <Form.Item
-                    name={'brand'}
+                    label={<TitleLabel>Color</TitleLabel>}
                     rules={[
                       {
                         required: true,
-                        message: 'Hãy chọn hãng!',
+                        message: 'Must not be empty!',
                       },
                     ]}
-                    className='!text-left'
+                    name='color'
                   >
-                    {/* <Select
-                      onChange={(value) => setChoosedBrand(value)}
+                    <Select
                       showSearch
-                      placeholder='Chọn hãng'
+                      placeholder='Choose color'
                       optionFilterProp='children'
                       filterOption={filterOption}
-                      options={itemsBrand}
-                      className='!text-left'
-                    /> */}
-                    <AutoComplete
-                      options={optionsBrand}
-                      onSearch={(text) =>
-                        setOptionsBrand(getPanelValueBrand(text))
-                      }
-                      placeholder='Chọn hãng'
-                      onChange={(value) => setChoosedBrand(value)}
-                      className='!text-left'
+                      options={dataColor}
+                      className='!text-left w-full'
                     />
                   </Form.Item>
-                </Descriptions.Item>
-                <Descriptions.Item label='Bộ sưu tập' span={1}>
                   <Form.Item
-                    name={'collection'}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Hãy chọn bộ sưu tập!',
-                      },
-                    ]}
-                    className='!text-left'
-                  >
-                    <AutoComplete
-                      options={optionsCollection}
-                      onSearch={(text) =>
-                        setOptionsCollection(getPanelValueCollection(text))
-                      }
-                      placeholder='Chọn bộ sưu tập'
-                      className='!text-left'
-                      disabled={!choosedBrand}
-                    />
-                    {/* <Select
-                      showSearch
-                      placeholder='Chọn bộ sưu tập'
-                      optionFilterProp='children'
-                      filterOption={filterOption}
-                      options={itemsCollection}
-                      className='!text-left'
-                    /> */}
-                  </Form.Item>
-                </Descriptions.Item>
-                <Descriptions.Item label='Chất lượng' span={1}>
-                  <Form.Item
+                    label={<TitleLabel>Condition</TitleLabel>}
                     name={'jewelryCondition'}
                     rules={[
                       {
                         required: true,
-                        message: 'Hãy nhập chất lượng!',
+                        message: 'Must not be empty!',
                       },
                     ]}
                     className='!text-left'
                   >
                     <Select
-                      placeholder='Chọn chất lượng'
+                      placeholder='Choose condition'
                       options={[
                         { label: 'New', value: 'New' },
                         { label: 'Used', value: 'Used' },
                       ]}
                       className='!text-left w-full'
                     />
-                  </Form.Item>{' '}
-                </Descriptions.Item>
-                <Descriptions.Item label='Giới tính' span={1}>
+                  </Form.Item>
                   <Form.Item
+                    label={<TitleLabel>Gender</TitleLabel>}
                     name={'sex'}
                     rules={[
                       {
                         required: true,
-                        message: 'Hãy nhập giới tính!',
+                        message: 'Must not be empty!',
                       },
                     ]}
                     className='!text-left'
                   >
                     <Select
                       showSearch
-                      placeholder='Chọn giới tính'
+                      placeholder='Choose gender'
                       optionFilterProp='children'
                       filterOption={filterOption}
                       options={itemsGender}
                       className='!text-left w-full'
                     />
                   </Form.Item>
-                </Descriptions.Item>
-                <Descriptions.Item label='Trạng thái' span={1}>
-                  {data.status}
-                </Descriptions.Item>
-                <Descriptions.Item span={3} label='Mô tả'>
                   <Form.Item
-                    name='description'
+                    label={<TitleLabel>Brand</TitleLabel>}
+                    name={'brand'}
                     rules={[
                       {
                         required: true,
-                        message: 'Hãy nhập mô tả!',
-                      },
-                    ]}
-                    className='w-full'
-                  >
-                    <Input.TextArea className='w-full' />
-                  </Form.Item>
-                </Descriptions.Item>
-                <Descriptions.Item
-                  label='Cân nặng'
-                  className='min-w-fit'
-                  span={1}
-                >
-                  <Form.Item
-                    name={'weight'}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Hãy nhập cân nặng!',
-                      },
-                      {
-                        validator: validateWeightMaterial,
+                        message: 'Must not be empty!',
                       },
                     ]}
                     className='!text-left'
                   >
-                    <InputNumber controls={false} className='w-[400px]' />
+                    <Select
+                      onChange={(value) => setChoosedBrand(value)}
+                      showSearch
+                      placeholder='Choose brand'
+                      optionFilterProp='children'
+                      filterOption={filterOption}
+                      options={itemsBrand}
+                      className='!text-left'
+                    />
                   </Form.Item>
-                </Descriptions.Item>
-                <Descriptions.Item label='Chất liệu' span={2}>
+                  <Form.Item
+                    label={<TitleLabel>Collection</TitleLabel>}
+                    name={'collection'}
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Must not be empty!',
+                      },
+                    ]}
+                    className='!text-left'
+                  >
+                    <Select
+                      showSearch
+                      placeholder='Choose collection!'
+                      optionFilterProp='children'
+                      filterOption={filterOption}
+                      options={itemsCollection}
+                      className='!text-left'
+                    />
+                  </Form.Item>
+                </div>
+                <Form.Item
+                  label={<TitleLabel>Description</TitleLabel>}
+                  name='description'
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Must not be empty!',
+                    },
+                  ]}
+                  className='w-full'
+                >
+                  <Input.TextArea className='w-full' />
+                </Form.Item>
+                <div>
                   {materialsInput?.map((material, index) => (
-                    <div key={index} className='grid grid-cols-5 gap-4'>
+                    <div key={index} className='grid grid-cols-4 gap-4'>
                       <Form.Item
-                        className='!text-left col-span-2'
+                        label={<TitleLabel>Materials</TitleLabel>}
+                        className='!text-left col-span-1'
                         rules={[
                           {
                             required: true,
-                            message: 'Hãy nhập chất liệu!',
+                            message: 'Must not be empty!',
                           },
                         ]}
                       >
                         <Select
                           showSearch
-                          placeholder='Chọn chất liệu'
+                          placeholder='Choose material'
                           optionFilterProp='children'
                           filterOption={filterOption}
                           options={getFilteredMaterials(index)?.map((e) => ({
@@ -513,12 +502,12 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                         />
                       </Form.Item>
                       <Form.Item
-                        label='Cân nặng'
-                        className='!text-left col-span-2'
+                        label={<TitleLabel>Weight</TitleLabel>}
+                        className='!text-left col-span-1'
                         rules={[
                           {
                             required: true,
-                            message: 'Hãy nhập cân nặng của vật liệu',
+                            message: 'Must not be empty!',
                           },
                         ]}
                       >
@@ -536,7 +525,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                             fontSize: '24px',
                             color: '#ff4d4f',
                           }}
-                          className='!flex flex-col justify-start items-start col-span-1'
+                          className='mt-3'
                         />
                       )}
                     </div>
@@ -544,15 +533,33 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                   <Button
                     type='dashed'
                     onClick={addMaterialInput}
-                    className='w-full flex justify-center'
+                    className='w-1/5 flex justify-center'
                   >
-                    Thêm chất liệu
+                    Add Material
                   </Button>
-                </Descriptions.Item>
-              </Descriptions>
-            </Col>
-          </Row>
-        </Form>
+                  <Form.Item
+                    label={<TitleLabel>Weight</TitleLabel>}
+                    name={'weight'}
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Must not be empty!',
+                      },
+                      {
+                        validator: validateWeightMaterial,
+                      },
+                    ]}
+                    className='!text-left'
+                  >
+                    <InputNumber readOnly controls={false} className='w-1/5' />
+                  </Form.Item>
+                </div>
+              </Col>
+            </Row>
+          </Form>
+        )
+      ) : (
+        <Spin />
       )}
     </Modal>
   );

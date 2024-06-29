@@ -2,9 +2,7 @@ import { Dropdown, Image, Menu, Space, Table } from 'antd';
 import useTableSearch from '@hooks/useTableSearch';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  setMyAuctionData,
-} from '@core/store/WishlistStore/MyAuctionStore/myAuction';
+import { setMyAuctionData } from '@core/store/WishlistStore/MyAuctionStore/myAuction';
 import { myAuctionApi } from '@api/WishlistApi/myAuctionApi';
 import { useNavigate } from 'react-router-dom';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
@@ -16,7 +14,7 @@ export const MyAuctionTable = () => {
   const { getColumnSearchProps } = useTableSearch();
   const { getColumnSearchDateProps } = useTableSearchDate();
   const [loading, setLoading] = useState(false);
-  const [openUpdate, setOpenUpdate] = useState(false)
+  const [openUpdate, setOpenUpdate] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const auctionData = useSelector((state) => state.myAuction.myAuctionData);
@@ -156,9 +154,8 @@ export const MyAuctionTable = () => {
   ];
 
   const handleUpdateOpen = (data) => {
-    setOpenUpdate(true),
-    dispatch(setDataUpdate(data))
-  }
+    setOpenUpdate(true), dispatch(setDataUpdate(data));
+  };
 
   const getMenu = (id, status, data) => (
     <Menu>
@@ -168,9 +165,7 @@ export const MyAuctionTable = () => {
         </a>
       </Menu.Item>
       <Menu.Item key={'update'}>
-        <a onClick={() => handleUpdateOpen(data)}>
-          Update date range session
-        </a>
+        <a onClick={() => handleUpdateOpen(data)}>Update date range session</a>
       </Menu.Item>
     </Menu>
   );
@@ -180,9 +175,11 @@ export const MyAuctionTable = () => {
       try {
         setLoading(true);
         const response = await myAuctionApi.getMyAuction();
-        console.log(response.data);
-        if (response.data) {
-          dispatch(setMyAuctionData(response.data));
+        const sortedData = response.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        if (sortedData) {
+          dispatch(setMyAuctionData(sortedData));
         }
       } catch (error) {
         console.error('Error fetching auction data:', error);

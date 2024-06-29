@@ -3,15 +3,22 @@ import { requestJewelryApi } from '../../../../../../services/api/RequestApi/req
 import {
   // AutoComplete,
   Button,
+  Divider,
   Form,
   Input,
   InputNumber,
   Modal,
   Select,
+  Spin,
+  Typography,
   Upload,
 } from 'antd';
 import { UploadOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useNotification } from '../../../../../../hooks/useNotification';
+import { dataColor } from '../../../../../../utils/colorData/colorUtil';
+import { InputCategoryRequest } from '../../../../../../components/ui/InputCategoryRequest';
+import { useNavigate } from 'react-router-dom';
+const { Title } = Typography;
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -32,16 +39,14 @@ export const FormRequest = () => {
   const [brand, setBrand] = useState([]);
   const [collection, setCollection] = useState([]);
   const [material, setMaterial] = useState([]);
+  const [choosedCategory, setChoosedCategory] = useState(null);
   const [materialsInput, setMaterialsInput] = useState([
     { idMaterial: null, weight: 0 },
   ]);
-  const [choosedBrand, setChoosedBrand] = useState('');
+  const [choosedBrand, setChoosedBrand] = useState(null);
   const [loading, setLoading] = useState(false);
-  // const [optionsBrand, setOptionsBrand] = useState([]);
-  // const [optionsCollection, setOptionsCollection] = useState([]);
-  // const getPanelValueBrand = (searchText) => (!searchText ? [] : itemsBrand);
-  // const getPanelValueCollection = (searchText) =>
-  //   !searchText ? [] : itemsCollection;
+  const [loadingRender, setLoadingRender] = useState(false);
+  const navigate = useNavigate()
 
   const handleCancel = () => setPreviewVisible(false);
 
@@ -95,33 +100,12 @@ export const FormRequest = () => {
     return Promise.resolve();
   };
 
-  const fetchApiCategory = async () => {
-    const response = await requestJewelryApi.getCategory();
-    setCategory(response.data);
-  };
-
-  const fetchBrand = async () => {
-    const response = await requestJewelryApi.getBrand();
-    setBrand(response.data);
-  };
-
-  const fetchCollection = async () => {
-    const response = await requestJewelryApi.getCollection();
-    setCollection(response.data);
-  };
-
-  const fetchMaterial = async () => {
-    const response = await requestJewelryApi.getMaterial();
-    setMaterial(response.data);
-  };
-
   const filterOption = (input, option) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      console.log(values);
       const formData = new FormData();
       if (values?.name) formData.append('name', values.name);
       if (values?.description)
@@ -158,10 +142,13 @@ export const FormRequest = () => {
       await requestJewelryApi.addRequestJewelry(formData);
       form.resetFields();
       setMaterialsInput([{ idMaterial: null, weight: 0 }]);
+      setChoosedBrand(null);
+      setChoosedCategory(null);
       openNotification({
         type: 'success',
         description: 'Post jewelry success',
       });
+      navigate('/wishlist')
     } catch (error) {
       openNotification({
         type: 'error',
@@ -181,14 +168,7 @@ export const FormRequest = () => {
     const updatedMaterials = materialsInput.filter((_, idx) => idx !== index);
     setMaterialsInput(updatedMaterials);
     form.resetFields([`material_${index}`, `weight_${index}`]);
-    form.validateFields(['weight']);
-  };
-
-  const handleMaterialChange = (index, idMaterial) => {
-    const updatedMaterials = materialsInput.map((material, idx) =>
-      idx === index ? { ...material, idMaterial } : material
-    );
-    setMaterialsInput(updatedMaterials);
+    handleWeightTotalChange(updatedMaterials);
     form.validateFields(['weight']);
   };
 
@@ -199,28 +179,31 @@ export const FormRequest = () => {
     return material?.filter((mat) => !selectedMaterials.includes(mat.id));
   };
 
+  const handleMaterialChange = (index, idMaterial) => {
+    const updatedMaterials = materialsInput.map((material, idx) =>
+      idx === index ? { ...material, idMaterial } : material
+    );
+    setMaterialsInput(updatedMaterials);
+    handleWeightTotalChange(updatedMaterials);
+    form.validateFields(['weight']);
+  };
+
   const handleWeightChange = (index, weight) => {
     const updatedMaterials = materialsInput.map((material, idx) =>
       idx === index ? { ...material, weight } : material
     );
     setMaterialsInput(updatedMaterials);
+    handleWeightTotalChange(updatedMaterials);
     form.validateFields(['weight']);
   };
 
-  useEffect(() => {
-    fetchApiCategory();
-    fetchBrand();
-    fetchCollection();
-    fetchMaterial();
-  }, []);
-  const itemsGender = useMemo(
-    () => [
-      { label: 'Male', value: 'Male' },
-      { label: 'Female', value: 'Female' },
-      { label: 'Unisex', value: 'Unisex' },
-    ],
-    []
-  );
+  const handleWeightTotalChange = (materials) => {
+    const totalWeight = materials.reduce(
+      (total, material) => total + material.weight,
+      0
+    );
+    form.setFieldsValue({ weight: totalWeight });
+  };
 
   const itemsCondition = useMemo(
     () => [
@@ -247,17 +230,64 @@ export const FormRequest = () => {
       label: e?.name,
       value: e?.name,
     }));
-  useEffect(() => {
-    if (itemsCategory.length > 0) {
-      form.setFieldsValue({
-        category: itemsCategory[0].value,
-        sex: itemsGender[0].value,
-        jewelryCondition: itemsCondition[0].value,
-      });
-    }
-  }, [form, itemsCategory, itemsCondition, itemsGender]);
 
-  return (
+  const itemsGender = useMemo(
+    () => [
+      { label: 'Male', value: 'Male' },
+      { label: 'Female', value: 'Female' },
+      { label: 'Unisex', value: 'Unisex' },
+    ],
+    []
+  );
+
+  const handleSetValueOfCategory = (value) => {
+    form.setFieldsValue({ category: value });
+    setChoosedCategory(value);
+  };
+
+  useEffect(() => {
+    const fetchApiCategory = async () => {
+      try {
+        setLoadingRender(true);
+        const response = await requestJewelryApi.getCategory();
+        setCategory(response.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoadingRender(false);
+      }
+    };
+
+    const fetchBrand = async () => {
+      const response = await requestJewelryApi.getBrand();
+      setBrand(response.data);
+    };
+
+    const fetchCollection = async () => {
+      const response = await requestJewelryApi.getCollection();
+      setCollection(response.data);
+    };
+
+    const fetchMaterial = async () => {
+      const response = await requestJewelryApi.getMaterial();
+      setMaterial(response.data);
+    };
+    fetchApiCategory();
+    fetchBrand();
+    fetchCollection();
+    fetchMaterial();
+  }, []);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      sex: itemsGender[0].value,
+      jewelryCondition: itemsCondition[0].value,
+    });
+  }, []);
+
+  return loadingRender ? (
+    <Spin />
+  ) : (
     <>
       {contextHolder}
       <Form
@@ -269,10 +299,35 @@ export const FormRequest = () => {
         size='large'
         form={form}
       >
-        <div className='grid grid-cols-3 gap-y-7 gap-x-5'>
+        <Form.Item
+          name={'name'}
+          label={
+            <Title level={5} className='!mb-0 font-sans !font-normal'>
+              Name
+            </Title>
+          }
+          rules={[
+            {
+              required: true,
+              message: 'Must not be empty!',
+            },
+          ]}
+          className='!text-left col-span-1'
+        >
+          <Input placeholder='Enter jewelry name...' className='!w-1/2' />
+        </Form.Item>
+        <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
+          Category of jewelry
+        </Title>
+        <Divider className='!my-3' />
+        <div className='grid gap-5 grid-cols-3 !w-1/2'>
           <Form.Item
-            name={'name'}
-            label='Jewelry name'
+            name={'category'}
+            label={
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
+                Category
+              </Title>
+            }
             rules={[
               {
                 required: true,
@@ -281,40 +336,30 @@ export const FormRequest = () => {
             ]}
             className='!text-left col-span-1'
           >
-            <Input />
+            <Select
+              showSearch
+              placeholder='Choose category'
+              optionFilterProp='children'
+              filterOption={filterOption}
+              options={itemsCategory}
+              className='!text-left !w-full'
+              onSelect={handleSetValueOfCategory}
+            />
           </Form.Item>
-          <Form.Item
-            name={'weight'}
-            label='Weight (g)'
-            rules={[
-              {
-                required: true,
-                message: 'Must not be empty!',
-              },
-              {
-                validator: validateWeightMaterial,
-              },
-            ]}
-            className='!text-left h-24'
-          >
-            <InputNumber controls={false} className='w-full' />
-          </Form.Item>
-          <Form.Item
-            name={'size'}
-            label='Size'
-            rules={[
-              {
-                required: true,
-                message: 'Must not be empty!',
-              },
-            ]}
-            className='!text-left'
-          >
-            <Input />
-          </Form.Item>
+          <InputCategoryRequest category={choosedCategory} form={form} />
+        </div>
+        <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
+          Information of jewelry
+        </Title>
+        <Divider className='!my-3' />
+        <div className='grid grid-cols-5 gap-5'>
           <Form.Item
             name={'color'}
-            label='Color'
+            label={
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
+                Color
+              </Title>
+            }
             rules={[
               {
                 required: true,
@@ -323,11 +368,21 @@ export const FormRequest = () => {
             ]}
             className='!text-left'
           >
-            <Input />
+            <Select
+              options={dataColor}
+              placeholder='Choose color'
+              optionFilterProp='children'
+              filterOption={filterOption}
+              showSearch
+            />
           </Form.Item>
           <Form.Item
             name={'jewelryCondition'}
-            label='Condition'
+            label={
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
+                Condition
+              </Title>
+            }
             rules={[
               {
                 required: true,
@@ -343,71 +398,14 @@ export const FormRequest = () => {
               className='!text-left'
             />
           </Form.Item>
-          <Form.Item
-            name={'category'}
-            label='Category'
-            rules={[
-              {
-                required: true,
-                message: 'Must not be empty!',
-              },
-            ]}
-            className='!text-left'
-          >
-            <Select
-              showSearch
-              placeholder='Choose category'
-              optionFilterProp='children'
-              filterOption={filterOption}
-              options={itemsCategory}
-              className='!text-left'
-            />
-          </Form.Item>
-          <Form.Item name={'brand'} label='Brand' className='!text-left'>
-            {/* <AutoComplete
-              options={optionsBrand}
-              onSearch={(text) => setOptionsBrand(getPanelValueBrand(text))}
-              placeholder='Choose brand'
-              onChange={(value) => setChoosedBrand(value)}
-              className='!text-left'
-            /> */}
-            <Select
-              onChange={(value) => setChoosedBrand(value)}
-              showSearch
-              placeholder='Choose brand'
-              optionFilterProp='children'
-              filterOption={filterOption}
-              options={itemsBrand}
-              className='!text-left'
-            />
-          </Form.Item>
-          <Form.Item
-            name={'collection'}
-            label='Collection (Please select the brand first)'
-            className='!text-left'
-          >
-            {/* <AutoComplete
-              options={optionsCollection}
-              onSearch={(text) =>
-                setOptionsCollection(getPanelValueCollection(text))
-              }
-              placeholder='Chọn bộ sưu tập'
-              className='!text-left'
-              disabled={!choosedBrand}
-            /> */}
-            <Select
-              showSearch
-              placeholder='Choose collection'
-              optionFilterProp='children'
-              filterOption={filterOption}
-              options={itemsCollection}
-              className='!text-left'
-              disabled={!choosedBrand}
-            />
-          </Form.Item>
+
           <Form.Item
             name={'sex'}
-            label='Gender'
+            label={
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
+                Gender
+              </Title>
+            }
             rules={[
               {
                 required: true,
@@ -425,13 +423,70 @@ export const FormRequest = () => {
               className='!text-left'
             />
           </Form.Item>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: 'Must not be empty!',
+              },
+            ]}
+            name={'brand'}
+            label={
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
+                Brand
+              </Title>
+            }
+            className='!text-left'
+          >
+            <Select
+              onChange={(value) => setChoosedBrand(value)}
+              showSearch
+              placeholder='Choose brand'
+              optionFilterProp='children'
+              filterOption={filterOption}
+              options={itemsBrand}
+              className='!text-left'
+            />
+          </Form.Item>
+          <Form.Item
+            name={'collection'}
+            label={
+              <Title level={5} className='!mb-0 font-sans !font-normal'>
+                Collection (Choose brand first)
+              </Title>
+            }
+            className='!text-left'
+            rules={[
+              {
+                required: true,
+                message: 'Must not be empty!',
+              },
+            ]}
+          >
+            <Select
+              showSearch
+              placeholder='Choose collection'
+              optionFilterProp='children'
+              filterOption={filterOption}
+              options={itemsCollection}
+              className='!text-left'
+              disabled={!choosedBrand}
+            />
+          </Form.Item>
         </div>
-
+        <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
+          Weight of jewelry
+        </Title>
+        <Divider className='!my-3' />
         {materialsInput.map((material, index) => (
           <div key={index} className='grid grid-cols-3 gap-4'>
             <Form.Item
               name={`material_${index}`}
-              label='Material'
+              label={
+                <Title level={5} className='!mb-0 font-sans !font-normal'>
+                  Material
+                </Title>
+              }
               className='!text-left'
               rules={[
                 {
@@ -454,9 +509,14 @@ export const FormRequest = () => {
               />
             </Form.Item>
             <Form.Item
-              label={`Weight of material ${
-                material.idMaterial === 3 ? '(karat)' : '(g)'
-              }`}
+              label={
+                <Title
+                  level={5}
+                  className='!mb-0 font-sans !font-normal'
+                >{`Weight of material ${
+                  material.idMaterial === 3 ? '(karat)' : '(g)'
+                }`}</Title>
+              }
               name={`weight_${index}`}
               className='!text-left'
               rules={[
@@ -469,6 +529,7 @@ export const FormRequest = () => {
               ]}
             >
               <InputNumber
+                placeholder='Enter material weight...'
                 controls={false}
                 value={material.weight}
                 onChange={(e) => handleWeightChange(index, e)}
@@ -491,13 +552,42 @@ export const FormRequest = () => {
         <Button
           type='dashed'
           onClick={addMaterialInput}
-          className='w-2/3 flex justify-center'
+          className='w-2/3 flex justify-center font-sans !font-normal'
         >
           Add more material
         </Button>
         <Form.Item
+          name={'weight'}
+          label={
+            <Title level={5} className='!mb-0 font-sans !font-normal'>
+              Weight (g)
+            </Title>
+          }
+          rules={[
+            {
+              required: true,
+              message: 'Must not be empty!',
+            },
+            {
+              validator: validateWeightMaterial,
+            },
+          ]}
+          className='!text-left h-24'
+        >
+          <InputNumber
+            placeholder='Total of material weight'
+            readOnly
+            controls={false}
+            className='w-1/5'
+          />
+        </Form.Item>
+        <Form.Item
           name={'description'}
-          label='Description'
+          label={
+            <Title level={5} className='!mb-0 font-sans !font-normal'>
+              Description
+            </Title>
+          }
           className='!text-left'
           rules={[
             {
@@ -506,11 +596,15 @@ export const FormRequest = () => {
             },
           ]}
         >
-          <Input.TextArea rows={4} />
+          <Input.TextArea placeholder='Enter jewelry description...' rows={4} />
         </Form.Item>
         <Form.Item
           name='imagesFile'
-          label='Upload jewelry image (The first image will be thumbnail)'
+          label={
+            <Title level={5} className='!mb-0 font-sans !font-normal'>
+              Upload jewelry image (The first image will be thumbnail){' '}
+            </Title>
+          }
           valuePropName='fileList'
           getValueFromEvent={normFile}
           rules={[{ required: true, message: 'Must not be empty!' }]}
@@ -527,7 +621,12 @@ export const FormRequest = () => {
             {fileList.length >= 8 ? null : (
               <div>
                 <UploadOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
+                <div
+                  style={{ marginTop: 8 }}
+                  className='font-sans !font-normal'
+                >
+                  Upload
+                </div>
               </div>
             )}
           </Upload>

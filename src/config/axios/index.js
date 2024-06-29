@@ -17,7 +17,6 @@ const openNotificationWithIcon = (type, title) => {
     duration: 5,
   });
 };
-
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
@@ -37,7 +36,7 @@ const refreshToken = async () => {
     throw new Error('No refresh token available');
   }
   const response = await axios.post(
-    'http://167.71.212.203:8080/api/v1/user/refresh',
+    'http://apijewelryauction.techx.id.vn:8081/api/v1/user/refresh',
     { refresh }
   );
   const { accessToken } = response.data;
