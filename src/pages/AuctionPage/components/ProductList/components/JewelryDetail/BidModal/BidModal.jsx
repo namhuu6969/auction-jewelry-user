@@ -12,6 +12,7 @@ export const BidModal = ({
   open,
   currentStep,
   step,
+  currentPrice,
   bidAmount,
   handleOk,
   handleCancel,
@@ -41,7 +42,12 @@ export const BidModal = ({
         <div className='flex flex-col gap-4'>
           <label>Bid Amount (VND):</label>
           <Flex justify='center' align='center'>
-            <Button className='!inline w-[10%]' onClick={decreaseBidAmount} type='primary'>
+            <Button
+              disabled={parseInt(bidAmount) <= parseInt(currentPrice + step)}
+              className='!inline w-[10%]'
+              onClick={decreaseBidAmount}
+              type='primary'
+            >
               <IoRemove />
             </Button>
             <Input
