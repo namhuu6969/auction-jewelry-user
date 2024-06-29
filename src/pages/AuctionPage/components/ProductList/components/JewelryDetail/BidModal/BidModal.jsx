@@ -12,6 +12,7 @@ export const BidModal = ({
   open,
   currentStep,
   step,
+  currentPrice,
   bidAmount,
   handleOk,
   handleCancel,
@@ -41,7 +42,12 @@ export const BidModal = ({
         <div className='flex flex-col gap-4'>
           <label>Bid Amount (VND):</label>
           <Flex justify='center' align='center'>
-            <Button className='!inline w-[10%]' onClick={decreaseBidAmount} type='primary'>
+            <Button
+              disabled={parseInt(bidAmount) <= parseInt(currentPrice + step)}
+              className='!inline w-[10%]'
+              onClick={decreaseBidAmount}
+              type='primary'
+            >
               <IoRemove />
             </Button>
             <Input
@@ -64,7 +70,7 @@ export const BidModal = ({
             )}
           </div>
           <Card title={profileInfo.full_name} extra={<a href='#'>More</a>}>
-            <p>Your Wallet Balance: {money} VND</p> {/* Display wallet balance */}
+            <p>Your Wallet Balance: {profileInfo.money} VND</p> {/* Display wallet balance */}
           </Card>
         </div>
       ),
@@ -75,7 +81,7 @@ export const BidModal = ({
         <div className='flex flex-col gap-4'>
           <Title level={4}>Please confirm your bid:</Title>
           <p>Bid Amount: {bidAmount} VND</p>
-          <p>Your Wallet Balance: {money} VND</p> {/* Display wallet balance */}
+          <p>Your Wallet Balance: {profileInfo.money} VND</p> {/* Display wallet balance */}
         </div>
       ),
     },

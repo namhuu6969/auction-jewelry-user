@@ -30,6 +30,7 @@ export const JewelryDetail = () => {
   const [step, setStep] = useState(0);
   const [isWinner, setIsWinner] = useState(false); // State to check if user is winner
   const [bidAmount, setBidAmount] = useState('');
+  const [flag, setFlag] = useState(false);
 
   const userEmail = localStorage.getItem('fullName');
 
@@ -39,7 +40,7 @@ export const JewelryDetail = () => {
       setJewelryData(response.data.jewelry);
       setAuctionData(response.data);
       setStep(response.data.step);
-      setBidAmount(response.data.currentPrice.toString());
+      setBidAmount((response.data.currentPrice + response.data.step).toString());
       setSelectedImage({
         id: 1,
         image: `http://167.71.212.203:8080/uploads/jewelry/${response.data.jewelry.jewelryImages[0]?.url}`, // Set the initial selected image
@@ -93,7 +94,9 @@ export const JewelryDetail = () => {
   const decreaseBidAmount = () => {
     if (bidAmount > currentPrice) {
       setBidAmount((prevBidAmount) => (parseInt(prevBidAmount) - step).toString());
+      setFlag(false);
     } else {
+      setFlag(true);
       notification.warning({
         message: 'Bid amount must be greater than current price',
       });
@@ -358,6 +361,7 @@ export const JewelryDetail = () => {
         <BidModal
           open={isModalVisible}
           currentStep={currentStep}
+          currentPrice={currentPrice}
           step={step}
           bidAmount={bidAmount}
           handleOk={handleOk}
