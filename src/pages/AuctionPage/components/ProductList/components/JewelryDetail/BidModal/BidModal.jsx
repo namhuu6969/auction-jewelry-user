@@ -22,6 +22,9 @@ export const BidModal = ({
   next,
   prev,
 }) => {
+  const userData = useSelector((state) => state.personal.user);
+  const money = useSelector((state) => state.personal.money);
+
   const [profileInfo, setProfileInfo] = useState({});
   useEffect(() => {
     const fetchUserData = async () => {
@@ -61,7 +64,7 @@ export const BidModal = ({
             )}
           </div>
           <Card title={profileInfo.full_name} extra={<a href='#'>More</a>}>
-            <p>Your Wallet Balance: {profileInfo.money} VND</p> {/* Display wallet balance */}
+            <p>Your Wallet Balance: {money} VND</p> {/* Display wallet balance */}
           </Card>
         </div>
       ),
@@ -72,15 +75,16 @@ export const BidModal = ({
         <div className='flex flex-col gap-4'>
           <Title level={4}>Please confirm your bid:</Title>
           <p>Bid Amount: {bidAmount} VND</p>
-          <p>Your Wallet Balance: {profileInfo.money} VND</p> {/* Display wallet balance */}
+          <p>Your Wallet Balance: {money} VND</p> {/* Display wallet balance */}
         </div>
       ),
     },
   ];
+
   const navigator = useNavigate();
 
   const checkWallet = () => {
-    if (profileInfo.money < bidAmount) {
+    if (money < bidAmount) {
       Modal.confirm({
         title: 'Insufficient Funds',
         content: `Your wallet balance is not sufficient`,
