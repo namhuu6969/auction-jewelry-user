@@ -70,7 +70,7 @@ export const BidModal = ({
             )}
           </div>
           <Card title={profileInfo.full_name} extra={<a href='#'>More</a>}>
-            <p>Your Wallet Balance: {money} VND</p> {/* Display wallet balance */}
+            <p>Your Wallet Balance: {profileInfo.money} VND</p> {/* Display wallet balance */}
           </Card>
         </div>
       ),
@@ -81,7 +81,7 @@ export const BidModal = ({
         <div className='flex flex-col gap-4'>
           <Title level={4}>Please confirm your bid:</Title>
           <p>Bid Amount: {bidAmount} VND</p>
-          <p>Your Wallet Balance: {money} VND</p> {/* Display wallet balance */}
+          <p>Your Wallet Balance: {profileInfo.money} VND</p> {/* Display wallet balance */}
         </div>
       ),
     },
