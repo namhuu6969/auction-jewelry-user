@@ -49,6 +49,12 @@ export const ValuatingTable = () => {
       key: 'name',
     },
     {
+      title: 'Starting Price',
+      dataIndex: ['jewelry', 'staringPrice'],
+      key: 'staringPrice',
+      render: (data) => formatPriceVND(data),
+    },
+    {
       title: 'Valuation Staff',
       dataIndex: ['staff', 'full_name'],
       key: 'staff',
@@ -63,7 +69,7 @@ export const ValuatingTable = () => {
       title: 'Valuation Fee',
       dataIndex: 'valuatingFee',
       key: 'valuationFee',
-      render: (data) => formatPriceVND(data)
+      render: (data) => formatPriceVND(data),
     },
     {
       title: 'Valuation Type',
@@ -104,20 +110,23 @@ export const ValuatingTable = () => {
       ),
     },
   ];
-  const handleError = (status, startingPrice, valuationType) => {
+  const handleError = (status, startingPrice, valuationType, statusJewelry) => {
     const error = [];
     if (status === 'REQUEST') {
-      error.push('Staff is valuating this jewelry');
+      error.push('- Staff is valuating this jewelry');
     }
     if (startingPrice === 0) {
-      error.push('Staff has not set the starting price yet');
+      error.push('- Staff has not set the starting price yet');
     }
     if (valuationType === true) {
       error.push(
-        'Online Valuated jewelry cannot be put up for auction! Please valuate this jewelry offline'
+        '- Online Valuated jewelry cannot be put up for auction! Please valuate this jewelry offline'
       );
     }
-    return error.join('\n');
+    if (statusJewelry === 'AUCTIONING') {
+      error.push('- This jewelry is auctioning');
+    }
+    if (status) return error.join('\n');
   };
 
   const getMenu = (id, status, startingPrice, statusJewelry, valuationType) => (
@@ -128,11 +137,18 @@ export const ValuatingTable = () => {
           status === 'REQUEST' ||
           status === 'VALUATING' ||
           statusJewelry === 'AUCTIONING' ||
-          valuationType === true ||
           startingPrice === 0
         }
       >
-        <Tooltip title={handleError(status, startingPrice, valuationType)} overlayStyle={{ whiteSpace: 'pre-line' }}>
+        <Tooltip
+          title={handleError(
+            status,
+            startingPrice,
+            valuationType,
+            statusJewelry
+          )}
+          overlayStyle={{ whiteSpace: 'pre-line' }}
+        >
           <span>
             <a onClick={() => handleAddAuctionClick(id)}>Put up auction</a>
           </span>

@@ -317,7 +317,7 @@ export const FormRequest = () => {
           <Input placeholder='Enter jewelry name...' className='!w-1/2' />
         </Form.Item>
         <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
-          Category of jewelry
+          Category
         </Title>
         <Divider className='!my-3' />
         <div className='grid gap-5 grid-cols-3 !w-1/2'>
@@ -349,7 +349,7 @@ export const FormRequest = () => {
           <InputCategoryRequest category={choosedCategory} form={form} />
         </div>
         <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
-          Information of jewelry
+          Information
         </Title>
         <Divider className='!my-3' />
         <div className='grid grid-cols-5 gap-5'>
@@ -475,7 +475,7 @@ export const FormRequest = () => {
           </Form.Item>
         </div>
         <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
-          Weight of jewelry
+          Weight
         </Title>
         <Divider className='!my-3' />
         {materialsInput.map((material, index) => (
@@ -581,6 +581,10 @@ export const FormRequest = () => {
             className='w-1/5'
           />
         </Form.Item>
+        <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
+          Description
+        </Title>
+        <Divider className='!my-3' />
         <Form.Item
           name={'description'}
           label={
@@ -598,6 +602,10 @@ export const FormRequest = () => {
         >
           <Input.TextArea placeholder='Enter jewelry description...' rows={4} />
         </Form.Item>
+        <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
+          Image
+        </Title>
+        <Divider className='!my-3' />
         <Form.Item
           name='imagesFile'
           label={

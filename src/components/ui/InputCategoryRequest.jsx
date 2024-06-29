@@ -110,7 +110,7 @@ export const InputCategoryRequest = ({ category, form }) => {
     <Form.Item
       name='size'
       label={
-        <Title level={4} className='!mb-0 font-sans !font-normal'>
+        <Title level={5} className='!mb-0 font-sans !font-normal'>
           Size
         </Title>
       }
