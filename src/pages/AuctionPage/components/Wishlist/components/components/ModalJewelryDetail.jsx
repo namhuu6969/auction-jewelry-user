@@ -250,6 +250,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
       setChoosedBrand(data?.brand?.name);
       setChoosedCategory(data?.category?.id);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     jewelryId,
     open,
@@ -473,7 +474,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                 </Form.Item>
                 <div>
                   {materialsInput?.map((material, index) => (
-                    <div key={index} className='flex gap-4'>
+                    <div key={index} className='grid grid-cols-4 gap-4'>
                       <Form.Item
                         label={<TitleLabel>Materials</TitleLabel>}
                         className='!text-left col-span-1'

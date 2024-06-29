@@ -20,16 +20,16 @@ export const InputCategoryUpdate = ({ category, form, value }) => {
         return (
           <div className='flex gap-5 items-center'>
             <Title level={5} className='font-sans !font-normal w-fit !m-0'>
-              90 cm ~
+              36 ~
             </Title>
             <InputNumber
               {...inputProps}
-              min={90}
-              max={120}
+              min={36}
+              max={60}
               placeholder='Enter necklace size...'
             />
             <Title level={5} className='font-sans !font-normal w-fit !m-0'>
-              ~ 120 cm
+              ~ 60
             </Title>
           </div>
         );
@@ -37,7 +37,7 @@ export const InputCategoryUpdate = ({ category, form, value }) => {
         return (
           <div className='flex gap-5 items-center'>
             <Title level={5} className='font-sans !font-normal w-fit !m-0'>
-              6 mm ~
+              6 ~
             </Title>
             <InputNumber
               {...inputProps}
@@ -46,7 +46,7 @@ export const InputCategoryUpdate = ({ category, form, value }) => {
               placeholder='Enter earring size...'
             />
             <Title level={5} className='font-sans !font-normal w-fit !m-0'>
-              ~ 25 mm
+              ~ 25
             </Title>
           </div>
         );
@@ -54,16 +54,16 @@ export const InputCategoryUpdate = ({ category, form, value }) => {
         return (
           <div className='flex gap-5 items-center'>
             <Title level={5} className='font-sans !font-normal w-fit !m-0'>
-              12 cm ~
+              14 ~
             </Title>
             <InputNumber
               {...inputProps}
-              min={12}
-              max={23}
+              min={14}
+              max={25}
               placeholder='Enter bracelet size...'
             />
             <Title level={5} className='font-sans !font-normal w-fit !m-0'>
-              ~ 23 cm
+              ~ 25
             </Title>
           </div>
         );
@@ -71,16 +71,16 @@ export const InputCategoryUpdate = ({ category, form, value }) => {
         return (
           <div className='flex gap-5 items-center'>
             <Title level={5} className='font-sans !font-normal w-fit !m-0'>
-              15.7 mm ~
+              6 ~
             </Title>
             <InputNumber
               {...inputProps}
-              min={15.7}
-              max={21.3}
+              min={6}
+              max={20}
               placeholder='Enter ring size...'
             />
             <Title level={5} className='font-sans !font-normal w-fit !m-0'>
-              ~ 21.3 mm
+              ~ 20
             </Title>
           </div>
         );
@@ -88,16 +88,16 @@ export const InputCategoryUpdate = ({ category, form, value }) => {
         return (
           <div className='flex gap-5 items-center'>
             <Title level={5} className='font-sans !font-normal w-fit !m-0'>
-              90 cm ~
+              36 ~
             </Title>
             <InputNumber
               {...inputProps}
-              min={90}
-              max={120}
+              min={36}
+              max={60}
               placeholder='Enter pendants size...'
             />
             <Title level={5} className='font-sans !font-normal w-fit !m-0'>
-              ~ 120 cm
+              ~ 60
             </Title>
           </div>
         );
@@ -124,7 +124,6 @@ export const InputCategoryUpdate = ({ category, form, value }) => {
       ]}
       className='!text-left col-span-2'
     >
-      {console.log(sizeInput)}
       {handleChangeInputView()}
     </Form.Item>
   );
