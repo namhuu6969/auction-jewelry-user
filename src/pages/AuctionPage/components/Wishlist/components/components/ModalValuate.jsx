@@ -1,10 +1,11 @@
 import { Divider, Flex, Modal, Spin, Table, Typography } from 'antd';
 import { SecondaryButton } from '../../../../../../components/ui/SecondaryButton';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNotification } from '../../../../../../hooks/useNotification';
 import { formatPriceVND } from '../../../../../../utils/utils';
 import { myValuatingApi } from '../../../../../../services/api/WishlistApi/myValuatingApi';
+import { setRender } from '../../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 const { Title } = Typography;
 
 export const ModalValuate = ({ setOpen, open }) => {
@@ -13,6 +14,7 @@ export const ModalValuate = ({ setOpen, open }) => {
   const [dataSource, setDataSource] = useState([]);
   const [data, setData] = useState({});
   const { openNotification, contextHolder } = useNotification();
+  const dispatch = useDispatch()
   const columns = [
     {
       title: 'Material',
@@ -67,6 +69,7 @@ export const ModalValuate = ({ setOpen, open }) => {
         });
       } finally {
         setLoading(false)
+        dispatch(setRender(true))
       }
     };
     if (jewelryId && open) {

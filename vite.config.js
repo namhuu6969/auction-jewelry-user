@@ -21,6 +21,11 @@ export default defineConfig({
     },
   },
   server: {
-    port: 4176,
+    host: true,
+  },
+  build: {
+    outDir: 'build',
+    assetsDir: 'assets',
+    emptyOutDir: true,
   },
 });
