@@ -15,7 +15,7 @@ import {
 } from 'antd';
 import { UploadOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useNotification } from '../../../../../../hooks/useNotification';
-import { dataColor } from '../../../../../../utils/colorData/colorUtil';
+import { dataColor as initialDataColor } from '../../../../../../utils/colorData/colorUtil';
 import { InputCategoryRequest } from '../../../../../../components/ui/InputCategoryRequest';
 import { useNavigate } from 'react-router-dom';
 const { Title } = Typography;
@@ -46,7 +46,18 @@ export const FormRequest = () => {
   const [choosedBrand, setChoosedBrand] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingRender, setLoadingRender] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [disabledButtonAdd, setDisabledButtonAdd] = useState(false);
+  const [dataColor, setDataColor] = useState(initialDataColor);
+  const [newColor, setNewColor] = useState('');
+
+  const handleAddColor = () => {
+    if (newColor && !dataColor.find(color => color.value === newColor)) {
+      setDataColor([...dataColor, { value: newColor, label: newColor }]);
+      setNewColor('');
+    }
+  };
+
 
   const handleCancel = () => setPreviewVisible(false);
 
@@ -148,7 +159,7 @@ export const FormRequest = () => {
         type: 'success',
         description: 'Post jewelry success',
       });
-      navigate('/wishlist')
+      navigate('/wishlist');
     } catch (error) {
       openNotification({
         type: 'error',
@@ -285,6 +296,14 @@ export const FormRequest = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (materialsInput.length >= (material?.length || 0)) {
+      setDisabledButtonAdd(true);
+    } else {
+      setDisabledButtonAdd(false);
+    }
+  }, [materialsInput, material]);
+
   return loadingRender ? (
     <Spin />
   ) : (
@@ -320,7 +339,7 @@ export const FormRequest = () => {
           Category
         </Title>
         <Divider className='!my-3' />
-        <div className='grid gap-5 grid-cols-3 !w-1/2'>
+        <div className='grid gap-5 grid-cols-4'>
           <Form.Item
             name={'category'}
             label={
@@ -334,7 +353,7 @@ export const FormRequest = () => {
                 message: 'Must not be empty!',
               },
             ]}
-            className='!text-left col-span-1'
+            className='!text-left col-span-1 flex !w-full'
           >
             <Select
               showSearch
@@ -342,7 +361,7 @@ export const FormRequest = () => {
               optionFilterProp='children'
               filterOption={filterOption}
               options={itemsCategory}
-              className='!text-left !w-full'
+              className='!text-left !w-[350px]'
               onSelect={handleSetValueOfCategory}
             />
           </Form.Item>
@@ -374,6 +393,21 @@ export const FormRequest = () => {
               optionFilterProp='children'
               filterOption={filterOption}
               showSearch
+              dropdownRender={menu => (
+                <>
+                  {menu}
+                  <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
+                    <Input
+                      style={{ flex: 'auto' }}
+                      value={newColor}
+                      onChange={e => setNewColor(e.target.value)}
+                    />
+                    <Button type="link" onClick={handleAddColor}>
+                      Add new color
+                    </Button>
+                  </div>
+                </>
+              )}
             />
           </Form.Item>
           <Form.Item
@@ -553,6 +587,7 @@ export const FormRequest = () => {
           type='dashed'
           onClick={addMaterialInput}
           className='w-2/3 flex justify-center font-sans !font-normal'
+          disabled={disabledButtonAdd}
         >
           Add more material
         </Button>
@@ -641,7 +676,7 @@ export const FormRequest = () => {
         </Form.Item>
         <Form.Item className='w-60 mx-auto lg:mt-10'>
           <Button
-            className='w-full bg-[#946257] font-serif hover:!bg-[#946257] hover:!shadow-none'
+            className={`w-full bg-[#946257] font-serif  hover:!shadow-none  hover:!bg-[#946257]`}
             type='primary'
             htmlType='submit'
             loading={loading}
