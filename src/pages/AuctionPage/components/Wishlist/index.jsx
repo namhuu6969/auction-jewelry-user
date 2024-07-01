@@ -1,4 +1,4 @@
-import { Divider, Flex, Tabs } from 'antd';
+import { Divider, Flex, Image, Tabs } from 'antd';
 import './index.css';
 import { MyJewelryTable } from './components/MyJewelryTable';
 import { WishlistTable } from './components/WishlistTable';
@@ -61,29 +61,33 @@ const WishlistPage = () => {
       label: 'My Winning',
       children: <WinningTable />,
     },
-
   ];
   useEffect(() => {
     const fetchData = async () => {
       const responseCate = await wishlistApi.getCategory();
       const responseBrand = await wishlistApi.getBrand();
       const responseCollection = await wishlistApi.getCollection();
-      const responseMaterial = await wishlistApi.getMaterial()
+      const responseMaterial = await wishlistApi.getMaterial();
       dispatch(setCategory(responseCate.data));
       dispatch(setBrand(responseBrand.data));
       dispatch(setCollection(responseCollection.data));
-      dispatch(setMaterial(responseMaterial.data))
+      dispatch(setMaterial(responseMaterial.data));
     };
     fetchData();
   }, [dispatch]);
   return (
-    <div className='h-full'>
+    <div className='min-h-[58.3vh]'>
       {authorize ? (
         <>
           <Flex className='flex-col'>
             <Breadcum linkBreadcum={breadcumLink} />
             <Divider className='border-black' />
           </Flex>
+          <Image
+            src='public/images/banner-management.jpeg'
+            preview={false}
+            className='mb-5'
+          />
           <Tabs defaultActiveKey='1' className='custom-tabs' items={items} />
         </>
       ) : (
