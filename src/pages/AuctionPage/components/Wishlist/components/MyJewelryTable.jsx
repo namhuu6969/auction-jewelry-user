@@ -15,7 +15,8 @@ import { ModalValuate } from './components/ModalValuate';
 import { ModalConfirmDelete } from './components/ModalConfirmDelete';
 import { myJewelryApi } from '../../../../../services/api/WishlistApi/myJewelryApi';
 import { useNotification } from '../../../../../hooks/useNotification';
-import { myValuatingApi } from '../../../../../services/api/WishlistApi/myValuatingApi';
+import { ModalOfflineValuate } from './components/ModalOfflineValuate';
+import { renderStatusJewelry } from '../../../../../utils/RenderStatus/renderStatusUtil';
 
 export const MyJewelryTable = () => {
   const { getColumnSearchProps } = useTableSearch();
@@ -31,31 +32,11 @@ export const MyJewelryTable = () => {
   const [openValuate, setOpenValuate] = useState(false);
   const [openDetail, setOpenDetail] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [openOfflineValuate, setOpenOfflineValuate] = useState(false);
   const dispatch = useDispatch();
   const [confirm, setConfirm] = useState(false);
   const [id, setId] = useState(0);
   const { openNotification, contextHolder } = useNotification();
-  useEffect(() => {
-    const fetchJewelryMe = async () => {
-      try {
-        setLoading(true);
-        const response = await wishlistApi.getJewelryByMe();
-        const sortedData = response.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        dispatch(setJewelryData(sortedData));
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchJewelryMe();
-    if (render) {
-      fetchJewelryMe();
-    }
-  }, [dispatch, render]);
 
   const handleConfirmDelete = (id) => {
     setOpenConfirm(true);
@@ -72,7 +53,6 @@ export const MyJewelryTable = () => {
         description: 'Delete successfully',
       });
     } catch (error) {
-      console.log(error);
       openNotification({
         type: 'error',
         description: error.response.data.message,
@@ -91,30 +71,8 @@ export const MyJewelryTable = () => {
   };
 
   const handleOfflineValuate = async (id) => {
-    const data = {
-      jewelryId: id,
-      desiredPrice: 0,
-      paymentMethod: 'VNPAY',
-      notes: 'string',
-      valuatingMethod: 'DIRECTLY_VALUATION',
-      online: false,
-    };
-    try {
-      setLoading(true);
-      await myValuatingApi.valuateTheJewelry(data);
-      openNotification({
-        type: 'success',
-        description: 'Your request is send',
-      });
-    } catch (error) {
-      openNotification({
-        type: 'error',
-        description: 'Failed to fetch',
-      });
-    } finally {
-      setLoading(false);
-      dispatch(setRender(true));
-    }
+    setOpenOfflineValuate(true);
+    dispatch(setJewelryId(id));
   };
 
   const handleErrorForSendValuate = (status) => {
@@ -292,6 +250,7 @@ export const MyJewelryTable = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      render: (data) => renderStatusJewelry(data),
     },
     {
       title: 'Action',
@@ -309,7 +268,28 @@ export const MyJewelryTable = () => {
       ),
     },
   ];
+  useEffect(() => {
+    const fetchJewelryMe = async () => {
+      try {
+        setLoading(true);
+        const response = await wishlistApi.getJewelryByMe();
+        const sortedData = response.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        dispatch(setJewelryData(sortedData));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchJewelryMe();
+    if (render) {
+      fetchJewelryMe();
+      dispatch(setRender(false));
+    }
+  }, [dispatch, render]);
   return (
     <>
       {contextHolder}
@@ -322,6 +302,10 @@ export const MyJewelryTable = () => {
         loading={loadingDelete}
         setLoading={setLoadingDelete}
       />
+      <ModalOfflineValuate
+        open={openOfflineValuate}
+        setOpen={setOpenOfflineValuate}
+      />
       <ModalValuate open={openValuate} setOpen={setOpenValuate} />
       <ModalJewelryDetail open={openDetail} setOpen={setOpenDetail} />
       <Table
@@ -331,6 +315,7 @@ export const MyJewelryTable = () => {
         loading={loading}
         dataSource={[...jewelryData]}
         columns={columns}
+        pagination={{ pageSize: 4 }}
       />
     </>
   );

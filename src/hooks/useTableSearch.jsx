@@ -18,15 +18,21 @@ const useTableSearch = () => {
     setSearchText('');
   };
 
+  const getNestedValue = (record, dataIndex) => {
+    if (Array.isArray(dataIndex)) {
+      return dataIndex.reduce((acc, key) => (acc ? acc[key] : null), record);
+    }
+    return record[dataIndex];
+  };
+
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
       confirm,
       clearFilters,
-      close,
     }) => (
-      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+      <div style={{ padding: 8 }}>
         <Input
           ref={searchInput}
           placeholder={`Search ${dataIndex}`}
@@ -48,32 +54,27 @@ const useTableSearch = () => {
             Search
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => handleReset(clearFilters)}
             size='small'
             style={{ width: 90 }}
           >
             Reset
           </Button>
-          <Button
-            type='link'
-            size='small'
-            onClick={() => {
-              close();
-            }}
-          >
-            Close
-          </Button>
         </Space>
       </div>
     ),
     filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
+      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
+    onFilter: (value, record) => {
+      const recordValue = getNestedValue(record, dataIndex);
+      return recordValue
+        ? recordValue.toString().toLowerCase().includes(value.toLowerCase())
+        : '';
+    },
+    onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
+        setTimeout(() => searchInput.current.select(), 100);
       }
     },
     render: (text) => text,
