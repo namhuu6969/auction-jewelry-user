@@ -72,10 +72,11 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
       address: combinedAddress || 'string',
       online: false,
     };
-    console.log(data);
     try {
       setLoading(true);
-      await myValuatingApi.valuateTheJewelry(data);
+      const response = await myValuatingApi.valuateTheJewelry(data);
+      console.log(response.data.paymentResponse.url)
+      
       openNotification({
         type: 'success',
         description: 'Your request is send',
@@ -83,6 +84,7 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
       dispatch(setRender(true));
       setMethod('');
       setIsAtHome(false);
+      window.open(response.data.paymentResponse.url)
     } catch (error) {
       openNotification({
         type: 'error',
