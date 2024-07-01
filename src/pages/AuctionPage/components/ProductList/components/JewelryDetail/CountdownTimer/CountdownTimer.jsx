@@ -16,6 +16,7 @@ export const CountdownTimer = ({ targetDate }) => {
 
   return (
     <Card
+      className='drop-shadow-md'
       title={
         <Title level={4} className='font-sans'>
           Time Remaining
