@@ -657,9 +657,10 @@ export const FormRequest = () => {
             name='images'
             listType='picture-card'
             fileList={fileList}
-            onPreview={handlePreview}
+            onPreview={handlePreview} 
             onChange={handleChange}
             beforeUpload={beforeUpload}
+            accept='image/png, image/jpeg, image/jpg'
           >
             {fileList.length >= 8 ? null : (
               <div>
