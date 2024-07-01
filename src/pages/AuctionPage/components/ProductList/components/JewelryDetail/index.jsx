@@ -125,7 +125,7 @@ export const JewelryDetail = () => {
     const dateFormat = new Date(time).toLocaleString('vi-VN', {
       timeZone: 'Asia/Ho_Chi_Minh',
     });
-    return dateFormat;
+    return dateFormat.split(' ')[1];
   };
 
   const calculateDaysDifference = (startDate, endDate) => {
@@ -154,7 +154,7 @@ export const JewelryDetail = () => {
   const img = ({ element }) => {
     return (
       <Image
-        className={`w-[60%] my-10 carousel-image cursor-pointer ${
+        className={`!w-[100%] my-10 carousel-image cursor-pointer ${
           element.id === selectedImage?.id ? 'selected' : ''
         }`}
         src={element?.image}
@@ -215,19 +215,17 @@ export const JewelryDetail = () => {
                 {isWinner.email === userEmail ? (
                   <div>
                     <p>You are winner right now</p>
-                    <BidHistory auctionId={id} size={5} />
                   </div>
                 ) : (
                   <div>
                     <p>{`${isWinner.full_name} are winner right now`}</p>
-                    <BidHistory auctionId={id} size={5} />
                   </div>
                 )}
               </div>
             )}
             <div className='overlay'>
               <Image
-                className='w-[100%] mx-auto !object-cover cursor-pointer'
+                className='!w-[100%] mx-auto !object-cover cursor-pointer'
                 src={selectedImage.image}
               />
             </div>
@@ -255,13 +253,13 @@ export const JewelryDetail = () => {
                   {formatPriceVND(currentPrice)}
                 </Title>
                 <Title className='!mr-4 !my-auto text-left font-sans !font-medium' level={3}>
-                  Start Time:
+                  Start Date:
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
                   {formatedDateTime(startTime)}
                 </Title>
                 <Title className='!mr-4 !my-auto text-left font-sans !font-medium' level={3}>
-                  Eding Time:
+                  Eding Date:
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
                   {formatedDateTime(endTime)}
@@ -270,7 +268,7 @@ export const JewelryDetail = () => {
                   Step:
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
-                  {formatPrice(step)} VND
+                  {formatPrice(step)}$
                 </Title>
                 <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={3}>
                   Status:
@@ -291,17 +289,17 @@ export const JewelryDetail = () => {
             </Flex>
             <CountdownTimer targetDate={endTime} />
             <Flex gap={15}>
-              <Flex className='items-center' gap={10}>
+              <Flex className='items-center' gap={18}>
                 <PiGavelFill className='!text-3xl' />
                 <BidHistory auctionId={id} />
               </Flex>
-              <Flex className='items-center' gap={10}>
+              <Flex className='items-center' gap={18}>
                 <UserOutlined className='!text-3xl' />
                 <Title level={4} className='!m-0 font-sans !font-thin text-start'>
-                  Number of Participants {totalBids}
+                  People: {totalBids}
                 </Title>
               </Flex>
-              <Flex className='items-center' gap={10}>
+              <Flex className='items-center' gap={18}>
                 <ClockCircleOutlined className='!text-3xl' />
                 <Title level={4} className='!m-0 font-sans !font-thin text-start'>
                   Auction Duration: {calculateDaysDifference(startTime, endTime)} days

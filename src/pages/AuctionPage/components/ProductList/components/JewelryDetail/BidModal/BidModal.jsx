@@ -90,7 +90,7 @@ export const BidModal = ({
   const navigator = useNavigate();
 
   const checkWallet = () => {
-    if (money < bidAmount) {
+    if (profileInfo.money < bidAmount) {
       Modal.confirm({
         title: 'Insufficient Funds',
         content: `Your wallet balance is not sufficient`,
