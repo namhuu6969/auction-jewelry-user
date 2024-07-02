@@ -75,7 +75,7 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
     console.log(data);
     try {
       setLoading(true);
-      await myValuatingApi.valuateTheJewelry(data);
+      const response = await myValuatingApi.valuateTheJewelry(data);
       openNotification({
         type: 'success',
         description: 'Your request is send',
@@ -83,6 +83,7 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
       dispatch(setRender(true));
       setMethod('');
       setIsAtHome(false);
+      window.open(response.data.paymentResponse.url)
     } catch (error) {
       openNotification({
         type: 'error',

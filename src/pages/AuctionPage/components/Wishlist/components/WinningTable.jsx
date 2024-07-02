@@ -5,9 +5,14 @@ import { useNotification } from '../../../../../hooks/useNotification';
 import { myAuctionApi } from '../../../../../services/api/WishlistApi/myAuctionApi';
 import { setMyWinning } from '../../../../../core/store/WishlistStore/MyAuctionStore/myAuction';
 import { formatPriceVND, imageURL } from '../../../../../utils/utils';
+import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
+import useTableSearch from '../../../../../hooks/useTableSearch';
+import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
 
 export const WinningTable = () => {
   const myWinningData = useSelector((state) => state.myAuction.myWinningData);
+  const { getColumnSearchProps } = useTableSearch();
+  const { getColumnSearchDateProps } = useTableSearchDate();
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch();
   const { openNotification, contextHolder } = useNotification();
@@ -22,6 +27,7 @@ export const WinningTable = () => {
       title: 'Name',
       dataIndex: ['jewelry', 'name'],
       key: 'name',
+      ...getColumnSearchProps(['jewelry', 'name'])
     },
     {
       title: 'Category',
@@ -72,6 +78,9 @@ export const WinningTable = () => {
       key: 'action',
       align: 'center',
       fixed: 'right',
+      render: (data) => (
+        <PrimaryButton>Payment</PrimaryButton>
+      )
     },
   ];
   useEffect(() => {
