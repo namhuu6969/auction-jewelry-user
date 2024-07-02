@@ -330,6 +330,14 @@ export const FormRequest = () => {
               required: true,
               message: 'Must not be empty!',
             },
+            {
+              validator: (_, value) => {
+                if (value && value.trim()) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('Whitespace-only is not allowed!'));
+              }
+            }
           ]}
           className='!text-left col-span-1'
         >
@@ -657,9 +665,10 @@ export const FormRequest = () => {
             name='images'
             listType='picture-card'
             fileList={fileList}
-            onPreview={handlePreview}
+            onPreview={handlePreview} 
             onChange={handleChange}
             beforeUpload={beforeUpload}
+            accept='image/png, image/jpeg, image/jpg'
           >
             {fileList.length >= 8 ? null : (
               <div>

@@ -17,6 +17,7 @@ import { myJewelryApi } from '../../../../../services/api/WishlistApi/myJewelryA
 import { useNotification } from '../../../../../hooks/useNotification';
 import { ModalOfflineValuate } from './components/ModalOfflineValuate';
 import { renderStatusJewelry } from '../../../../../utils/RenderStatus/renderStatusUtil';
+import { myValuatingApi } from '../../../../../services/api/WishlistApi/myValuatingApi';
 
 export const MyJewelryTable = () => {
   const { getColumnSearchProps } = useTableSearch();
