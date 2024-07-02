@@ -9,6 +9,7 @@ import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
 import { formatPriceVND, imageURL } from '../../../../../utils/utils';
 import { ModalUpdateDate } from './components/ModalUpdateDate';
 import { setDataUpdate } from '../../../../../core/store/WishlistStore/MyAuctionStore/myAuction';
+import { renderStatusAuction } from '../../../../../utils/RenderStatus/renderStatusUtil';
 
 export const MyAuctionTable = () => {
   const { getColumnSearchProps } = useTableSearch();
@@ -80,7 +81,7 @@ export const MyAuctionTable = () => {
       title: 'Name',
       dataIndex: ['jewelry', 'name'],
       key: 'name',
-      ...getColumnSearchProps('name'),
+      ...getColumnSearchProps(['jewelry', 'name']),
     },
     {
       title: 'Starting Price',
@@ -132,6 +133,7 @@ export const MyAuctionTable = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      render: (data) => renderStatusAuction(data),
     },
     {
       title: 'Action',
@@ -164,7 +166,10 @@ export const MyAuctionTable = () => {
           View detail session
         </a>
       </Menu.Item>
-      <Menu.Item key={'update'}>
+      <Menu.Item
+        key={'update'}
+        disabled={status === 'InProgress' ? true : false}
+      >
         <a onClick={() => handleUpdateOpen(data)}>Update date range session</a>
       </Menu.Item>
     </Menu>

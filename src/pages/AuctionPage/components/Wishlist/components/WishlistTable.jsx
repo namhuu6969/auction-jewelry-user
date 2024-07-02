@@ -63,7 +63,7 @@ export const WishlistTable = () => {
       title: 'Name',
       dataIndex: ['auction', 'jewelry', 'name'],
       key: 'name',
-      ...getColumnSearchProps('name'),
+      ...getColumnSearchProps(['auction', 'jewelry', 'name']),
     },
     {
       title: 'Category',
