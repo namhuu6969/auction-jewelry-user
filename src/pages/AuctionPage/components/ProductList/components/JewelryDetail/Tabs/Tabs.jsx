@@ -49,7 +49,7 @@ const TabsContent = ({ jewelry, startTime, endTime }) => {
           </Flex>
           <Flex className='justify-start items-center'>
             <p className='text-lg mr-2'>Brand:</p>
-            <p className='text-lg'>{jewelry.brand.name}</p>
+            <p className='text-lg'>{jewelry.brand.name || ''}</p>
           </Flex>
           <Flex className='justify-start items-center'>
             <p className='text-lg mr-2'>Condition:</p>
@@ -61,7 +61,7 @@ const TabsContent = ({ jewelry, startTime, endTime }) => {
           </Flex>
           <Flex className='justify-start items-center'>
             <p className='text-lg mr-2'>Collection:</p>
-            <p className='text-lg'>{jewelry.collection.name}</p>
+            <p className='text-lg'>{jewelry.collection ? jewelry.collection.name : ''}</p>
           </Flex>
           <Flex className='justify-start items-center'>
             <p className='text-lg mr-2'>Materials:</p>
