@@ -330,6 +330,14 @@ export const FormRequest = () => {
               required: true,
               message: 'Must not be empty!',
             },
+            {
+              validator: (_, value) => {
+                if (value && value.trim()) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('Whitespace-only is not allowed!'));
+              }
+            }
           ]}
           className='!text-left col-span-1'
         >

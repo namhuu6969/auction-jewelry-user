@@ -113,7 +113,7 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
       width={700}
       open={open}
       onCancel={handleCancel}
-      title={'Offline Valuate'}
+      title={'Offline Valuate (You have to payment valuation fee)'}
       footer={[
         <SecondaryButton onClick={handleCancel} key={'cancel'}>
           Cancel
