@@ -1,4 +1,4 @@
-import { Table, Tag } from 'antd';
+import { Image, Table, Tag } from 'antd';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNotification } from '../../../../../hooks/useNotification';
@@ -8,12 +8,15 @@ import { formatPriceVND, imageURL } from '../../../../../utils/utils';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
 import useTableSearch from '../../../../../hooks/useTableSearch';
 import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
+import { setAuctionCheckout } from '../../../../../core/store/Checkout/checkoutSlice';
+import { useNavigate } from 'react-router-dom';
 
 export const WinningTable = () => {
   const myWinningData = useSelector((state) => state.myAuction.myWinningData);
   const { getColumnSearchProps } = useTableSearch();
   const { getColumnSearchDateProps } = useTableSearchDate();
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const { openNotification, contextHolder } = useNotification();
   const columns = [
@@ -21,13 +24,13 @@ export const WinningTable = () => {
       title: '',
       dataIndex: ['jewelry', 'thumbnail'],
       key: 'thumbnail',
-      render: (data) => imageURL(data),
+      render: (data) => <Image src={imageURL(data)} />,
     },
     {
       title: 'Name',
       dataIndex: ['jewelry', 'name'],
       key: 'name',
-      ...getColumnSearchProps(['jewelry', 'name'])
+      ...getColumnSearchProps(['jewelry', 'name']),
     },
     {
       title: 'Category',
@@ -74,19 +77,37 @@ export const WinningTable = () => {
       key: 'status',
     },
     {
+      title: 'Jewelry Status',
+      dataIndex: ['jewelry', 'status'],
+      key: 'jewelryStatus',
+    },
+    {
       title: 'Action',
       key: 'action',
       align: 'center',
       fixed: 'right',
       render: (data) => (
-        <PrimaryButton>Payment</PrimaryButton>
-      )
+        <PrimaryButton
+          disabled={data.jewelry.status === 'DELIVERING' && true}
+          onClick={() => handleCheckout(data)}
+          className={`${
+            data.jewelry.status === 'DELIVERING' &&
+            'hover:!bg-[#DDD] hover:!text-[#797979] !bg-[#DDD] !text-[#797979]'
+          }`}
+        >
+          Payment
+        </PrimaryButton>
+      ),
     },
   ];
+  const handleCheckout = (data) => {
+    dispatch(setAuctionCheckout(data));
+    navigate('/checkout');
+  };
   useEffect(() => {
     const fetchDataWinning = async () => {
       try {
-        setLoading(true)
+        setLoading(true);
         const response = await myAuctionApi.getMyWinningAuction();
         dispatch(setMyWinning(response.data));
       } catch (error) {
@@ -95,7 +116,7 @@ export const WinningTable = () => {
           description: 'Error',
         });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
     fetchDataWinning();

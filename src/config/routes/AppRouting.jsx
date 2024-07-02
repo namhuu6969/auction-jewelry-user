@@ -16,8 +16,8 @@ import WishlistPage from '@pages/AuctionPage/components/Wishlist';
 import { ValuationPage } from '@pages/AuctionPage/components/Valuation';
 import { Payment } from '@pages/AuctionPage/components/Payment';
 import { VerifiedPage } from '../../pages/VerifiedPage';
-import CheckoutPage from '../../pages/AuctionPage/components/Checkout';
 import { ResultPayment } from '../../pages/AuctionPage/components/Payment/components/ResultPayment/resultPayment';
+import CheckoutPage from '../../pages/AuctionPage/components/Checkout';
 
 const AppRouting = () => {
   return (

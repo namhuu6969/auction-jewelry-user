@@ -5,6 +5,7 @@ import authReducer from './Auth/auth';
 import jewelryMeReducer from './WishlistStore/JewelryMeStore/jewelryMe';
 import myAuctionReducer from './WishlistStore/MyAuctionStore/myAuction';
 import myValuationReducer from './WishlistStore/MyValuationStore/myValuation';
+import checkoutReducer from './Checkout/checkoutSlice';
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     myAuction: myAuctionReducer,
     myValuation: myValuationReducer,
     personal: personalReducer,
+    checkout: checkoutReducer
   },
 });
 
