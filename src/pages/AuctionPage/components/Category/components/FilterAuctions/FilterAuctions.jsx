@@ -1,18 +1,38 @@
 import { useState } from 'react';
-import { Checkbox, AutoComplete, Input, Typography, DatePicker, Space, Button, Flex } from 'antd';
+import { Checkbox, AutoComplete, Input, Typography, DatePicker, Space, Button } from 'antd';
 
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
-export const FilterAuctions = ({ category, brands, data, setFilteredData, handleInputSearch }) => {
-  const [checkedList, setCheckedList] = useState([]);
-  const onChange = (list) => {
-    setCheckedList(list);
-  };
-
+export const FilterAuctions = ({
+  category,
+  brands,
+  data,
+  prevData,
+  setFilteredData,
+  handleInputSearch,
+}) => {
+  const [checkedTypes, setCheckedTypes] = useState([]);
+  const [checkedBrands, setCheckedBrands] = useState([]);
+  const [checkedConditions, setCheckedConditions] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+  const [dateRange, setDateRange] = useState([]);
   const [searchOptions, setSearchOptions] = useState([]);
 
+  const handleTypeChange = (list) => {
+    setCheckedTypes(list);
+  };
+
+  const handleBrandChange = (list) => {
+    setCheckedBrands(list);
+  };
+
+  const handleConditionChange = (list) => {
+    setCheckedConditions(list);
+  };
+
   const handleSearch = (value) => {
+    setSearchValue(value);
     const searchResults = data
       .filter((item) => item.jewelry.name.toLowerCase().includes(value.toLowerCase()))
       .map((item) => ({ value: item.jewelry.name }));
@@ -20,19 +40,64 @@ export const FilterAuctions = ({ category, brands, data, setFilteredData, handle
   };
 
   const onSelect = (value) => {
-    // Handle selection of a search result if needed
-    // setSelectedFeatures(value);
-    console.log(value);
-    const filterData = data.filter((item) =>
-      item.jewelry.name.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredData(filterData);
+    setSearchValue(value);
   };
 
   const onDateChange = (dates, dateStrings) => {
-    // Handle date range selection if needed
-    console.log('Selected dates: ', dates);
-    console.log('Formatted date strings: ', dateStrings);
+    setDateRange(dateStrings);
+  };
+
+  const handleSubmit = () => {
+    let filteredData = data;
+    const hasFilters =
+      searchValue ||
+      checkedTypes.length > 0 ||
+      checkedBrands.length > 0 ||
+      checkedConditions.length > 0 ||
+      dateRange.length > 0;
+
+    if (hasFilters) {
+      if (searchValue) {
+        filteredData = filteredData.filter((item) =>
+          item.jewelry.name.toLowerCase().includes(searchValue.toLowerCase())
+        );
+      }
+
+      if (checkedTypes.length > 0) {
+        filteredData = filteredData.filter((item) =>
+          checkedTypes.includes(item.jewelry.category.name)
+        );
+      }
+
+      if (checkedBrands.length > 0) {
+        if (checkedBrands.includes('Other')) {
+          setFilteredData(prevData);
+        } else {
+          filteredData = filteredData.filter((item) =>
+            checkedBrands.includes(item.jewelry.brand.name)
+          );
+        }
+      }
+
+      if (checkedConditions.length > 0) {
+        filteredData = filteredData.filter((item) =>
+          checkedConditions.includes(item.jewelry.jewelryCondition)
+        );
+      }
+
+      if (dateRange.length > 0) {
+        const [startDate, endDate] = dateRange;
+        console.log(startDate, endDate);
+        filteredData = filteredData.filter((item) => {
+          const auctionDate = new Date(item.auctionDate);
+          return auctionDate >= new Date(startDate) && auctionDate <= new Date(endDate);
+        });
+      }
+    } else {
+      setFilteredData(prevData);
+      return;
+    }
+    setFilteredData(filteredData);
   };
 
   return (
@@ -47,7 +112,6 @@ export const FilterAuctions = ({ category, brands, data, setFilteredData, handle
           options={searchOptions}
           onSearch={handleSearch}
           onSelect={onSelect}
-          onChange={handleInputSearch}
           style={{ width: '100%' }}
         >
           <Input.Search placeholder='Search by title' enterButton />
@@ -59,12 +123,7 @@ export const FilterAuctions = ({ category, brands, data, setFilteredData, handle
           Types
           <div className='mt-2 mb-4 border-b-2 border-black w-30' />
         </Title>
-        <Checkbox.Group
-          className='flex-start'
-          options={category}
-          defaultValue={['Option 1']}
-          onChange={onChange}
-        />
+        <Checkbox.Group className='flex-start' options={category} onChange={handleTypeChange} />
       </div>
 
       <div className='w-full my-4'>
@@ -72,7 +131,7 @@ export const FilterAuctions = ({ category, brands, data, setFilteredData, handle
           Brands
           <div className='mt-2 mb-4 border-b-2 border-black w-30' />
         </Title>
-        <Checkbox.Group options={brands} defaultValue={['Option 1']} onChange={onChange} />
+        <Checkbox.Group options={brands} onChange={handleBrandChange} />
       </div>
 
       <div className='w-full my-4'>
@@ -83,8 +142,7 @@ export const FilterAuctions = ({ category, brands, data, setFilteredData, handle
         <Checkbox.Group
           className='!justify-start'
           options={['New', 'Used', 'Like New']}
-          defaultValue={['Option 1']}
-          onChange={onChange}
+          onChange={handleConditionChange}
         />
       </div>
 
@@ -93,9 +151,10 @@ export const FilterAuctions = ({ category, brands, data, setFilteredData, handle
           <RangePicker onChange={onDateChange} style={{ width: '100%' }} />
         </Space>
       </div>
-      <Flex className='w-full' justify='end'>
-        <Button>Submit</Button>
-      </Flex>
+
+      <div className='w-full' style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Button onClick={handleSubmit}>Submit</Button>
+      </div>
     </div>
   );
 };
