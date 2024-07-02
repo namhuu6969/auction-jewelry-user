@@ -11,7 +11,7 @@ export const IncomingAuctions = ({ data }) => {
         Suggesst
         <div className='mt-2 mb-4 border-b-2 border-black w-30' />
       </Title>
-      <Flex vertical>
+      <Flex gap={20} vertical>
         {data.map((item, index) => {
           if (index < 3) {
             return (

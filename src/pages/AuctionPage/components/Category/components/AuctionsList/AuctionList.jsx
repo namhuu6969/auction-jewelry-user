@@ -33,23 +33,25 @@ export const AuctionList = ({ data, Card }) => {
               />
             }
           >
-            <div className='text-start'>
-              <p>{item.jewelry.name}</p>
-              <p style={{ fontWeight: '500' }}>Status: {handleShowStatus(item)}</p>
-            </div>
-            <div className='text-start'>
-              <p style={{ fontWeight: '500' }}>
-                Current Price: {formatPriceVND(item.currentPrice)}
-              </p>
-            </div>
-            <div className='text-end mt-4'>
-              <Button
-                onClick={() => navigate(`/jewelry/detail/${item.id}`)}
-                type='primary'
-                key='bid'
-              >
-                More Detail
-              </Button>
+            <div className='p-2'>
+              <div className='text-start'>
+                <p>{item.jewelry.name}</p>
+                <p style={{ fontWeight: '500' }}>Status: {handleShowStatus(item)}</p>
+              </div>
+              <div className='text-start'>
+                <p style={{ fontWeight: '500' }}>
+                  Current Price: {formatPriceVND(item.currentPrice)}
+                </p>
+              </div>
+              <div className='text-end mt-4'>
+                <Button
+                  onClick={() => navigate(`/jewelry/detail/${item.id}`)}
+                  type='primary'
+                  key='bid'
+                >
+                  More Detail
+                </Button>
+              </div>
             </div>
           </Card>
         </List.Item>
