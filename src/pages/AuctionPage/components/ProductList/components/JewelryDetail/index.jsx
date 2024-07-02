@@ -30,7 +30,6 @@ export const JewelryDetail = () => {
   const [step, setStep] = useState(0);
   const [isWinner, setIsWinner] = useState(false); // State to check if user is winner
   const [bidAmount, setBidAmount] = useState('');
-  const [flag, setFlag] = useState(false);
 
   const userEmail = localStorage.getItem('fullName');
 
@@ -94,9 +93,7 @@ export const JewelryDetail = () => {
   const decreaseBidAmount = () => {
     if (bidAmount > currentPrice) {
       setBidAmount((prevBidAmount) => (parseInt(prevBidAmount) - step).toString());
-      setFlag(false);
     } else {
-      setFlag(true);
       notification.warning({
         message: 'Bid amount must be greater than current price',
       });
