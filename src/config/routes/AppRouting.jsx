@@ -16,6 +16,8 @@ import WishlistPage from '@pages/AuctionPage/components/Wishlist';
 import { ValuationPage } from '@pages/AuctionPage/components/Valuation';
 import { Payment } from '@pages/AuctionPage/components/Payment';
 import { VerifiedPage } from '../../pages/VerifiedPage';
+import { ResultPayment } from '../../pages/AuctionPage/components/Payment/components/ResultPayment/resultPayment';
+import CheckoutPage from '../../pages/AuctionPage/components/Checkout';
 
 const AppRouting = () => {
   return (
@@ -26,6 +28,7 @@ const AppRouting = () => {
         <Route path='/verified' element={<VerifiedPage />} />
         <Route path='' element={<Home />} />
         <Route path='payment' element={<Payment />} />
+        <Route path='resultPayment' element={<ResultPayment />}/>
         <Route path='profile' element={<ProfilePage />} />
         <Route path='about' element={<About />} />
         <Route path='auction' element={<Category />} />
@@ -38,6 +41,7 @@ const AppRouting = () => {
         </Route>
         <Route path='wishlist' element={<WishlistPage />} />
         <Route path='valuation' element={<ValuationPage />} />
+        <Route path='checkout' element={<CheckoutPage />} />
       </Route>
       <Route path='*' element={<PagesNotFound />} />
     </Routes>

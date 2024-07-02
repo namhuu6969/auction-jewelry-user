@@ -7,12 +7,15 @@ import { setJewelryId } from '../../../../../core/store/WishlistStore/JewelryMeS
 import { ModalAddAuction } from './components/ModalAddAuction';
 import { formatDate, imageURL } from '../../../../../utils/utils';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
+import useTableSearch from '../../../../../hooks/useTableSearch';
+import { renderStatusJewelry } from '../../../../../utils/RenderStatus/renderStatusUtil';
 // import { myAuctionApi } from '@api/WishlistApi/myAuctionApi';
 // import { setMyAuctionData } from '@core/store/WishlistStore/MyAuctionStore/myAuction';
 
 export const ValuatingTable = () => {
   const dataSource = useSelector((state) => state.myValuation.myValuationData);
   const { getColumnSearchDateProps } = useTableSearchDate();
+  const { getColumnSearchProps } = useTableSearch();
   const [open, setOpen] = useState(false);
   const render = useSelector((state) => state.jewelryMe.render);
   // const auctionData = useSelector((state) => state.myAuction.myAuctionData);
@@ -42,11 +45,22 @@ export const ValuatingTable = () => {
       ...getColumnSearchDateProps('createdAt'),
       key: 'created',
       render: (data) => formatDate(data),
+      ...getColumnSearchDateProps('createdAt'),
+      sorter: (a, b) => new Date(a?.createdAt) - new Date(b?.createdAt),
     },
     {
       title: 'Name',
       dataIndex: ['jewelry', 'name'],
       key: 'name',
+      ...getColumnSearchProps(['jewelry', 'name']),
+    },
+    {
+      title: 'Starting Price',
+      dataIndex: ['jewelry', 'staringPrice'],
+      key: 'staringPrice',
+      render: (data) => formatPriceVND(data),
+      sorter: (a, b) =>
+        new Date(a?.jewelry?.staringPrice) - new Date(b?.jewelry?.staringPrice),
     },
     {
       title: 'Valuation Staff',
@@ -54,16 +68,18 @@ export const ValuatingTable = () => {
       key: 'staff',
     },
     {
-      title: 'Vauation Value',
+      title: 'Valuation Value',
       dataIndex: 'valuation_value',
       key: 'valuation_value',
       render: (data) => formatPriceVND(data),
+      sorter: (a, b) =>
+        new Date(a?.valuation_value) - new Date(b?.valuation_value),
     },
     {
       title: 'Valuation Fee',
       dataIndex: 'valuatingFee',
       key: 'valuationFee',
-      render: (data) => formatPriceVND(data)
+      render: (data) => formatPriceVND(data),
     },
     {
       title: 'Valuation Type',
@@ -80,10 +96,13 @@ export const ValuatingTable = () => {
       title: 'Status',
       dataIndex: ['jewelry', 'status'],
       key: 'status',
+      render: (data) => renderStatusJewelry(data)
     },
     {
       title: 'Action',
       key: 'action',
+      align: 'center',
+      fixed: 'right',
       render: (data) => (
         <Dropdown
           overlay={getMenu(
@@ -104,20 +123,23 @@ export const ValuatingTable = () => {
       ),
     },
   ];
-  const handleError = (status, startingPrice, valuationType) => {
+  const handleError = (status, startingPrice, valuationType, statusJewelry) => {
     const error = [];
     if (status === 'REQUEST') {
-      error.push('Staff is valuating this jewelry');
+      error.push('- Staff is valuating this jewelry');
     }
     if (startingPrice === 0) {
-      error.push('Staff has not set the starting price yet');
+      error.push('- Staff has not set the starting price yet');
     }
     if (valuationType === true) {
       error.push(
-        'Online Valuated jewelry cannot be put up for auction! Please valuate this jewelry offline'
+        '- Online Valuated jewelry cannot be put up for auction! Please valuate this jewelry offline'
       );
     }
-    return error.join('\n');
+    if (statusJewelry === 'AUCTIONING') {
+      error.push('- This jewelry is auctioning');
+    }
+    if (status) return error.join('\n');
   };
 
   const getMenu = (id, status, startingPrice, statusJewelry, valuationType) => (
@@ -128,11 +150,18 @@ export const ValuatingTable = () => {
           status === 'REQUEST' ||
           status === 'VALUATING' ||
           statusJewelry === 'AUCTIONING' ||
-          valuationType === true ||
           startingPrice === 0
         }
       >
-        <Tooltip title={handleError(status, startingPrice, valuationType)} overlayStyle={{ whiteSpace: 'pre-line' }}>
+        <Tooltip
+          title={handleError(
+            status,
+            startingPrice,
+            valuationType,
+            statusJewelry
+          )}
+          overlayStyle={{ whiteSpace: 'pre-line' }}
+        >
           <span>
             <a onClick={() => handleAddAuctionClick(id)}>Put up auction</a>
           </span>
@@ -150,7 +179,8 @@ export const ValuatingTable = () => {
       const sortedData = response.data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
-      dispatch(setMyValuation(sortedData));
+      const filterData = sortedData.filter((element) => !element.online);
+      dispatch(setMyValuation(filterData));
     };
     // const fetchData = async () => {
     //   const response = await myAuctionApi.getMyAuction();
@@ -169,11 +199,12 @@ export const ValuatingTable = () => {
     <>
       <ModalAddAuction open={open} setOpen={setOpen} />
       <Table
-        scroll={{
-          x: 1500,
-        }}
         dataSource={[...dataSource]}
         columns={columns}
+        scroll={{
+          x: 2000,
+        }}
+        pagination={{ pageSize: 4 }}
       />
     </>
   );

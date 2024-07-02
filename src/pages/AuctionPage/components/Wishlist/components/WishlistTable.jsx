@@ -11,29 +11,27 @@ export const WishlistTable = () => {
   const { getColumnSearchDateProps } = useTableSearchDate();
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
-  const {contextHolder, openNotification} = useNotification()
+  const { contextHolder, openNotification } = useNotification();
   const handleDeleteWishlist = async (id) => {
     try {
-      setLoading(true)
-      await wishlistApi.deleteWishlist(id)
+      setLoading(true);
+      await wishlistApi.deleteWishlist(id);
       openNotification({
         type: 'success',
-        title: 'Delete success'
-      })
-    } catch(error) {
+        title: 'Delete success',
+      });
+    } catch (error) {
       openNotification({
         title: 'Failed',
-        type: 'error'
-      })
+        type: 'error',
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
   const getMenu = (id) => (
     <Menu>
-      <Menu.Item
-        key='0'
-      >
+      <Menu.Item key='0'>
         <a onClick={() => handleDeleteWishlist(id)}>Put up auction</a>
       </Menu.Item>
     </Menu>
@@ -65,7 +63,7 @@ export const WishlistTable = () => {
       title: 'Name',
       dataIndex: ['auction', 'jewelry', 'name'],
       key: 'name',
-      ...getColumnSearchProps('name'),
+      ...getColumnSearchProps(['auction', 'jewelry', 'name']),
     },
     {
       title: 'Category',
@@ -99,10 +97,7 @@ export const WishlistTable = () => {
       key: 'action',
       fixed: 'right',
       render: (data) => (
-        <Dropdown
-          overlay={getMenu(data.id)}
-          trigger={['click']}
-        >
+        <Dropdown overlay={getMenu(data.id)} trigger={['click']}>
           <a>
             <Space>
               <p className='text-2xl'>...</p>
@@ -112,7 +107,7 @@ export const WishlistTable = () => {
       ),
     },
   ];
- 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -132,7 +127,7 @@ export const WishlistTable = () => {
   }, []);
   return (
     <>
-    {contextHolder}
+      {contextHolder}
       <Table
         scroll={{
           x: 2000,
@@ -140,6 +135,7 @@ export const WishlistTable = () => {
         loading={loading}
         dataSource={dataSource}
         columns={columns}
+        pagination={{ pageSize: 4 }}
       />
     </>
   );

@@ -115,6 +115,7 @@ export const Category = () => {
             brands={brands}
             onChange={onChanges}
             data={filteredData}
+            prevData={auctionData}
             setFilteredData={setFilteredData}
             handleInputSearch={handleInputSearch}
           />

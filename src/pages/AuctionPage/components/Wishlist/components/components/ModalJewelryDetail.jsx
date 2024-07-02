@@ -140,6 +140,10 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
   const handleSubmit = async (values) => {
     const data = {
       ...values,
+      materials: materialsInput?.map((e) => ({
+        idMaterial: e.idMaterial,
+        weight: e.weight,
+      })),
     };
     const dataMaterials = {
       materials: materialsInput?.map((e) => ({
