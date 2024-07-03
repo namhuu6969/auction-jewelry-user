@@ -265,7 +265,7 @@ export const JewelryDetail = () => {
                   Step:
                 </Title>
                 <Title className='!m-0 !my-auto !text-red-600 text-left font-sans' level={3}>
-                  {formatPrice(step)}$
+                  {formatPriceVND(step)}
                 </Title>
                 <Title className='!m-0 !my-auto text-left font-sans !font-medium' level={3}>
                   Status:
