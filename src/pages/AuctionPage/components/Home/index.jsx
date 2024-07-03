@@ -75,11 +75,11 @@ export const Home = () => {
         <Skeleton loading={loading}>
           <Flex className='justify-between'>
             <Title level={3} className='font-serif'>
-              News
+              Blogs
               <div className='mt-2 mb-4 border-b-2 border-black w-30' />
             </Title>
             <Title level={5}>
-              <Link to={'/'} className='font-serif !text-black !underline'>
+              <Link to={'/blog'} className='font-serif !text-black !underline'>
                 View all
               </Link>
             </Title>
