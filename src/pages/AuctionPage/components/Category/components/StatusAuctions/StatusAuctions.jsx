@@ -21,7 +21,7 @@ const status = [
 ];
 
 const { Title } = Typography;
-export const StatusAuctions = ({ setFilterData, handleFilterChange }) => {
+export const StatusAuctions = ({ handleFilterChange }) => {
   return (
     <div className='m-4 p-4 shadow-lg rounded-md flex flex-col items-start'>
       <Title level={3}>
