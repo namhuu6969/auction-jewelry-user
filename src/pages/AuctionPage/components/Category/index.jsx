@@ -79,7 +79,7 @@ export const Category = () => {
     if (checkedValues.length === 0) {
       setFilteredData(auctionData);
     } else {
-      setFilteredData(auctionData.filter((item) => checkedValues.includes(item.feature)));
+      setFilteredData(auctionData.filter((item) => checkedValues.includes(item.status)));
     }
   };
 
@@ -119,7 +119,7 @@ export const Category = () => {
             setFilteredData={setFilteredData}
             handleInputSearch={handleInputSearch}
           />
-          <StatusAuctions options={options} onChange={handleFilterChange} />
+          <StatusAuctions data={auctionData} handleFilterChange={handleFilterChange} />
           <IncomingAuctions data={auctionData} />
         </Sider>
         <Layout>
