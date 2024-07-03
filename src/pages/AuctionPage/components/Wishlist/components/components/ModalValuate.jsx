@@ -78,7 +78,6 @@ export const ModalValuate = ({ setOpen, open }) => {
   }, [open]);
   return (
     <>
-    {console.log(data)}
       {contextHolder}
       <Modal
         title={

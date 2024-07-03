@@ -168,7 +168,7 @@ export const MyAuctionTable = () => {
       </Menu.Item>
       <Menu.Item
         key={'update'}
-        disabled={status === 'InProgress' ? true : false}
+        disabled={status === 'InProgress' || status === 'Completed' ? true : false}
       >
         <a onClick={() => handleUpdateOpen(data)}>Update date range session</a>
       </Menu.Item>
