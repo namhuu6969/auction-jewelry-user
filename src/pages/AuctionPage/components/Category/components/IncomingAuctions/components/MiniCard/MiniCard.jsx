@@ -1,9 +1,11 @@
 import { Card, Typography } from 'antd';
 import { formatPriceVND } from '@utils/utils';
+import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
 
-const MiniCard = ({ imageSrc, title, price }) => {
+const MiniCard = ({ id, imageSrc, title, price }) => {
+  const navigate = useNavigate();
   const truncateTitle = (title, number = 10) => {
     const words = title.split(' ');
     if (words.length > number) {
@@ -13,7 +15,11 @@ const MiniCard = ({ imageSrc, title, price }) => {
   };
 
   return (
-    <Card className='hover:cursor-pointer' style={{ width: 300, margin: '0.4rem 0' }}>
+    <Card
+      onClick={() => navigate(`/jewelry/detail/${id}`)}
+      className='hover:cursor-pointer'
+      style={{ width: 300, margin: '0.4rem 0' }}
+    >
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ flex: '1' }}>
           <img

@@ -17,6 +17,7 @@ export const IncomingAuctions = ({ data }) => {
             return (
               <MiniCard
                 key={item.id}
+                id={item.id}
                 imageSrc={item.jewelry.thumbnail}
                 title={item.jewelry.name}
                 price={item.jewelry.staringPrice}
