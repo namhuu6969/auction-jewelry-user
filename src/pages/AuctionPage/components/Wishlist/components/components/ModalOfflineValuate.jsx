@@ -51,8 +51,6 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
         label: e.full_name_en,
         value: e.id,
       }));
-      console.log(optionResponse);
-
       setWard(optionResponse);
       setIsShowWard(true);
     }
@@ -72,7 +70,6 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
       address: combinedAddress || 'string',
       online: false,
     };
-    console.log(data);
     try {
       setLoading(true);
       const response = await myValuatingApi.valuateTheJewelry(data);

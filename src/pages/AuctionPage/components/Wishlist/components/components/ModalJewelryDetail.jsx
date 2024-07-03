@@ -187,6 +187,14 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
     return material?.filter((mat) => !selectedMaterials.includes(mat.id));
   };
 
+  const readProps = {
+    readOnly: data.status !== 'PENDING' ? true : false,
+  };
+
+  const disabledProps = {
+    disabled: data.status !== 'PENDING' ? true : false,
+  };
+
   useEffect(() => {
     const fetchImages = async () => {
       const images = await getImage(jewelryId);
@@ -254,7 +262,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
       setChoosedBrand(data?.brand?.name);
       setChoosedCategory(data?.category?.id);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     jewelryId,
     open,
@@ -292,6 +300,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
           key='save'
           type='primary'
           loading={loading}
+          {...disabledProps}
         >
           Lưu
         </PrimaryButton>,
@@ -326,7 +335,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input {...readProps} />
                   </Form.Item>
                   <Form.Item label={<TitleLabel>Status</TitleLabel>}>
                     {data.status}
@@ -352,12 +361,15 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                       options={itemsCategory}
                       className='w-full'
                       onChange={(e) => setChoosedCategory(e)}
+                      {...disabledProps}
                     />
                   </Form.Item>
                   <InputCategoryUpdate
                     value={form.getFieldsValue() && form.getFieldsValue().size}
                     category={choosedCategory}
                     form={form}
+                    readProps={readProps}
+                    disabledProps={disabledProps}
                   />
                 </div>
 
@@ -379,6 +391,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                       filterOption={filterOption}
                       options={dataColor}
                       className='!text-left w-full'
+                      {...disabledProps}
                     />
                   </Form.Item>
                   <Form.Item
@@ -399,6 +412,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                         { label: 'Used', value: 'Used' },
                       ]}
                       className='!text-left w-full'
+                      {...disabledProps}
                     />
                   </Form.Item>
                   <Form.Item
@@ -419,6 +433,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                       filterOption={filterOption}
                       options={itemsGender}
                       className='!text-left w-full'
+                      {...disabledProps}
                     />
                   </Form.Item>
                   <Form.Item
@@ -440,6 +455,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                       filterOption={filterOption}
                       options={itemsBrand}
                       className='!text-left'
+                      {...disabledProps}
                     />
                   </Form.Item>
                   <Form.Item
@@ -460,6 +476,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                       filterOption={filterOption}
                       options={itemsCollection}
                       className='!text-left'
+                      {...disabledProps}
                     />
                   </Form.Item>
                 </div>
@@ -474,7 +491,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                   ]}
                   className='w-full'
                 >
-                  <Input.TextArea className='w-full' />
+                  <Input.TextArea {...readProps} className='w-full' />
                 </Form.Item>
                 <div>
                   {materialsInput?.map((material, index) => (
@@ -503,6 +520,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                             handleMaterialChange(index, value)
                           }
                           value={material.idMaterial}
+                          {...disabledProps}
                         />
                       </Form.Item>
                       <Form.Item
@@ -516,13 +534,14 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                         ]}
                       >
                         <InputNumber
+                          {...readProps}
                           controls={false}
                           value={material.weight}
                           onChange={(value) => handleWeightChange(index, value)}
                           className='w-full'
                         />
                       </Form.Item>
-                      {index > 0 && (
+                      {(index > 0 && data.status === 'PENDING') && (
                         <MinusCircleOutlined
                           onClick={() => removeMaterialInput(index)}
                           style={{
@@ -538,6 +557,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
                     type='dashed'
                     onClick={addMaterialInput}
                     className='w-1/5 flex justify-center'
+                    {...disabledProps}
                   >
                     Add Material
                   </Button>

@@ -4,7 +4,7 @@ import { myValuatingApi } from '../../../../../services/api/WishlistApi/myValuat
 import { useEffect, useState } from 'react';
 const { Title } = Typography;
 
-export const UserInformationItem = ({ form }) => {
+export const UserInformationItem = () => {
   const [district, setDitrict] = useState([]);
   const [ward, setWard] = useState([]);
   const [isShowWard, setIsShowWard] = useState(false);
@@ -18,8 +18,6 @@ export const UserInformationItem = ({ form }) => {
         label: e.full_name_en,
         value: e.id,
       }));
-      console.log(optionResponse);
-
       setWard(optionResponse);
       setIsShowWard(true);
     }

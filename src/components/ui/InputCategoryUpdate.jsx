@@ -2,7 +2,7 @@ import { Form, Input, InputNumber, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 const { Title } = Typography;
 
-export const InputCategoryUpdate = ({ category, form, value }) => {
+export const InputCategoryUpdate = ({ category, form, value, readProps, disabledProps }) => {
   const [sizeInput, setSizeInput] = useState(null);
   const handleChangeInput = (value) => {
     form.setFieldsValue({ size: value });
@@ -14,6 +14,7 @@ export const InputCategoryUpdate = ({ category, form, value }) => {
       controls: false,
       onChange: handleChangeInput,
       value: sizeInput,
+      ...readProps
     };
     switch (category) {
       case 1:
