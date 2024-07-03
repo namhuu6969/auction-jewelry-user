@@ -17,6 +17,7 @@ import {
 } from '../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { MyAuctionTable } from './components/MyAuctionTable';
 import { ValuatingTable } from './components/ValuatingTable';
+import { DeliveryMethodTable } from './components/DeliveryMethodTable';
 const WishlistPage = () => {
   const authorize = localStorage.getItem('fullName');
   const breadcumLink = [
@@ -61,6 +62,11 @@ const WishlistPage = () => {
       label: 'My Winning',
       children: <WinningTable />,
     },
+    {
+      key: 7,
+      label: 'My Delivery',
+      children: <DeliveryMethodTable />
+    }
   ];
   useEffect(() => {
     const fetchData = async () => {

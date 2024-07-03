@@ -52,7 +52,6 @@ export const BidModal = ({
             </Button>
             <Input
               className='w-[80%]'
-              type='number'
               min='0'
               step={step}
               value={bidAmount}

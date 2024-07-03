@@ -13,21 +13,18 @@ const CheckoutPage = () => {
   const [status, setStatus] = useState(false);
   const [form] = Form.useForm();
   const onFinish = async (values) => {
-    const combinedAddress = `${values.numberAddress}, ${values.ward.label} , ${values.district.label} , Ho Chi Minh City, VN`;
-    const data = {
-      address: combinedAddress,
-      full_name: values.full_name,
-      phone_number: values.phone_number,
-      auction_id: auctionCheckout.id,
-    };
     try {
+      const combinedAddress = `${values.numberAddress}, ${values.ward.label} , ${values.district.label} , Ho Chi Minh City, VN`;
+      const data = {
+        address: combinedAddress,
+        full_name: values.full_name,
+        phone_number: values.phone_number,
+        auction_id: auctionCheckout.id,
+      };
       setLoading(true);
-      const response = await checkoutApi.checkoutPaymentAuction(data);
-      if(!response) {
-        throw new Error()
-      }
+      await checkoutApi.checkoutPaymentAuction(data);
     } catch (error) {
-      setStatus(true)
+      setStatus(true);
     } finally {
       setOpen(true);
       setLoading(false);
