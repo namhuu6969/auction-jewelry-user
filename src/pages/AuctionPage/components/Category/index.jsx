@@ -78,6 +78,8 @@ export const Category = () => {
     setSelectedFeatures(checkedValues);
     if (checkedValues.length === 0) {
       setFilteredData(auctionData);
+    } else if (checkedValues.includes('all')) {
+      setFilteredData(auctionData);
     } else {
       setFilteredData(auctionData.filter((item) => checkedValues.includes(item.status)));
     }
