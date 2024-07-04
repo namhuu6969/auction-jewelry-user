@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 const { Title } = Typography;
 
 const CardContent = ({ element = {} }) => {
-  console.log(element);
   const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
