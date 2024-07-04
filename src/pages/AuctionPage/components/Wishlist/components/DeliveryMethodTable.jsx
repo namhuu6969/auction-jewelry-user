@@ -6,6 +6,7 @@ import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
 import { useDispatch } from 'react-redux';
 import { setDelivery } from '../../../../../core/store/Delivery/deliverySlice';
 import { useNavigate } from 'react-router-dom';
+import { renderStatusDelivery } from '../../../../../utils/RenderStatus/renderStatusUtil';
 
 export const DeliveryMethodTable = () => {
   const [dataSource, setDataSource] = useState([]);
@@ -49,6 +50,7 @@ export const DeliveryMethodTable = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      render: (data) => renderStatusDelivery(data)
     },
     {
       title: 'Action',
