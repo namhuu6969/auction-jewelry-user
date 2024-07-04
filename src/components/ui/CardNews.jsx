@@ -1,14 +1,18 @@
 import { Card, Typography } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { imageURLBlog } from '../../utils/utils';
 const { Title } = Typography;
 
 const CardNews = ({ element }) => {
+  const navigate = useNavigate();
   const coverImage =
     element.blogImages.length > 0
-      ? `http://167.71.212.203:8080/uploads/jewelry/${element.blogImages[0].url}`
+      ? `${imageURLBlog(element.blogImages[0].url)}`
       : 'http://example.com/image.jpg'; // Use a default image if no blogImages
 
   return (
     <Card
+      onClick={() => navigate(`/blog/detail/${element.id}`)}
       cover={<img alt={element.title} src={coverImage} className='w-full h-48 object-cover' />}
       bordered={false}
       bodyStyle={{ padding: 0 }}
