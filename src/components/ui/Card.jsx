@@ -1,9 +1,12 @@
 import { Button, Card, Flex, Image, Typography } from 'antd';
-import { formatPrice, getImage, imageURL } from '../../utils/utils';
+import { formatPriceVND, getImage, imageURL } from '../../utils/utils';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 const { Title } = Typography;
 
 const CardContent = ({ element = {} }) => {
+  console.log(element);
+  const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
@@ -23,6 +26,7 @@ const CardContent = ({ element = {} }) => {
   return (
     <Card
       hoverable
+      onClick={() => navigate(`/jewelry/detail/${element?.id}`)}
       cover={
         loading ? (
           <Image
@@ -47,32 +51,23 @@ const CardContent = ({ element = {} }) => {
     >
       <Flex className='!min-h-full bg-[#F2E7E7] px-5 py-4' vertical>
         <Flex className='!min-h-16'>
-          <Title
-            className='multi-line-ellipsis !flex-1 text-left font-serif'
-            level={4}
-          >
+          <Title className='multi-line-ellipsis !flex-1 text-left font-serif' level={4}>
             {element?.jewelry?.name}
           </Title>
         </Flex>
         <Flex gap={10}>
-          <Title
-            level={5}
-            className='!flex-1 !text-[#898989] !font-medium text-left font-sans'
-          >
+          <Title level={5} className='!flex-1 !text-[#898989] !font-medium text-left font-sans'>
             The current:
           </Title>
           <Title
             level={5}
             className='!flex-1 !mt-0 !text-right font-sans !font-medium !text-[#946257]'
           >
-            {formatPrice(element?.currentPrice)} VND
+            {formatPriceVND(element?.currentPrice)}
           </Title>
         </Flex>
         <Flex className='!flex-1 justify-between items-center !h-full'>
-          <Title
-            level={5}
-            className='!m-0 font-sans !font-medium text-left !text-[#FF0000]'
-          >
+          <Title level={5} className='!m-0 font-sans !font-medium text-left !text-[#FF0000]'>
             {element?.status.toUpperCase()}
           </Title>
           <Button className='px-8 !border-black font-semibold !text-black hover:!bg-[#946257] hover:!text-[#fff] font-serif shadow-md'>

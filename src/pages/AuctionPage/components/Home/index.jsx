@@ -8,12 +8,14 @@ import CardContent from '@components/ui/Card';
 import { ImageBrandCard } from '@components/ui/ImageBrandCard/ImageBrandCard';
 import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
 import { blogServices } from '../../../../services/api/BlogServices/BlogServices';
+
 const { Title } = Typography;
 
 export const Home = () => {
   const [loading, setLoading] = useState(false);
   const [auctionData, setAuctionData] = useState([]);
   const [newsData, setNewsData] = useState([]);
+
   useEffect(() => {
     const fetchDataAuction = async () => {
       try {
@@ -113,7 +115,7 @@ export const Home = () => {
               </div>
             </div>
             <div className='w-1/2 h-[400px]'>
-              <img src='/images/brand.jpg' className='object-cover h-full w-full	' alt='sadas' />
+              <img src='/images/brand.jpg' className='object-cover h-full w-full' alt='Brand' />
             </div>
           </div>
         </Skeleton>
