@@ -20,6 +20,10 @@ export const BlogList = () => {
     fetchBlogs();
   }, []);
 
+  const createMarkup = (html) => {
+    return { __html: html };
+  };
+
   return (
     <div className='container mx-auto p-6'>
       <Row gutter={[16, 16]}>
@@ -35,7 +39,7 @@ export const BlogList = () => {
                     <img
                       src={
                         blog.blogImages.length > 0
-                          ? `http://167.71.212.203:8080/uploads/jewelry/${blog.blogImages[0].url}`
+                          ? `http://apijewelryauction.techx.id.vn:8081/uploads/blogs/${blog.blogImages[0].url}`
                           : 'http://example.com/image.jpg'
                       }
                       className='w-full h-48 object-cover'
@@ -48,9 +52,7 @@ export const BlogList = () => {
                   <Title level={4} className='font-bold text-gray-800'>
                     {blog.title}
                   </Title>
-                  <Paragraph ellipsis={{ rows: 2 }} className='text-gray-600'>
-                    {blog.content}
-                  </Paragraph>
+                  <div dangerouslySetInnerHTML={createMarkup(blog.content)} />
                   <div className='flex items-center mt-4'>
                     <Avatar src={blog.user.imageUrl} size='large' />
                     <div className='ml-3'>

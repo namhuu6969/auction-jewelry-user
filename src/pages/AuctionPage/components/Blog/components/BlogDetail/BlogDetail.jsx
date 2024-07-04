@@ -32,7 +32,7 @@ export const BlogDetail = () => {
 
   return (
     <div className='container mx-auto p-6'>
-      <div className='max-w-3xl mx-auto'>
+      <div className='max-w-7xl mx-auto'>
         <Title level={2} className='font-bold text-3xl mb-4'>
           {blog.title}
         </Title>
@@ -40,10 +40,10 @@ export const BlogDetail = () => {
           <img
             src={
               blog.blogImages.length > 0
-                ? `http://167.71.212.203:8080/uploads/jewelry/${blog.blogImages[0].url}`
+                ? `http://apijewelryauction.techx.id.vn:8081/uploads/blogs/${blog.blogImages[0].url}`
                 : 'http://example.com/image.jpg'
             }
-            className='w-full h-64 object-cover rounded-lg mb-4'
+            className='!w-full h-64 object-cover rounded-lg mb-4'
           />
         )}
         <div className='flex items-center mb-4'>
