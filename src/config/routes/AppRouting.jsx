@@ -18,6 +18,10 @@ import { Payment } from '@pages/AuctionPage/components/Payment';
 import { VerifiedPage } from '../../pages/VerifiedPage';
 import { ResultPayment } from '../../pages/AuctionPage/components/Payment/components/ResultPayment/resultPayment';
 import CheckoutPage from '../../pages/AuctionPage/components/Checkout';
+import { FollowDelivery } from '../../pages/AuctionPage/components/Delivery';
+import { Blog } from '../../pages/AuctionPage/components/Blog';
+import { BlogDetail } from '@pages/AuctionPage/components/Blog/components/BlogDetail/BlogDetail';
+import { BlogList } from '@pages/AuctionPage/components/Blog/components/BlogList/BlogList';
 
 const AppRouting = () => {
   return (
@@ -27,11 +31,16 @@ const AppRouting = () => {
       <Route exact path='/' element={<AuctionPage />}>
         <Route path='/verified' element={<VerifiedPage />} />
         <Route path='' element={<Home />} />
+        <Route path='blog' element={<Blog />}>
+          <Route path='' element={<BlogList />} />
+          <Route path='detail/:id' element={<BlogDetail />} />
+        </Route>
         <Route path='payment' element={<Payment />} />
-        <Route path='resultPayment' element={<ResultPayment />}/>
+        <Route path='resultPayment' element={<ResultPayment />} />
         <Route path='profile' element={<ProfilePage />} />
         <Route path='about' element={<About />} />
         <Route path='auction' element={<Category />} />
+        <Route path='delivery' element={<FollowDelivery />} />
         <Route path='jewelry' element={<ProductList />}>
           <Route path='' element={<JewelryList />} />
           <Route path='detail/:id' element={<JewelryDetail />} />

@@ -11,18 +11,20 @@ export const WishlistTable = () => {
   const { getColumnSearchDateProps } = useTableSearchDate();
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [render, setRender] = useState(false)
   const { contextHolder, openNotification } = useNotification();
   const handleDeleteWishlist = async (id) => {
     try {
       setLoading(true);
       await wishlistApi.deleteWishlist(id);
+      setRender(true)
       openNotification({
         type: 'success',
-        title: 'Delete success',
+        description: 'Delete success',
       });
     } catch (error) {
       openNotification({
-        title: 'Failed',
+        description: 'Failed',
         type: 'error',
       });
     } finally {
@@ -32,7 +34,7 @@ export const WishlistTable = () => {
   const getMenu = (id) => (
     <Menu>
       <Menu.Item key='0'>
-        <a onClick={() => handleDeleteWishlist(id)}>Put up auction</a>
+        <a onClick={() => handleDeleteWishlist(id)}>Remove</a>
       </Menu.Item>
     </Menu>
   );
@@ -124,7 +126,11 @@ export const WishlistTable = () => {
       }
     };
     fetchData();
-  }, []);
+    if(render) {
+      fetchData()
+      setRender(false)
+    }
+  }, [render]);
   return (
     <>
       {contextHolder}

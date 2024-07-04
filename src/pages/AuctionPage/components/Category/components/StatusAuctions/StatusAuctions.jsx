@@ -8,20 +8,20 @@ const status = [
   },
   {
     label: 'In Progress',
-    value: 'inprogress',
+    value: 'InProgress',
   },
   {
     label: 'Up Coming',
-    value: 'upcoming',
+    value: 'Waiting',
   },
   {
     label: 'Ended',
-    value: 'ended',
+    value: 'Completed',
   },
 ];
 
 const { Title } = Typography;
-export const StatusAuctions = ({ onChange }) => {
+export const StatusAuctions = ({ handleFilterChange }) => {
   return (
     <div className='m-4 p-4 shadow-lg rounded-md flex flex-col items-start'>
       <Title level={3}>
@@ -32,8 +32,8 @@ export const StatusAuctions = ({ onChange }) => {
         <Checkbox.Group
           className='flex-col space-y-2 text-2xl'
           options={status}
-          defaultValue={['Option 1']}
-          onChange={onChange}
+          defaultValue={['all']}
+          onChange={handleFilterChange}
         />
       </div>
     </div>

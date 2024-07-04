@@ -9,6 +9,10 @@ export const imageURL = (imageUrl) => {
   return `http://apijewelryauction.techx.id.vn:8081/uploads/jewelry/${imageUrl}`;
 };
 
+export const imageURLBlog = (imageUrl) => {
+  return `http://apijewelryauction.techx.id.vn:8081/uploads/blogs/${imageUrl}`;
+};
+
 export const formatDate = (date) => {
   const formatted = new Intl.DateTimeFormat('vi-VN', {
     year: 'numeric',

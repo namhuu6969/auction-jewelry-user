@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PrimaryButton } from '../../../../../../components/ui/PrimaryButton';
 import { SecondaryButton } from '../../../../../../components/ui/SecondaryButton';
 import { useEffect, useState } from 'react';
-import moment from 'moment';
 import { useNotification } from '../../../../../../hooks/useNotification';
 import { myAuctionApi } from '../../../../../../services/api/WishlistApi/myAuctionApi';
 import { setMyAuctionData } from '@core/store/WishlistStore/MyAuctionStore/myAuction';
+import dayjs from 'dayjs';
+
 const { RangePicker } = DatePicker;
 
 export const ModalUpdateDate = ({ open, setOpen }) => {
@@ -15,37 +16,59 @@ export const ModalUpdateDate = ({ open, setOpen }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const { contextHolder, openNotification } = useNotification();
+  const [dateRange, setDateRange] = useState([null, null]);
   const dispatch = useDispatch();
+
   const handleClose = () => {
     setOpen(false);
     form.resetFields();
   };
+
+  const validateStartDate = (_, value) => {
+    const selectedStartDate = value && value[0];
+    const currentDate = dayjs();
+    if (!selectedStartDate || selectedStartDate.isAfter(currentDate)) {
+      return Promise.resolve();
+    }
+    return Promise.reject(
+      new Error('Please choose a date that is greater than the current date')
+    );
+  };
+
+  const validateEndDate = (_, value) => {
+    const selectedStartDate = value && value[0];
+    const selectedEndDate = value && value[1];
+    if (
+      !selectedEndDate ||
+      (selectedStartDate && selectedEndDate.isAfter(selectedStartDate))
+    ) {
+      return Promise.resolve();
+    }
+    return Promise.reject(
+      new Error('Please choose a valid start and end time for the auction')
+    );
+  };
+
   const validateDateRange = (_, value) => {
-    if (!value || !value[0] || !value[1]) {
-      return Promise.reject(new Error('Please choose a valid range of date'));
+    const selectedStartDate = value && value[0];
+    const selectedEndDate = value && value[1];
+    if (selectedStartDate && selectedEndDate) {
+      const daysDiff = selectedEndDate.diff(selectedStartDate, 'day');
+      if (daysDiff > 7) {
+        return Promise.reject(
+          new Error('The range of start and end dates must be within 7 days')
+        );
+      }
+      return Promise.resolve();
     }
+    return Promise.reject(new Error('Please choose a valid date range'));
+  };
 
-    const [startDate, endDate] = value;
-    const currentDate = moment();
-
-    if (startDate.isBefore(currentDate)) {
-      return Promise.reject(
-        new Error('Start date must be greater than the current date')
-      );
+  const disabled7DaysDate = (current, { from }) => {
+    if (from) {
+      return Math.abs(current.diff(from, 'day')) >= 7;
     }
-
-    if (endDate.isBefore(startDate)) {
-      return Promise.reject(new Error('End date must be after the start date'));
-    }
-
-    const daysDiff = endDate.diff(startDate, 'days');
-    if (daysDiff > 7) {
-      return Promise.reject(
-        new Error('The range of start date and end date must be within 7 days')
-      );
-    }
-
-    return Promise.resolve();
+    return false;
   };
 
   const handleSubmit = async (values) => {
@@ -59,17 +82,19 @@ export const ModalUpdateDate = ({ open, setOpen }) => {
         dataUpdate.id,
         formattedDate
       );
-      const updateMyAuction = auctionData.map(auction => auction.id === response.data.id ? response.data : auction)
+      const updateMyAuction = auctionData.map((auction) =>
+        auction.id === response.data.id ? response.data : auction
+      );
       dispatch(setMyAuctionData(updateMyAuction));
       openNotification({
         type: 'success',
-        description: 'Updated date range session'
-      })
-      handleClose()
+        description: 'Updated date range session',
+      });
+      handleClose();
     } catch (error) {
       openNotification({
         type: 'error',
-        description: 'Failed',
+        description: 'Failed to update date range',
       });
     } finally {
       setLoading(false);
@@ -78,25 +103,27 @@ export const ModalUpdateDate = ({ open, setOpen }) => {
 
   useEffect(() => {
     if (dataUpdate) {
-      form.setFieldsValue({
-        dateRange: [
-          dataUpdate.startTime ? moment(dataUpdate.startTime) : null,
-          dataUpdate.endTime ? moment(dataUpdate.endTime) : null,
-        ],
-      });
+      const start = dataUpdate.startTime ? dayjs(dataUpdate.startTime) : null;
+      const end = dataUpdate.endTime ? dayjs(dataUpdate.endTime) : null;
+      setDateRange([start, end]);
+      form.setFieldsValue({ dateRange: [start, end] });
     }
   }, [dataUpdate, form]);
 
   return (
     <Modal
-      open={open}
-      onCancel={() => setOpen(false)}
+      visible={open}
+      onCancel={handleClose}
       title='Update Date Range'
       footer={[
-        <SecondaryButton key={'cancel'} onClick={handleClose}>
+        <SecondaryButton key='cancel' onClick={handleClose}>
           Cancel
         </SecondaryButton>,
-        <PrimaryButton loading={loading} onClick={() => form.submit()} key={'save'}>
+        <PrimaryButton
+          loading={loading}
+          onClick={() => form.submit()}
+          key='save'
+        >
           Update
         </PrimaryButton>,
       ]}
@@ -109,6 +136,8 @@ export const ModalUpdateDate = ({ open, setOpen }) => {
           name='dateRange'
           rules={[
             { required: true, message: 'Must not be empty!' },
+            { validator: validateStartDate },
+            { validator: validateEndDate },
             { validator: validateDateRange },
           ]}
         >
@@ -117,6 +146,10 @@ export const ModalUpdateDate = ({ open, setOpen }) => {
             format='YYYY-MM-DD HH:mm'
             placeholder={['Start date', 'End date']}
             className='!w-full'
+            disabledDate={disabled7DaysDate}
+            needConfirm={false}
+            onChange={(dates) => setDateRange(dates)}
+            value={dateRange}
           />
         </Form.Item>
       </Form>

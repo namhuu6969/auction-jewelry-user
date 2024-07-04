@@ -4,6 +4,7 @@ import { IoRemove, IoAdd } from 'react-icons/io5';
 import { useEffect, useState } from 'react';
 import { UserServices } from '../../../../../../../services/api/UserServices/UserServices';
 import { useSelector } from 'react-redux';
+import { formatPriceVND } from '../../../../../../../utils/utils';
 
 const { Step } = Steps;
 const { Title } = Typography;
@@ -52,7 +53,6 @@ export const BidModal = ({
             </Button>
             <Input
               className='w-[80%]'
-              type='number'
               min='0'
               step={step}
               value={bidAmount}
@@ -70,7 +70,8 @@ export const BidModal = ({
             )}
           </div>
           <Card title={profileInfo.full_name} extra={<a href='#'>More</a>}>
-            <p>Your Wallet Balance: {profileInfo.money} VND</p> {/* Display wallet balance */}
+            <p>Your Wallet Balance: {formatPriceVND(profileInfo.money)}</p>{' '}
+            {/* Display wallet balance */}
           </Card>
         </div>
       ),
@@ -80,8 +81,9 @@ export const BidModal = ({
       content: (
         <div className='flex flex-col gap-4'>
           <Title level={4}>Please confirm your bid:</Title>
-          <p>Bid Amount: {bidAmount} VND</p>
-          <p>Your Wallet Balance: {profileInfo.money} VND</p> {/* Display wallet balance */}
+          <p>Bid Amount: {formatPriceVND(parseInt(bidAmount))}</p>
+          <p>Your Wallet Balance: {formatPriceVND(profileInfo.money)}</p>{' '}
+          {/* Display wallet balance */}
         </div>
       ),
     },
@@ -97,7 +99,7 @@ export const BidModal = ({
         okText: 'Go to Payment',
         cancelText: 'Cancel',
         onOk: () => {
-          navigator('/payment');
+          navigator('/profle');
         },
       });
     } else {

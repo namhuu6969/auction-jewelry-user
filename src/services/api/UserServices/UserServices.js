@@ -25,4 +25,12 @@ export const UserServices = {
       return err;
     }
   },
+  createPayment: async (amount) => {
+    try {
+      const response = await api.get(`payment/create_payment?amount=${parseFloat(amount)}`);
+      return response.data;
+    } catch (err) {
+      return err;
+    }
+  },
 };
