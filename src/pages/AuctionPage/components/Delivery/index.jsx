@@ -1,6 +1,6 @@
 import { Empty, Image, Steps, Table, Tag } from 'antd';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { imageURL } from '../../../../utils/utils';
 import { FaBox, FaHandHoldingUsd, FaTruck } from 'react-icons/fa';
 import { RiTaskFill } from 'react-icons/ri';
@@ -9,6 +9,9 @@ import { PrimaryButton } from '../../../../components/ui/PrimaryButton';
 import { checkoutApi } from '../../../../services/api/Payment/checkoutApi';
 import { useNotification } from '../../../../hooks/useNotification';
 import { useNavigate } from 'react-router-dom';
+import { renderStatusDeliveryResult } from '../../../../utils/RenderStatus/renderStatusUtil';
+import { HiOutlineDotsHorizontal } from 'react-icons/hi';
+import { BsThreeDots } from 'react-icons/bs';
 
 const statusProps = {
   className: 'flex items-center gap-2',
@@ -19,6 +22,7 @@ export const FollowDelivery = () => {
   const [dataSource, setDataSource] = useState([]);
   const { openNotification, contextHolder } = useNotification();
   const navigate = useNavigate();
+  const [render, setRender] = useState(false);
   const handleStatusAuction = (data) => {
     switch (data) {
       case 'PREPARING':
@@ -66,24 +70,24 @@ export const FollowDelivery = () => {
       key: 'condition',
     },
     {
-      title: 'Weight',
-      dataIndex: 'weight',
-      key: 'weight',
-      render: (data) => <p>{data}(g)</p>,
-    },
-    {
       title: 'Material',
       dataIndex: 'jewelryMaterials',
       render: (jewelryMaterials) => (
-        <div className='grid grid-cols-4 gap-1'>
+        <div className='w-[200px] flex-wrap'>
           {jewelryMaterials.map((material) => (
-            <Tag key={material.id} className='col-span-2 text-center w-fit'>
+            <Tag key={material.id} className='col-span-1 text-center w-fit'>
               {material.material.name} - {material.weight}(
               {material.material.unit})
             </Tag>
           ))}
         </div>
       ),
+    },
+    {
+      title: 'Weight',
+      dataIndex: 'weight',
+      key: 'weight',
+      render: (data) => <p>{data}(g)</p>,
     },
   ];
   const itemsStep = [
@@ -127,6 +131,7 @@ export const FollowDelivery = () => {
         type: 'success',
         description: 'Confirm Success',
       });
+      setRender(true);
     } catch (error) {
       openNotification({
         type: 'error',
@@ -138,7 +143,10 @@ export const FollowDelivery = () => {
     if (auction && Object.keys(auction).length > 0) {
       setDataSource([auction.jewelry]);
     }
-  }, [auction]);
+    if (render) {
+      setDataSource([auction.jewelry]);
+    }
+  }, [auction, render]);
 
   const isEmptyObject = (obj) => {
     return !obj || Object.keys(obj).length === 0;
@@ -146,7 +154,15 @@ export const FollowDelivery = () => {
   return !isEmptyObject(auction) ? (
     <div className='flex flex-col gap-10'>
       {contextHolder}
-      <Table columns={columns || []} dataSource={dataSource || []} pagination={false} />
+      <TitleLabel className={'!font-semibold'} level={3}>
+        {renderStatusDeliveryResult(auction?.status)}
+      </TitleLabel>
+
+      <Table
+        columns={columns || []}
+        dataSource={dataSource || []}
+        pagination={false}
+      />
       <Steps current={handleStatusAuction(auction?.status)} items={itemsStep} />
       <div className='flex flex-col gap-5'>
         <TitleLabel level={3} className={'text-left'}>
@@ -169,7 +185,7 @@ export const FollowDelivery = () => {
         </div>
       </div>
       <div className='flex w-full justify-end'>
-        {auction.status === 'RECEIVED' ? (
+        {auction.status !== 'DELIVERED' ? (
           <></>
         ) : (
           <PrimaryButton onClick={() => handleConfirm(auction.id)}>

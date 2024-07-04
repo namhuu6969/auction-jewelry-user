@@ -8,5 +8,9 @@ export const checkoutApi = {
   checkoutConfirm: async (id) => {
     const response = await api.put(`checkout/confirm/${id}`)
     return response.data
+  },
+  checkoutWithPayment: async (id) => {
+    const response = await api.post(`checkout/payment/${id}`)
+    return response.data
   }
 }

@@ -1,4 +1,4 @@
-import { Button, Divider, Image, Table, Tag } from 'antd';
+import { Image, Table, Tag } from 'antd';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNotification } from '../../../../../hooks/useNotification';
@@ -9,7 +9,7 @@ import useTableSearch from '../../../../../hooks/useTableSearch';
 import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
 import { setAuctionCheckout } from '../../../../../core/store/Checkout/checkoutSlice';
 import { useNavigate } from 'react-router-dom';
-import { checkoutApi } from '../../../../../services/api/Payment/checkoutApi';
+import { renderStatusAuction } from '../../../../../utils/RenderStatus/renderStatusUtil';
 
 export const WinningTable = () => {
   const myWinningData = useSelector((state) => state.myAuction.myWinningData);
@@ -74,6 +74,7 @@ export const WinningTable = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      render: (data) => renderStatusAuction(data)
     },
     {
       title: 'Jewelry Status',

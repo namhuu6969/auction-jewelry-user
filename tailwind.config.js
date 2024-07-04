@@ -10,6 +10,22 @@ export default {
       lineHeight: {
         none: '1', // Typically, 'none' is represented by a line-height of 1
       },
+      animation: {
+        delivering: 'delivering 1.5s ease-in-out infinite',
+      },
+      keyframes: {
+        delivering: {
+          '0%': {
+            transform: 'translateY(0)',
+          },
+          '50%': {
+            transform: 'translateY(-5px)',
+          },
+          '100%': {
+            transform: 'translateY(0)',
+          },
+        },
+      },
     },
   },
   plugins: [],

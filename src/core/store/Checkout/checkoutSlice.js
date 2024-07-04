@@ -11,8 +11,11 @@ const checkoutSlice = createSlice({
     setAuctionCheckout: (state, action) => {
       state.auctionData = action.payload;
     },
+    clearDataAfterCheckout: (state) => {
+      state.auctionData = {}
+    }
   },
 });
 
-export const { setAuctionCheckout } = checkoutSlice.actions;
+export const { setAuctionCheckout, clearDataAfterCheckout } = checkoutSlice.actions;
 export default checkoutSlice.reducer
