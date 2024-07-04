@@ -16,12 +16,18 @@ import { formatPrice } from '@utils/utils';
 import { wishlistApi } from '../../../../../../services/api/WishlistApi/wishlistApi';
 import { CountdownTimer } from './CountdownTimer/CountdownTimer';
 import { formatPriceVND, handleStatus } from '../../../../../../utils/utils';
-
+import useSWR from 'swr';
 const { Title } = Typography;
+
+const fetcher = async (id) => {
+  const response = await auctionApi.getAuctionById(id);
+  return response.data;
+};
 
 export const JewelryDetail = () => {
   const navigator = useNavigate();
   const { id } = useParams();
+  const { data, error, isLoading } = useSWR(id, fetcher);
   const [auctionData, setAuctionData] = useState(null);
   const [jewelryData, setJewelryData] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -33,21 +39,21 @@ export const JewelryDetail = () => {
 
   const userEmail = localStorage.getItem('fullName');
 
+  console.log(data);
+
   useEffect(() => {
-    const fetchAuctionData = async () => {
-      const response = await auctionApi.getAuctionById(id);
-      setJewelryData(response.data.jewelry);
-      setAuctionData(response.data);
-      setStep(response.data.step);
-      setBidAmount((response.data.currentPrice + response.data.step).toString());
+    if (data) {
+      setJewelryData(data.jewelry);
+      setAuctionData(data);
+      setStep(data.step);
+      setBidAmount((data.currentPrice + data.step).toString());
       setSelectedImage({
         id: 1,
-        image: `http://167.71.212.203:8080/uploads/jewelry/${response.data.jewelry.jewelryImages[0]?.url}`, // Set the initial selected image
+        image: `http://167.71.212.203:8080/uploads/jewelry/${data.jewelry.jewelryImages[0]?.url}`, // Set the initial selected image
       });
-      if (response.data.winner) setIsWinner(response.data.winner);
-    };
-    fetchAuctionData();
-  }, [id]);
+      if (data.winner) setIsWinner(data.winner);
+    }
+  }, [data]);
 
   const showModal = () => {
     if (!userEmail) {
