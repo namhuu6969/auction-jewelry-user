@@ -1,22 +1,17 @@
-import { notification } from 'antd';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { clearUserData } from '../../core/store/PersonalStore/personal';
+import { clearToken } from '../../core/store/Auth/auth';
 // import { setTokens } from '@/core/store/auth/authenticate';
 
 const api = axios.create({
   baseURL: 'http://apijewelryauction.techx.id.vn:8081/api/v1/',
   headers: {
-    'Accept': 'application/json',
+    Accept: 'application/json',
     'Content-Type': 'application/json',
   },
 });
 
-const openNotificationWithIcon = (type, title) => {
-  notification[type]({
-    message: title,
-    placement: 'top',
-    duration: 5,
-  });
-};
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
@@ -37,9 +32,9 @@ const refreshToken = async () => {
   }
   const response = await axios.post(
     'http://apijewelryauction.techx.id.vn:8081/api/v1/user/refresh',
-    { refresh }
+    { refreshToken: refresh }
   );
-  const { accessToken } = response.data;
+  const { accessToken } = response.data.data;
   localStorage.setItem('accessToken', accessToken);
   return accessToken;
 };
@@ -61,11 +56,11 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (error) {
-        window.location.href = '/login';
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('fullName');
-        openNotificationWithIcon('warning', error.message);
+        localStorage.removeItem('money');
+        // window.location.href = '/login';
         return Promise.reject(error);
       }
     }
