@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PrimaryButton } from '../../../../../../components/ui/PrimaryButton';
 import TitleLabel from '../../../../../../components/ui/TitleLabel';
+import { formatPriceVND } from '../../../../../../utils/utils';
 const { Title } = Typography;
 
 export const ResultPayment = () => {
@@ -12,6 +13,7 @@ export const ResultPayment = () => {
   const [rspCode, setRspCode] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [money, setMoney] = useState('')
   const amount = searchParams.get('vnp_Amount');
   const bankCode = searchParams.get('vnp_BankCode');
   const bankNo = searchParams.get('vnp_BankTranNo');
@@ -61,6 +63,16 @@ export const ResultPayment = () => {
     };
     fetchPaymentResult();
   }, []);
+
+  useEffect(() => {
+    const config = {
+      style: 'currency',
+      currency: 'VND',
+      maximumFractionDigits: 9,
+    };
+    const formated = new Intl.NumberFormat('vi-VN', config).format(amount);
+    setMoney(formated)
+  }, []);
   return loading ? (
     <Spin />
   ) : rspCode === '00' ? (
@@ -86,7 +98,7 @@ export const ResultPayment = () => {
       <div className='grid grid-cols-4 border border-[#DDDDDD] px-5 py-10'>
         <div>
           <TitleLabel>Amount:</TitleLabel>
-          <TitleLabel>{amount || 'Unknom'}</TitleLabel>
+          <TitleLabel>{money || 'Unknom'}</TitleLabel>
         </div>
         <div>
           <TitleLabel>Card Type:</TitleLabel>
@@ -134,7 +146,7 @@ export const ResultPayment = () => {
       <div className='grid grid-cols-4 border border-[#DDDDDD] px-5 py-10'>
         <div>
           <TitleLabel>Amount:</TitleLabel>
-          <TitleLabel>{amount || 'Unknom'}</TitleLabel>
+          <TitleLabel>{formatPriceVND(amount) || 'Unknom'}</TitleLabel>
         </div>
         <div>
           <TitleLabel>Card Type:</TitleLabel>

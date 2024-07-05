@@ -80,7 +80,7 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
       dispatch(setRender(true));
       setMethod('');
       setIsAtHome(false);
-      window.open(response.data.paymentResponse.url)
+      window.location.href = response.data.paymentResponse.url
     } catch (error) {
       openNotification({
         type: 'error',

@@ -10,15 +10,23 @@ import { formatPriceVND, imageURL } from '../../../../../utils/utils';
 import { ModalUpdateDate } from './components/ModalUpdateDate';
 import { setDataUpdate } from '../../../../../core/store/WishlistStore/MyAuctionStore/myAuction';
 import { renderStatusAuction } from '../../../../../utils/RenderStatus/renderStatusUtil';
+import useSWR from 'swr';
+
+const fetch = async () => {
+  const response = await myAuctionApi.getMyAuction();
+  const sortedData = response.data.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+  return sortedData;
+};
 
 export const MyAuctionTable = () => {
   const { getColumnSearchProps } = useTableSearch();
+  const { data, error, isLoading, mutate } = useSWR('my-auction-data', fetch);
   const { getColumnSearchDateProps } = useTableSearchDate();
-  const [loading, setLoading] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const auctionData = useSelector((state) => state.myAuction.myAuctionData);
   const render = useSelector((state) => state.jewelryMe.render);
 
   // eslint-disable-next-line no-unused-vars
@@ -156,7 +164,8 @@ export const MyAuctionTable = () => {
   ];
 
   const handleUpdateOpen = (data) => {
-    setOpenUpdate(true), dispatch(setDataUpdate(data));
+    setOpenUpdate(true);
+    dispatch(setDataUpdate(data));
   };
 
   const getMenu = (id, status, data) => (
@@ -168,7 +177,9 @@ export const MyAuctionTable = () => {
       </Menu.Item>
       <Menu.Item
         key={'update'}
-        disabled={status === 'InProgress' || status === 'Completed' ? true : false}
+        disabled={
+          status === 'InProgress' || status === 'Completed' ? true : false
+        }
       >
         <a onClick={() => handleUpdateOpen(data)}>Update date range session</a>
       </Menu.Item>
@@ -176,35 +187,24 @@ export const MyAuctionTable = () => {
   );
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await myAuctionApi.getMyAuction();
-        const sortedData = response.data.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        if (sortedData) {
-          dispatch(setMyAuctionData(sortedData));
-        }
-      } catch (error) {
-        console.error('Error fetching auction data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (render === true) {
-      fetchData();
+    if (data) {
+      dispatch(setMyAuctionData(data));
     }
-    fetchData();
-  }, [dispatch, render]);
+    if (render === true) {
+      mutate();
+    }
+  }, [data, dispatch, mutate, render]);
 
   return (
     <>
-      <ModalUpdateDate open={openUpdate} setOpen={setOpenUpdate} />
+      <ModalUpdateDate
+        open={openUpdate}
+        setOpen={setOpenUpdate}
+        revalidate={mutate}
+      />
       <Table
-        loading={loading}
-        dataSource={auctionData}
+        loading={isLoading}
+        dataSource={data}
         columns={columns}
         scroll={{
           x: 2000,
