@@ -8,12 +8,14 @@ import CardContent from '@components/ui/Card';
 import { ImageBrandCard } from '@components/ui/ImageBrandCard/ImageBrandCard';
 import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
 import { blogServices } from '../../../../services/api/BlogServices/BlogServices';
+
 const { Title } = Typography;
 
 export const Home = () => {
   const [loading, setLoading] = useState(false);
   const [auctionData, setAuctionData] = useState([]);
   const [newsData, setNewsData] = useState([]);
+
   useEffect(() => {
     const fetchDataAuction = async () => {
       try {
@@ -102,10 +104,10 @@ export const Home = () => {
           </Flex>
           <div className='w-full flex'>
             <div className='w-1/2'>
-              <div className='p-[100px] h-full bg-black flex justify-self-start'>
+              <div className='p-[100px] h-full bg-[#F2E7E7] flex justify-self-start'>
                 <Flex justify='start' align='start' vertical>
-                  <p className='text-white text-3xl ml-6 mb-4'>Sell With Brand</p>
-                  <p className='text-white text-sm'>
+                  <p className='text-black text-3xl ml-6 mb-4'>Sell With Brand</p>
+                  <p className='text-black text-sm'>
                     Curious to know if your item is suitable for one of our upcoming sales? Provide
                     information and share images to request an online estimate now.
                   </p>
@@ -113,7 +115,7 @@ export const Home = () => {
               </div>
             </div>
             <div className='w-1/2 h-[400px]'>
-              <img src='/images/brand.jpg' className='object-cover h-full w-full	' alt='sadas' />
+              <img src='/images/brand.jpg' className='object-cover h-full w-full' alt='Brand' />
             </div>
           </div>
         </Skeleton>

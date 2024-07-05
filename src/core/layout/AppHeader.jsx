@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { UserOutlined } from '@ant-design/icons';
 import { clearToken } from '../store/Auth/auth';
 import { clearUserData } from '../store/PersonalStore/personal';
+import { useEffect, useState } from 'react';
 
 const services = [
   { title: 'Support', link: '/support' },
@@ -25,18 +26,30 @@ const navLink = [
 ];
 
 const AppHeader = () => {
+  const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const handleNavigation = (link) => {
     navigate(link);
   };
+
   const auth = localStorage.getItem('fullName');
   const dispatch = useDispatch();
+
   const handleLogout = async () => {
     dispatch(clearToken());
-    dispatch(clearUserData())
+    dispatch(clearUserData());
     window.location.href = '/login';
   };
+
   const items = [
     {
       label: (
@@ -71,6 +84,7 @@ const AppHeader = () => {
       key: 'logout',
     },
   ];
+
   return (
     <Flex className='container mx-auto' vertical gap={'0.8rem'}>
       <Flex align='center' justify='end'>
@@ -110,8 +124,15 @@ const AppHeader = () => {
             </p>
           ))}
           <Flex vertical className='pt-4 pb-8 font-serif text-lg text-black'>
-            <p style={{ lineHeight: '2rem' }}>13:31:10 PM</p>
-            <p style={{ lineHeight: '0.4rem' }}>Thurday, 16/5/2024</p>
+            <p style={{ lineHeight: '2rem' }}>{currentTime.toLocaleTimeString()}</p>
+            <p style={{ lineHeight: '0.4rem' }}>
+              {currentTime.toLocaleDateString('en-US', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric',
+              })}
+            </p>
           </Flex>
           {auth ? (
             <Dropdown
