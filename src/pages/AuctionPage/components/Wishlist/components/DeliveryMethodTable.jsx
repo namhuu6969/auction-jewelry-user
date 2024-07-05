@@ -72,7 +72,8 @@ export const DeliveryMethodTable = () => {
       const updateResponse = response.data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
-      setDataSource(updateResponse);
+      const filteredResponse = updateResponse.filter((e) => e.valuatingDelivery === true)
+      setDataSource(filteredResponse);
       setLoading(false);
     };
     fetchData();

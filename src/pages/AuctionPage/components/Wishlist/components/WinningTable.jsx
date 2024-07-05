@@ -9,7 +9,10 @@ import useTableSearch from '../../../../../hooks/useTableSearch';
 import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
 import { setAuctionCheckout } from '../../../../../core/store/Checkout/checkoutSlice';
 import { useNavigate } from 'react-router-dom';
-import { renderStatusAuction } from '../../../../../utils/RenderStatus/renderStatusUtil';
+import {
+  renderStatusAuction,
+  renderStatusJewelry,
+} from '../../../../../utils/RenderStatus/renderStatusUtil';
 
 export const WinningTable = () => {
   const myWinningData = useSelector((state) => state.myAuction.myWinningData);
@@ -74,12 +77,13 @@ export const WinningTable = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (data) => renderStatusAuction(data)
+      render: (data) => renderStatusAuction(data),
     },
     {
       title: 'Jewelry Status',
       dataIndex: ['jewelry', 'status'],
       key: 'jewelryStatus',
+      render: (data) => renderStatusJewelry(data),
     },
     {
       title: 'Action',
@@ -111,7 +115,10 @@ export const WinningTable = () => {
       try {
         setLoading(true);
         const response = await myAuctionApi.getMyWinningAuction();
-        dispatch(setMyWinning(response.data));
+        const sortData = response.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        dispatch(setMyWinning(sortData));
       } catch (error) {
         openNotification({
           type: 'error',

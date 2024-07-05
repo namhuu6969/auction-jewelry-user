@@ -139,6 +139,9 @@ export const ValuatingTable = () => {
     if (statusJewelry === 'AUCTIONING') {
       error.push('- This jewelry is auctioning');
     }
+    if(statusJewelry === 'DELIVERING') {
+      error.push('This jewelry is checkout')
+    }
     if (status) return error.join('\n');
   };
 
@@ -150,6 +153,7 @@ export const ValuatingTable = () => {
           status === 'REQUEST' ||
           status === 'VALUATING' ||
           statusJewelry === 'AUCTIONING' ||
+          statusJewelry === 'DELIVERING'||
           startingPrice === 0
         }
       >

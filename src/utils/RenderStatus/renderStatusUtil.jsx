@@ -5,15 +5,19 @@ export const renderStatusJewelry = (status) => {
   if (status) {
     switch (status) {
       case 'OFFLINE_VALUATING':
-        return <p className='text-yellow-500'>VALUATING</p>;
+        return <p className='text-yellow-500'>Valuating</p>;
       case 'STORED':
-        return <p className='text-blue-500'>STORE</p>;
+        return <p className='text-blue-500'>Store</p>;
       case 'PENDING':
-        return <p className='text-cyan-600'>PENDING</p>;
+        return <p className='text-cyan-600'>Pending</p>;
       case 'ONLINE_VALUATED':
-        return <p className='text-purple-500'>ONLINE VALUATED</p>;
+        return <p className='text-purple-500'>Online valuated</p>;
       case 'AUCTIONING':
-        return <p className='text-green-500'>AUCTIONING</p>;
+        return <p className='text-green-500'>Auctioning</p>;
+      case 'DELIVERING':
+        return <p className='text-orange-500'>Delivering</p>;
+      case 'VALUATING_DELIVERING':
+        return <p className='text-teal-400'>Valuating delivering</p>
       default:
         return status;
     }
