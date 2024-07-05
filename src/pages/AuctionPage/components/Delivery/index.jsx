@@ -1,4 +1,4 @@
-import { Empty, Image, Steps, Table, Tag } from 'antd';
+import { Empty, Image, Modal, Result, Steps, Table, Tag } from 'antd';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { imageURL } from '../../../../utils/utils';
@@ -7,11 +7,8 @@ import { RiTaskFill } from 'react-icons/ri';
 import TitleLabel from '../../../../components/ui/TitleLabel';
 import { PrimaryButton } from '../../../../components/ui/PrimaryButton';
 import { checkoutApi } from '../../../../services/api/Payment/checkoutApi';
-import { useNotification } from '../../../../hooks/useNotification';
 import { useNavigate } from 'react-router-dom';
 import { renderStatusDeliveryResult } from '../../../../utils/RenderStatus/renderStatusUtil';
-import { HiOutlineDotsHorizontal } from 'react-icons/hi';
-import { BsThreeDots } from 'react-icons/bs';
 
 const statusProps = {
   className: 'flex items-center gap-2',
@@ -20,9 +17,10 @@ const statusProps = {
 export const FollowDelivery = () => {
   const auction = useSelector((state) => state.delivery.auctionIdDelivery);
   const [dataSource, setDataSource] = useState([]);
-  const { openNotification, contextHolder } = useNotification();
+  const [open, setOpen] = useState(false)
+  const [status, setStatus] = useState(false);
+  const [check, setCheck] = useState('')
   const navigate = useNavigate();
-  const [render, setRender] = useState(false);
   const handleStatusAuction = (data) => {
     switch (data) {
       case 'PREPARING':
@@ -127,33 +125,25 @@ export const FollowDelivery = () => {
   const handleConfirm = async (id) => {
     try {
       await checkoutApi.checkoutConfirm(id);
-      openNotification({
-        type: 'success',
-        description: 'Confirm Success',
-      });
-      setRender(true);
+      setStatus(true);
+      setCheck('Thanks for using our website')
+      setOpen(true)
     } catch (error) {
-      openNotification({
-        type: 'error',
-        description: 'Error',
-      });
+      setStatus(false);
+      setCheck(error.response.data.message)
+      setOpen(true)
     }
   };
   useEffect(() => {
-    if (auction && Object.keys(auction).length > 0) {
-      setDataSource([auction.jewelry]);
-    }
-    if (render) {
-      setDataSource([auction.jewelry]);
-    }
-  }, [auction, render]);
+    setDataSource([auction.jewelry]);
+  }, [auction]);
 
   const isEmptyObject = (obj) => {
     return !obj || Object.keys(obj).length === 0;
   };
   return !isEmptyObject(auction) ? (
     <div className='flex flex-col gap-10'>
-      {contextHolder}
+      <ModalConfirmed open={open} setOpen={setOpen} status={status} message={check}/>
       <TitleLabel className={'!font-semibold'} level={3}>
         {renderStatusDeliveryResult(auction?.status)}
       </TitleLabel>
@@ -201,5 +191,30 @@ export const FollowDelivery = () => {
         Back to auction
       </PrimaryButton>
     </div>
+  );
+};
+
+const ModalConfirmed = ({ open, setOpen, status, message }) => {
+  const navigate = useNavigate();
+  const handleClose = () => {
+    setOpen(false);
+    navigate('/wishlist');
+  };
+  return (
+    <Modal
+      open={open}
+      onCancel={handleClose}
+      footer={[
+        <PrimaryButton key={'comfirmed'} onClick={() => handleClose()}>
+          Confirmed
+        </PrimaryButton>,
+      ]}
+    >
+      {status === true ? (
+        <Result status={'success'} title='Confirmed Success' subTitle={message} />
+      ) : (
+        <Result status={'error'} title='Confirmed Failed' subTitle={message} />
+      )}
+    </Modal>
   );
 };

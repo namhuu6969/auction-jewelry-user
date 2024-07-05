@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 
 const { RangePicker } = DatePicker;
 
-export const ModalUpdateDate = ({ open, setOpen }) => {
+export const ModalUpdateDate = ({ open, setOpen, revalidate }) => {
   const dataUpdate = useSelector((state) => state.myAuction.dataUpdate);
   const auctionData = useSelector((state) => state.myAuction.myAuctionData);
   const [form] = Form.useForm();
@@ -97,6 +97,7 @@ export const ModalUpdateDate = ({ open, setOpen }) => {
         description: 'Failed to update date range',
       });
     } finally {
+      revalidate()
       setLoading(false);
     }
   };

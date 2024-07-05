@@ -18,6 +18,7 @@ import { useNotification } from '../../../../../../hooks/useNotification';
 import { dataColor as initialDataColor } from '../../../../../../utils/colorData/colorUtil';
 import { InputCategoryRequest } from '../../../../../../components/ui/InputCategoryRequest';
 import { useNavigate } from 'react-router-dom';
+import { FaPlus } from 'react-icons/fa';
 const { Title } = Typography;
 
 const getBase64 = (file) =>
@@ -41,7 +42,7 @@ export const FormRequest = () => {
   const [material, setMaterial] = useState([]);
   const [choosedCategory, setChoosedCategory] = useState(null);
   const [materialsInput, setMaterialsInput] = useState([
-    { idMaterial: null, weight: 0 },
+    { idMaterial: null, weight: 0, unit: '' },
   ]);
   const [choosedBrand, setChoosedBrand] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -52,12 +53,11 @@ export const FormRequest = () => {
   const [newColor, setNewColor] = useState('');
 
   const handleAddColor = () => {
-    if (newColor && !dataColor.find(color => color.value === newColor)) {
+    if (newColor && !dataColor.find((color) => color.value === newColor)) {
       setDataColor([...dataColor, { value: newColor, label: newColor }]);
       setNewColor('');
     }
   };
-
 
   const handleCancel = () => setPreviewVisible(false);
 
@@ -171,7 +171,7 @@ export const FormRequest = () => {
   };
 
   const addMaterialInput = () => {
-    setMaterialsInput([...materialsInput, { idMaterial: null, weight: 0 }]);
+    setMaterialsInput([...materialsInput, { idMaterial: null, weight: 0, unit: '' }]);
     form.validateFields(['weight']);
   };
 
@@ -191,8 +191,9 @@ export const FormRequest = () => {
   };
 
   const handleMaterialChange = (index, idMaterial) => {
+    const selectedMaterial = material.find((mat) => mat.id === idMaterial);
     const updatedMaterials = materialsInput.map((material, idx) =>
-      idx === index ? { ...material, idMaterial } : material
+      idx === index ? { ...material, idMaterial, unit: selectedMaterial ? selectedMaterial.unit : '' } : material
     );
     setMaterialsInput(updatedMaterials);
     handleWeightTotalChange(updatedMaterials);
@@ -335,13 +336,15 @@ export const FormRequest = () => {
                 if (value && value.trim()) {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error('Whitespace-only is not allowed!'));
-              }
-            }
+                return Promise.reject(
+                  new Error('Whitespace-only is not allowed!')
+                );
+              },
+            },
           ]}
           className='!text-left col-span-1'
         >
-          <Input placeholder='Enter jewelry name...' className='!w-1/2' />
+          <Input placeholder='Enter jewelry name...' className='!w-full' />
         </Form.Item>
         <Title level={3} className='text-left mt-5 font-serif !text-[#946257]'>
           Category
@@ -401,16 +404,18 @@ export const FormRequest = () => {
               optionFilterProp='children'
               filterOption={filterOption}
               showSearch
-              dropdownRender={menu => (
+              dropdownRender={(menu) => (
                 <>
                   {menu}
-                  <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
+                  <div
+                    style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}
+                  >
                     <Input
                       style={{ flex: 'auto' }}
                       value={newColor}
-                      onChange={e => setNewColor(e.target.value)}
+                      onChange={(e) => setNewColor(e.target.value)}
                     />
-                    <Button type="link" onClick={handleAddColor}>
+                    <Button type='link' onClick={handleAddColor}>
                       Add new color
                     </Button>
                   </div>
@@ -520,85 +525,90 @@ export const FormRequest = () => {
           Weight
         </Title>
         <Divider className='!my-3' />
-        {materialsInput.map((material, index) => (
-          <div key={index} className='grid grid-cols-3 gap-4'>
-            <Form.Item
-              name={`material_${index}`}
-              label={
-                <Title level={5} className='!mb-0 font-sans !font-normal'>
-                  Material
-                </Title>
-              }
-              className='!text-left'
-              rules={[
-                {
-                  required: true,
-                  message: 'Must not be empty!',
-                },
-              ]}
-            >
-              <Select
-                showSearch
-                placeholder='Choose material'
-                optionFilterProp='children'
-                filterOption={filterOption}
-                options={getFilteredMaterials(index)?.map((e) => ({
-                  label: e?.name,
-                  value: e?.id,
-                }))}
-                className='!text-left !w-full'
-                onChange={(value) => handleMaterialChange(index, value)}
-              />
-            </Form.Item>
-            <Form.Item
-              label={
-                <Title
-                  level={5}
-                  className='!mb-0 font-sans !font-normal'
-                >{`Weight of material ${
-                  material.idMaterial === 3 ? '(karat)' : '(g)'
-                }`}</Title>
-              }
-              name={`weight_${index}`}
-              className='!text-left'
-              rules={[
-                { required: true, message: 'Must not be empty!' },
-                {
-                  type: 'number',
-                  min: 0.00000000000000001,
-                  message: 'Weight must be greater than 0!',
-                },
-              ]}
-            >
-              <InputNumber
-                placeholder='Enter material weight...'
-                controls={false}
-                value={material.weight}
-                onChange={(e) => handleWeightChange(index, e)}
-                className='w-full'
-              />
-            </Form.Item>
-            {index > 0 && (
-              <MinusCircleOutlined
-                onClick={() => removeMaterialInput(index)}
-                style={{
-                  fontSize: '24px',
-                  color: '#ff4d4f',
-                  cursor: 'pointer',
-                }}
-                className='mt-5'
-              />
-            )}
+        <div className='flex'>
+          <div className='w-[90%]'>
+            {materialsInput.map((material, index) => (
+              <div key={index} className='grid grid-cols-5 gap-4 col-span-2'>
+                <Form.Item
+                  name={`material_${index}`}
+                  label={
+                    <Title level={5} className='!mb-0 font-sans !font-normal'>
+                      Material
+                    </Title>
+                  }
+                  className='!text-left col-span-2'
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Must not be empty!',
+                    },
+                  ]}
+                >
+                  <Select
+                    showSearch
+                    placeholder='Choose material'
+                    optionFilterProp='children'
+                    filterOption={filterOption}
+                    options={getFilteredMaterials(index)?.map((e) => ({
+                      label: e?.name,
+                      value: e?.id,
+                    }))}
+                    className='!text-left !w-full'
+                    onChange={(value) => handleMaterialChange(index, value)}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label={
+                    <Title
+                      level={5}
+                      className='!mb-0 font-sans !font-normal'
+                    >{`Weight of material (${material.unit})`}</Title>
+                  }
+                  name={`weight_${index}`}
+                  className='!text-left col-span-2'
+                  rules={[
+                    { required: true, message: 'Must not be empty!' },
+                    {
+                      type: 'number',
+                      min: 0.00000000000000001,
+                      message: 'Weight must be greater than 0!',
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    placeholder='Enter material weight...'
+                    controls={false}
+                    value={material.weight}
+                    onChange={(e) => handleWeightChange(index, e)}
+                    className='w-full'
+                  />
+                </Form.Item>
+                {index > 0 && (
+                  <MinusCircleOutlined
+                    onClick={() => removeMaterialInput(index)}
+                    style={{
+                      fontSize: '24px',
+                      color: '#ff4d4f',
+                      cursor: 'pointer',
+                    }}
+                    className='mt-5'
+                  />
+                )}
+              </div>
+            ))}
           </div>
-        ))}
-        <Button
-          type='dashed'
-          onClick={addMaterialInput}
-          className='w-2/3 flex justify-center font-sans !font-normal'
-          disabled={disabledButtonAdd}
-        >
-          Add more material
-        </Button>
+          <div className='flex justify-start mt-10'>
+            <Button
+              type='primary'
+              onClick={addMaterialInput}
+              className='!w-[50px] !h-[50px] flex justify-center font-sans !font-normal rounded-full'
+              disabled={disabledButtonAdd}
+              shape='circle'
+              icon={<FaPlus />}
+              title='Add more material'
+            ></Button>
+          </div>
+        </div>
         <Form.Item
           name={'weight'}
           label={
@@ -665,7 +675,7 @@ export const FormRequest = () => {
             name='images'
             listType='picture-card'
             fileList={fileList}
-            onPreview={handlePreview} 
+            onPreview={handlePreview}
             onChange={handleChange}
             beforeUpload={beforeUpload}
             accept='image/png, image/jpeg, image/jpg'
