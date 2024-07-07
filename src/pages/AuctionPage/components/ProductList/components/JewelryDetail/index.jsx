@@ -71,10 +71,10 @@ export const JewelryDetail = () => {
       Modal.success({
         title: 'Bid Successfully',
         content: 'Your bid is on its way!',
-        okText: 'Bid more now',
+        okText: 'Ok',
         cancelText: 'Cancel',
         onOk: () => {
-          navigator('/auction');
+          setIsModalVisible(false);
         },
       });
       setCurrentStep(0);

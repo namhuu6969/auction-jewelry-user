@@ -24,9 +24,6 @@ export const BidModal = ({
   next,
   prev,
 }) => {
-  const userData = useSelector((state) => state.personal.user);
-  const money = useSelector((state) => state.personal.money);
-
   const [profileInfo, setProfileInfo] = useState({});
   useEffect(() => {
     const fetchUserData = async () => {
