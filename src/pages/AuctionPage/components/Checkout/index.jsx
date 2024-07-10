@@ -9,11 +9,12 @@ import { useNavigate } from 'react-router-dom';
 import { clearDataAfterCheckout } from '../../../../core/store/Checkout/checkoutSlice';
 const CheckoutPage = () => {
   const auctionCheckout = useSelector((state) => state.checkout.auctionData);
+  const myWallet = localStorage.getItem('money');
   const authorization = localStorage.getItem('fullName');
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState(false);
+  const [status, setStatus] = useState('');
   const [form] = Form.useForm();
   const onFinish = async (values) => {
     try {
@@ -25,9 +26,14 @@ const CheckoutPage = () => {
         auction_id: auctionCheckout.id,
       };
       setLoading(true);
-      await checkoutApi.checkoutPaymentAuction(data);
+      if (myWallet < auctionCheckout.currentPrice) {
+        setStatus('warning');
+      } else {
+        await checkoutApi.checkoutPaymentAuction(data);
+        setStatus('success');
+      }
     } catch (error) {
-      setStatus(true);
+      setStatus('error');
     } finally {
       setOpen(true);
       setLoading(false);
@@ -90,41 +96,63 @@ const CheckoutPage = () => {
 const ModalResult = ({ open, setOpen, loading, status }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  console.log(status);
   const handleCloseModal = () => {
     dispatch(clearDataAfterCheckout());
     setOpen(false);
     navigate('/');
   };
+  const handleRecharge = () => {
+    dispatch(clearDataAfterCheckout());
+    setOpen(false);
+    navigate('/profile');
+  }
   return (
     <Modal open={open} onCancel={handleCloseModal} footer={false}>
       {loading ? (
         <Spin />
-      ) : !status ? (
-        <>
-          <Result
-            status={'success'}
-            title={'Checkout Success'}
-            subTitle={'Thanks for use Jewelry Auction Website! Bit more now'}
-          />
-          <div className='flex justify-end w-full'>
-            <PrimaryButton key={'oke'} onClick={handleCloseModal}>
-              Continue auction
-            </PrimaryButton>
-          </div>
-        </>
       ) : (
-        <>
-          <Result
-            status={'error'}
-            title={'Checkout Error'}
-            subTitle={'Sorry! Please check information and wallet clearly'}
-          />
-          <div className='flex justify-end w-full'>
-            <PrimaryButton key={'oke'} onClick={handleCloseModal}>
-              Go to wallet
-            </PrimaryButton>
-          </div>
-        </>
+        (status === 'success' && (
+          <>
+            <Result
+              status={'success'}
+              title={'Checkout Success'}
+              subTitle={'Thanks for use Jewelry Auction Website! Bit more now'}
+            />
+            <div className='flex justify-end w-full'>
+              <PrimaryButton key={'oke'} onClick={handleCloseModal}>
+                Continue auction
+              </PrimaryButton>
+            </div>
+          </>
+        )) ||
+        (status === 'error' && (
+          <>
+            <Result
+              status={'error'}
+              title={'Checkout Error'}
+              subTitle={'Sorry! Please check information and wallet clearly'}
+            />
+            <div className='flex justify-end w-full'>
+              <PrimaryButton key={'oke'} onClick={handleCloseModal}>
+                Go to wallet
+              </PrimaryButton>
+            </div>
+          </>
+        )) || (
+          <>
+            <Result
+              status={'warning'}
+              title={'Checkout Warning'}
+              subTitle={'Sorry! Your wallet is not have enough money. Please recharge'}
+            />
+            <div className='flex justify-end w-full'>
+              <PrimaryButton key={'oke'} onClick={handleRecharge}>
+                Go to wallet
+              </PrimaryButton>
+            </div>
+          </>
+        )
       )}
     </Modal>
   );
