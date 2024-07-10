@@ -1,21 +1,22 @@
 import { Table } from 'antd';
 import useTableSearch from '../../../../../hooks/useTableSearch';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { myBiddingApi } from '../../../../../services/api/WishlistApi/myBiddingApi';
 import { formatDate, formatPriceVND } from '../../../../../utils/utils';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
+import useSWR from 'swr';
+import { useNotification } from '../../../../../hooks/useNotification';
+
+const fetch = async () => {
+  const response = await myBiddingApi.getBiddingMe();
+  return response.data;
+};
 
 export const BiddingTable = () => {
   const { getColumnSearchProps } = useTableSearch();
   const { getColumnSearchDateProps } = useTableSearchDate();
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await myBiddingApi.getBiddingMe();
-      setData(response.data);
-    };
-    fetchData();
-  }, []);
+  const { data, error, isLoading } = useSWR('my-bidding-data', fetch);
+  const { openNotification, contextHolder } = useNotification();
   const columns = [
     {
       title: 'Name',
@@ -44,7 +45,7 @@ export const BiddingTable = () => {
       dataIndex: 'currentPrice',
       key: 'currentPrice',
       sorter: (a, b) => a.currentPrice - b.currentPrice,
-      render: (data) => formatPriceVND(data)
+      render: (data) => formatPriceVND(data),
     },
     {
       title: 'Status',
@@ -52,6 +53,18 @@ export const BiddingTable = () => {
       key: 'status',
     },
   ];
-
-  return <Table dataSource={data} columns={columns} />;
+  useEffect(() => {
+    if (error) {
+      openNotification({
+        type: 'error',
+        description: 'Failed to fetch',
+      });
+    }
+  }, [error, openNotification]);
+  return (
+    <>
+      {contextHolder}
+      <Table loading={isLoading} dataSource={data} columns={columns} />
+    </>
+  );
 };

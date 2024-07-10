@@ -11,6 +11,7 @@ import { ModalUpdateDate } from './components/ModalUpdateDate';
 import { setDataUpdate } from '../../../../../core/store/WishlistStore/MyAuctionStore/myAuction';
 import { renderStatusAuction } from '../../../../../utils/RenderStatus/renderStatusUtil';
 import useSWR from 'swr';
+import { useNotification } from '../../../../../hooks/useNotification';
 
 const fetch = async () => {
   const response = await myAuctionApi.getMyAuction();
@@ -28,6 +29,7 @@ export const MyAuctionTable = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const render = useSelector((state) => state.jewelryMe.render);
+  const { openNotification, contextHolder } = useNotification();
 
   // eslint-disable-next-line no-unused-vars
   const [pageSize, setPageSize] = useState(4);
@@ -193,10 +195,17 @@ export const MyAuctionTable = () => {
     if (render === true) {
       mutate();
     }
-  }, [data, dispatch, mutate, render]);
+    if (error) {
+      openNotification({
+        type: 'error',
+        description: 'Failed to fetch',
+      });
+    }
+  }, [data, dispatch, error, mutate, openNotification, render]);
 
   return (
     <>
+      {contextHolder}
       <ModalUpdateDate
         open={openUpdate}
         setOpen={setOpenUpdate}

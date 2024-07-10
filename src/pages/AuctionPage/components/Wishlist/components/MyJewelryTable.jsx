@@ -17,12 +17,19 @@ import { myJewelryApi } from '../../../../../services/api/WishlistApi/myJewelryA
 import { useNotification } from '../../../../../hooks/useNotification';
 import { ModalOfflineValuate } from './components/ModalOfflineValuate';
 import { renderStatusJewelry } from '../../../../../utils/RenderStatus/renderStatusUtil';
-import { myValuatingApi } from '../../../../../services/api/WishlistApi/myValuatingApi';
+import useSWR from 'swr';
+
+const fetch = async () => {
+  const response = await wishlistApi.getJewelryByMe();
+  const sortedData = response.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+  return sortedData;
+};
 
 export const MyJewelryTable = () => {
   const { getColumnSearchProps } = useTableSearch();
   const { getColumnSearchDateProps } = useTableSearchDate();
-  const [loading, setLoading] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const category = useSelector((state) => state.jewelryMe.category);
   const brand = useSelector((state) => state.jewelryMe.brand);
@@ -38,6 +45,7 @@ export const MyJewelryTable = () => {
   const [confirm, setConfirm] = useState(false);
   const [id, setId] = useState(0);
   const { openNotification, contextHolder } = useNotification();
+  const { data, error, isLoading, mutate } = useSWR('my-jewelry-data', fetch);
 
   const handleConfirmDelete = (id) => {
     setOpenConfirm(true);
@@ -270,27 +278,20 @@ export const MyJewelryTable = () => {
     },
   ];
   useEffect(() => {
-    const fetchJewelryMe = async () => {
-      try {
-        setLoading(true);
-        const response = await wishlistApi.getJewelryByMe();
-        const sortedData = response.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        dispatch(setJewelryData(sortedData));
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchJewelryMe();
+    if (data) {
+      dispatch(setJewelryData(data));
+    }
     if (render) {
-      fetchJewelryMe();
+      mutate();
       dispatch(setRender(false));
     }
-  }, [dispatch, render]);
+    if (error) {
+      openNotification({
+        type: 'error',
+        description: 'Failed to fetch',
+      });
+    }
+  }, [data, dispatch, error, mutate, openNotification, render]);
   return (
     <>
       {contextHolder}
@@ -313,8 +314,8 @@ export const MyJewelryTable = () => {
         scroll={{
           x: 1500,
         }}
-        loading={loading}
-        dataSource={[...jewelryData]}
+        loading={isLoading}
+        dataSource={data}
         columns={columns}
         pagination={{ pageSize: 4 }}
       />
