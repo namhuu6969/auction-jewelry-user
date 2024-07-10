@@ -34,6 +34,7 @@ export const ValuatingTable = () => {
   // const auctionData = useSelector((state) => state.myAuction.myAuctionData);
   // const [checkAuctioning, setCheckAuctioning] = useState(false);
   const { data, error, isLoading, mutate } = useSWR('my-valuation-data', fetch);
+  const [valuation, setValuation] = useState({})
   const { openNotification, contextHolder } = useNotification();
   const dispatch = useDispatch();
   const formatPriceVND = (price) =>
@@ -125,7 +126,8 @@ export const ValuatingTable = () => {
             data.status,
             data.jewelry.staringPrice,
             data.jewelry.status,
-            data.online
+            data.online,
+            data
           )}
           trigger={['click']}
         >
@@ -160,7 +162,7 @@ export const ValuatingTable = () => {
     if (status) return error.join('\n');
   };
 
-  const getMenu = (id, status, startingPrice, statusJewelry, valuationType) => (
+  const getMenu = (id, status, startingPrice, statusJewelry, valuationType, valuation) => (
     <Menu>
       <Menu.Item
         key='0'
@@ -182,15 +184,16 @@ export const ValuatingTable = () => {
           overlayStyle={{ whiteSpace: 'pre-line' }}
         >
           <span>
-            <a onClick={() => handleAddAuctionClick(id)}>Put up auction</a>
+            <a onClick={() => handleAddAuctionClick(id, valuation)}>Put up auction</a>
           </span>
         </Tooltip>
       </Menu.Item>
     </Menu>
   );
-  const handleAddAuctionClick = (id) => {
+  const handleAddAuctionClick = (id, valuation) => {
     setOpen(true);
     dispatch(setJewelryId(id));
+    setValuation(valuation)
   };
   useEffect(() => {
     if (data) {
@@ -210,7 +213,7 @@ export const ValuatingTable = () => {
   return (
     <>
       {contextHolder}
-      <ModalAddAuction open={open} setOpen={setOpen} />
+      <ModalAddAuction open={open} setOpen={setOpen} valuation={valuation}/>
       <Table
         dataSource={data}
         columns={columns}

@@ -1,14 +1,17 @@
 import { DatePicker, InputNumber, Modal } from 'antd';
 import { Form } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PrimaryButton } from '../../../../../../components/ui/PrimaryButton';
 import { wishlistApi } from '../../../../../../services/api/WishlistApi/wishlistApi';
 import { setRender } from '../../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { useNotification } from '../../../../../../hooks/useNotification';
+import TitleLabel from '../../../../../../components/ui/TitleLabel';
+import { formatPriceVND } from '../../../../../../utils/utils';
 const { RangePicker } = DatePicker;
 
-export const ModalAddAuction = ({ open, setOpen }) => {
+export const ModalAddAuction = ({ open, setOpen, valuation }) => {
+  console.log(valuation);
   const jewelryId = useSelector((state) => state.jewelryMe.jewelryId);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -96,6 +99,11 @@ export const ModalAddAuction = ({ open, setOpen }) => {
     setOpen(false);
     form.resetFields();
   };
+  useEffect(() => {
+    if (valuation) {
+      form.setFieldsValue({ step: valuation?.jewelry?.staringPrice * 0.05 });
+    }
+  }, [form, valuation]);
   return (
     <Modal
       width={700}
@@ -134,16 +142,19 @@ export const ModalAddAuction = ({ open, setOpen }) => {
         </Form.Item>
 
         <Form.Item
-          label='Step'
+          label={
+            <TitleLabel>
+              Step (2% of{' '}
+              <span className='text-orange-600'>
+                starting price:{' '}
+                {formatPriceVND(valuation?.jewelry?.staringPrice)}
+              </span>
+              )
+            </TitleLabel>
+          }
           name='step'
-          rules={[
-            {
-              required: true,
-              message: 'Must not be empty!',
-            },
-          ]}
         >
-          <InputNumber className='!w-full' controls={false} min={0} />
+          <InputNumber className='!w-full' controls={false} readOnly />
         </Form.Item>
         <Form.Item className='flex justify-center'>
           <PrimaryButton loading={loading} htmlType='submit'>
