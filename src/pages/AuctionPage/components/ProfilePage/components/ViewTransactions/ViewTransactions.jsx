@@ -1,5 +1,5 @@
 // src/ViewTransactions.js
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Table, message } from 'antd';
 import moment from 'moment';
 import { transactionServices } from '../../../../../../services/api/TransactionServices/transactionServices';
@@ -49,9 +49,10 @@ export const ViewTransactions = () => {
     },
     {
       title: 'Receiver',
-      dataIndex: 'receiver',
       key: 'receiver',
-      render: (receiver) => receiver?.full_name,
+      dataIndex: 'systemReceive',
+      render: (systemReceive, record) =>
+        systemReceive ? 'System' : record.receiver?.full_name,
     },
   ];
 
