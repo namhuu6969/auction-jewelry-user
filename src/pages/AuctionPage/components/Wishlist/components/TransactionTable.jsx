@@ -10,7 +10,6 @@ const fetch = async () => {
   const sortedData = response.sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
-  console.log(sortedData)
   return sortedData;
 };
 
@@ -22,13 +21,13 @@ export const TransactionTable = () => {
       title: 'Created Date',
       key: 'createdAt',
       dataIndex: 'createdAt',
-      render: (data) => formatDateToYMDHM(data)
+      render: (data) => formatDateToYMDHM(data),
     },
     {
       title: 'Money',
       key: 'money',
       dataIndex: 'money',
-      render: (data) => formatPriceVND(data)
+      render: (data) => formatPriceVND(data),
     },
     {
       title: 'Sender',
@@ -38,7 +37,9 @@ export const TransactionTable = () => {
     {
       title: 'Receiver',
       key: 'receiver',
-      dataIndex: ['receiver', 'full_name'],
+      dataIndex: 'systemReceive',
+      render: (systemReceive, record) =>
+        systemReceive ? 'System' : record.receiver?.full_name,
     },
   ];
   useEffect(() => {
