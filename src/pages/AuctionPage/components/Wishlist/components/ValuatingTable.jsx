@@ -145,6 +145,7 @@ export const ValuatingTable = () => {
       ),
     },
   ];
+
   const handleError = (status, startingPrice, valuationType, statusJewelry) => {
     const error = [];
     if (status === 'REQUEST') {
@@ -168,9 +169,9 @@ export const ValuatingTable = () => {
       error.push('- This jewelry is checkout');
     }
     if (statusJewelry === 'VALUATING_DELIVERING') {
-      error.push('- Your jewelry is waiting for confirmed')
+      error.push('- Your jewelry is waiting for confirmed');
     }
-      if (status) return error.join('\n');
+    if (status) return error.join('\n');
   };
 
   const getMenu = (

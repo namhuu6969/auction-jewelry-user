@@ -17,7 +17,9 @@ export const renderStatusJewelry = (status) => {
       case 'DELIVERING':
         return <p className='text-orange-500'>Delivering</p>;
       case 'VALUATING_DELIVERING':
-        return <p className='text-teal-400'>Valuating delivering</p>
+        return <p className='text-teal-400'>Valuating delivering</p>    
+      case 'NOT_PAID':
+        return <p className='text-red-600'>Not paid</p>
       default:
         return status;
     }

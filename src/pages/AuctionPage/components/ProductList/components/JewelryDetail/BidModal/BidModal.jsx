@@ -96,7 +96,7 @@ export const BidModal = ({
         okText: 'Go to Payment',
         cancelText: 'Cancel',
         onOk: () => {
-          navigator('/profle');
+          navigator('/profile');
         },
       });
     } else {

@@ -94,6 +94,8 @@ export const MyJewelryTable = () => {
         return (error = 'You have send request for offline valuate');
       case 'VALUATING_DELIVERING':
         return (error = 'Jewelry is valuating');
+      case 'NOT_PAID':
+        return (error = 'You not paid valuating');
     }
     return error;
   };
@@ -111,6 +113,8 @@ export const MyJewelryTable = () => {
         return (error = 'Jewelry is waited to auction');
       case 'VALUATING_DELIVERING':
         return (error = 'Jewelry is valuating');
+      case 'NOT_PAID':
+        return (error = 'You not paid valuating');
     }
     return error;
   };
@@ -128,7 +132,8 @@ export const MyJewelryTable = () => {
         disabled={
           status === 'AUCTIONING' ||
           status === 'OFFLINE_VALUATING' ||
-          status === 'VALUATING_DELIVERING'
+          status === 'VALUATING_DELIVERING' ||
+          status === 'NOT_PAID'
         }
       >
         <Tooltip
@@ -149,7 +154,8 @@ export const MyJewelryTable = () => {
           status === 'OFFLINE_VALUATING' ||
           status === 'AUCTIONING' ||
           status === 'STORED' ||
-          status === 'VALUATING_DELIVERING'
+          status === 'VALUATING_DELIVERING' ||
+          status === 'NOT_PAID'
         }
       >
         <Tooltip
