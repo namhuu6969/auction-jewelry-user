@@ -11,7 +11,6 @@ import { formatPriceVND } from '../../../../../../utils/utils';
 const { RangePicker } = DatePicker;
 
 export const ModalAddAuction = ({ open, setOpen, valuation }) => {
-  console.log(valuation);
   const jewelryId = useSelector((state) => state.jewelryMe.jewelryId);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -97,11 +96,10 @@ export const ModalAddAuction = ({ open, setOpen, valuation }) => {
   };
   const handleClose = () => {
     setOpen(false);
-    form.resetFields();
   };
   useEffect(() => {
     if (valuation) {
-      form.setFieldsValue({ step: valuation?.jewelry?.staringPrice * 0.05 });
+      form.setFieldsValue({ step: valuation?.valuation_value * 0.05 });
     }
   }, [form, valuation]);
   return (
@@ -146,8 +144,8 @@ export const ModalAddAuction = ({ open, setOpen, valuation }) => {
             <TitleLabel>
               Step (2% of{' '}
               <span className='text-orange-600'>
-                starting price:{' '}
-                {formatPriceVND(valuation?.jewelry?.staringPrice)}
+                valuation value:{' '}
+                {formatPriceVND(valuation?.valuation_value)}
               </span>
               )
             </TitleLabel>

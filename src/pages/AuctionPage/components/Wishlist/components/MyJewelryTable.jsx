@@ -61,6 +61,7 @@ export const MyJewelryTable = () => {
         type: 'success',
         description: 'Delete successfully',
       });
+      dispatch(setRender(true));
     } catch (error) {
       openNotification({
         type: 'error',
@@ -91,6 +92,8 @@ export const MyJewelryTable = () => {
         return (error = 'This jewelry is auctioning');
       case 'OFFLINE_VALUATING':
         return (error = 'You have send request for offline valuate');
+      case 'VALUATING_DELIVERING':
+        return (error = 'Jewelry is valuating');
     }
     return error;
   };
@@ -106,6 +109,8 @@ export const MyJewelryTable = () => {
         return (error = 'Jewelry is auctioning');
       case 'STORED':
         return (error = 'Jewelry is waited to auction');
+      case 'VALUATING_DELIVERING':
+        return (error = 'Jewelry is valuating');
     }
     return error;
   };
@@ -115,16 +120,16 @@ export const MyJewelryTable = () => {
       <Menu.Item key='0'>
         <a onClick={() => handleOpenDetail(id)}>View Detail</a>
       </Menu.Item>
-      <Menu.Item
-        key='online'
-        disabled={status === 'AUCTIONING'}
-        title={status === 'AUCTIONING' && 'This jewelry is auctioning'}
-      >
+      <Menu.Item key='online'>
         <a onClick={() => handleOpenValuate(id)}>Online Valuate Jewelry</a>
       </Menu.Item>
       <Menu.Item
         key='offline'
-        disabled={status === 'AUCTIONING' || status === 'OFFLINE_VALUATING'}
+        disabled={
+          status === 'AUCTIONING' ||
+          status === 'OFFLINE_VALUATING' ||
+          status === 'VALUATING_DELIVERING'
+        }
       >
         <Tooltip
           title={handleErrorForSendValuate(status)}
@@ -143,7 +148,8 @@ export const MyJewelryTable = () => {
           status === 'ONLINE_VALUATED' ||
           status === 'OFFLINE_VALUATING' ||
           status === 'AUCTIONING' ||
-          status === 'STORED'
+          status === 'STORED' ||
+          status === 'VALUATING_DELIVERING'
         }
       >
         <Tooltip
