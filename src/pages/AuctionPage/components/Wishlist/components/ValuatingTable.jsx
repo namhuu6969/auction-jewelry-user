@@ -34,7 +34,7 @@ export const ValuatingTable = () => {
   // const auctionData = useSelector((state) => state.myAuction.myAuctionData);
   // const [checkAuctioning, setCheckAuctioning] = useState(false);
   const { data, error, isLoading, mutate } = useSWR('my-valuation-data', fetch);
-  const [valuation, setValuation] = useState({})
+  const [valuation, setValuation] = useState({});
   const { openNotification, contextHolder } = useNotification();
   const dispatch = useDispatch();
   const formatPriceVND = (price) =>
@@ -72,12 +72,17 @@ export const ValuatingTable = () => {
     },
     {
       title: 'Starting Price',
-      dataIndex: ['jewelry', 'staringPrice'],
-      key: 'staringPrice',
+      dataIndex: 'startingPrice',
+      key: 'startingPrice',
       render: (data) => formatPriceVND(data),
-      sorter: (a, b) =>
-        new Date(a?.jewelry?.staringPrice) - new Date(b?.jewelry?.staringPrice),
     },
+    // {
+    //   title: 'Starting Price',
+    //   dataIndex: ['jewelry', 'staringPrice'],
+    //   key: 'staringPrice',
+    //   sorter: (a, b) => a?.staringPrice - b?.staringPrice,
+    //   render: (data) => <p>{formatPriceVND(data)}</p>,
+    // },
     {
       title: 'Valuation Staff',
       dataIndex: ['staff', 'full_name'],
@@ -124,7 +129,7 @@ export const ValuatingTable = () => {
           overlay={getMenu(
             data.jewelry.id,
             data.status,
-            data.jewelry.staringPrice,
+            data.startingPrice,
             data.jewelry.status,
             data.online,
             data
@@ -145,6 +150,9 @@ export const ValuatingTable = () => {
     if (status === 'REQUEST') {
       error.push('- Staff is valuating this jewelry');
     }
+    if (status === 'VALUATING') {
+      error.push('- Wait manager accept valuate');
+    }
     if (startingPrice === 0) {
       error.push('- Staff has not set the starting price yet');
     }
@@ -157,12 +165,22 @@ export const ValuatingTable = () => {
       error.push('- This jewelry is auctioning');
     }
     if (statusJewelry === 'DELIVERING') {
-      error.push('This jewelry is checkout');
+      error.push('- This jewelry is checkout');
     }
-    if (status) return error.join('\n');
+    if (statusJewelry === 'VALUATING_DELIVERING') {
+      error.push('- Your jewelry is waiting for confirmed')
+    }
+      if (status) return error.join('\n');
   };
 
-  const getMenu = (id, status, startingPrice, statusJewelry, valuationType, valuation) => (
+  const getMenu = (
+    id,
+    status,
+    startingPrice,
+    statusJewelry,
+    valuationType,
+    valuation
+  ) => (
     <Menu>
       <Menu.Item
         key='0'
@@ -171,6 +189,7 @@ export const ValuatingTable = () => {
           status === 'VALUATING' ||
           statusJewelry === 'AUCTIONING' ||
           statusJewelry === 'DELIVERING' ||
+          statusJewelry === 'VALUATING_DELIVERING' ||
           startingPrice === 0
         }
       >
@@ -184,7 +203,9 @@ export const ValuatingTable = () => {
           overlayStyle={{ whiteSpace: 'pre-line' }}
         >
           <span>
-            <a onClick={() => handleAddAuctionClick(id, valuation)}>Put up auction</a>
+            <a onClick={() => handleAddAuctionClick(id, valuation)}>
+              Put up auction
+            </a>
           </span>
         </Tooltip>
       </Menu.Item>
@@ -193,7 +214,7 @@ export const ValuatingTable = () => {
   const handleAddAuctionClick = (id, valuation) => {
     setOpen(true);
     dispatch(setJewelryId(id));
-    setValuation(valuation)
+    setValuation(valuation);
   };
   useEffect(() => {
     if (data) {
@@ -213,7 +234,7 @@ export const ValuatingTable = () => {
   return (
     <>
       {contextHolder}
-      <ModalAddAuction open={open} setOpen={setOpen} valuation={valuation}/>
+      <ModalAddAuction open={open} setOpen={setOpen} valuation={valuation} />
       <Table
         dataSource={data}
         columns={columns}

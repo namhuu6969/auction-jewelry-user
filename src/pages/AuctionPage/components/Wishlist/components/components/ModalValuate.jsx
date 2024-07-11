@@ -59,6 +59,7 @@ export const ModalValuate = ({ setOpen, open }) => {
       try {
         setLoading(true);
         const response = await myValuatingApi.valuateTheJewelry(data);
+        console.log(response)
         setData(response.data);
         setDataSource(response.data.materialPriceResponse);
       } catch (error) {
