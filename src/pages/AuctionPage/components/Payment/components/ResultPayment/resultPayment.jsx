@@ -13,7 +13,7 @@ export const ResultPayment = () => {
   const [rspCode, setRspCode] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [money, setMoney] = useState('')
+  const [money, setMoney] = useState('');
   const amount = searchParams.get('vnp_Amount');
   const bankCode = searchParams.get('vnp_BankCode');
   const bankNo = searchParams.get('vnp_BankTranNo');
@@ -71,7 +71,7 @@ export const ResultPayment = () => {
       maximumFractionDigits: 9,
     };
     const formated = new Intl.NumberFormat('vi-VN', config).format(amount);
-    setMoney(formated)
+    setMoney(formated);
   }, []);
   return loading ? (
     <Spin />
@@ -98,7 +98,7 @@ export const ResultPayment = () => {
       <div className='grid grid-cols-4 border border-[#DDDDDD] px-5 py-10'>
         <div>
           <TitleLabel>Amount:</TitleLabel>
-          <TitleLabel>{money || 'Unknom'}</TitleLabel>
+          <TitleLabel>{formatPriceVND(amount) || 'Unknom'}</TitleLabel>
         </div>
         <div>
           <TitleLabel>Card Type:</TitleLabel>

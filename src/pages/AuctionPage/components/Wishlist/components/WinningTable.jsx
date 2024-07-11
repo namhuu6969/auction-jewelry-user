@@ -1,6 +1,6 @@
 import { Image, Table, Tag } from 'antd';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNotification } from '../../../../../hooks/useNotification';
 import { myAuctionApi } from '../../../../../services/api/WishlistApi/myAuctionApi';
 import { setMyWinning } from '../../../../../core/store/WishlistStore/MyAuctionStore/myAuction';
@@ -13,12 +13,20 @@ import {
   renderStatusAuction,
   renderStatusJewelry,
 } from '../../../../../utils/RenderStatus/renderStatusUtil';
+import useSWR from 'swr';
+
+const fetch = async () => {
+  const response = await myAuctionApi.getMyWinningAuction();
+  const sortData = response.data.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+  return sortData
+}
 
 export const WinningTable = () => {
-  const myWinningData = useSelector((state) => state.myAuction.myWinningData);
+  const { data, error, isLoading } = useSWR('my-winning-data', fetch);
   const { getColumnSearchProps } = useTableSearch();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const { openNotification, contextHolder } = useNotification();
   const columns = [
@@ -111,36 +119,27 @@ export const WinningTable = () => {
     navigate('/checkout');
   };
   useEffect(() => {
-    const fetchDataWinning = async () => {
-      try {
-        setLoading(true);
-        const response = await myAuctionApi.getMyWinningAuction();
-        const sortData = response.data.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        dispatch(setMyWinning(sortData));
-      } catch (error) {
-        openNotification({
-          type: 'error',
-          description: 'Error',
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDataWinning();
-  }, [dispatch]);
+    if(data) {
+      dispatch(setMyWinning(data));
+    }
+    if(error) {
+      openNotification({
+        type: 'error',
+        description: 'Failed to fetch'
+      })
+    }
+  }, [data, dispatch, error, openNotification]);
   return (
     <>
       {contextHolder}
       <Table
-        dataSource={myWinningData && myWinningData}
+        dataSource={data}
         columns={columns}
         scroll={{
           x: 2000,
         }}
         pagination={{ pageSize: 4 }}
-        loading={loading}
+        loading={isLoading}
       />
     </>
   );
