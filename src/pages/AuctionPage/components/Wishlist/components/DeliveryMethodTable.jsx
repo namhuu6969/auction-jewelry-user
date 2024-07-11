@@ -1,5 +1,5 @@
 import { Image, Table } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { formatDate, imageURL } from '../../../../../utils/utils';
 import { deliveryApi } from '../../../../../services/api/WishlistApi/deliveryApi';
 import { PrimaryButton } from '../../../../../components/ui/PrimaryButton';
@@ -7,12 +7,25 @@ import { useDispatch } from 'react-redux';
 import { setDelivery } from '../../../../../core/store/Delivery/deliverySlice';
 import { useNavigate } from 'react-router-dom';
 import { renderStatusDelivery } from '../../../../../utils/RenderStatus/renderStatusUtil';
+import useSWR from 'swr';
+import { useNotification } from '../../../../../hooks/useNotification';
+
+const fetch = async () => {
+  const response = await deliveryApi.getMyDelivery();
+  const updateResponse = response.data.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+  const filteredResponse = updateResponse.filter(
+    (e) => e.valuatingDelivery === false
+  );
+  return filteredResponse;
+};
 
 export const DeliveryMethodTable = () => {
-  const [dataSource, setDataSource] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const { data, error, isLoading } = useSWR('my-delivery-data', fetch);
+  const { openNotification, contextHolder } = useNotification;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const columns = [
     {
       title: '',
@@ -50,40 +63,41 @@ export const DeliveryMethodTable = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (data) => renderStatusDelivery(data)
+      render: (data) => renderStatusDelivery(data),
     },
     {
       title: 'Action',
       render: (data) => (
         <>
-          <PrimaryButton onClick={() => handleDelivery(data)}>View Delivery</PrimaryButton>
+          <PrimaryButton onClick={() => handleDelivery(data)}>
+            View Delivery
+          </PrimaryButton>
         </>
       ),
     },
   ];
   const handleDelivery = (data) => {
-    dispatch(setDelivery(data))
-    navigate('/delivery')
-  }
+    dispatch(setDelivery(data));
+    navigate('/delivery');
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const response = await deliveryApi.getMyDelivery();
-      const updateResponse = response.data.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-      const filteredResponse = updateResponse.filter((e) => e.valuatingDelivery === true)
-      setDataSource(filteredResponse);
-      setLoading(false);
-    };
-    fetchData();
+    if (error) {
+      openNotification({
+        type: 'error',
+        description: 'Failed to fetch',
+      });
+    }
   }, []);
   return (
-    <Table
-      dataSource={dataSource}
-      columns={columns}
-      pagination={{ pageSize: 4 }}
-      loading={loading}
-    />
+    <>
+      {contextHolder}
+      <Table
+        dataSource={data}
+        columns={columns}
+        pagination={{ pageSize: 4 }}
+        loading={isLoading}
+      />
+    </>
   );
 };
