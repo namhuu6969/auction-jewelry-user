@@ -190,7 +190,6 @@ export const ValuatingTable = () => {
           status === 'VALUATING' ||
           statusJewelry === 'AUCTIONING' ||
           statusJewelry === 'DELIVERING' ||
-          statusJewelry === 'VALUATING_DELIVERING' ||
           startingPrice === 0
         }
       >
