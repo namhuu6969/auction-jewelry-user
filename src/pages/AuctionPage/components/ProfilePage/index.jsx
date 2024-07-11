@@ -124,7 +124,19 @@ export const ProfilePage = () => {
                           <Form.Item
                             name='amount'
                             label='Amount'
-                            rules={[{ required: true, message: 'Please enter the amount to add.' }]}
+                            rules={[
+                              { required: true, message: 'Please enter the amount to add.' },
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (value >= 1000 && value <= 9999999) {
+                                    return Promise.resolve();
+                                  }
+                                  return Promise.reject(
+                                    new Error('Amount must be between 1000 and 9999999.')
+                                  );
+                                },
+                              }),
+                            ]}
                           >
                             <Input type='number' placeholder='Enter amount' />
                           </Form.Item>
