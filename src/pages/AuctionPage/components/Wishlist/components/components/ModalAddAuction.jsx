@@ -88,7 +88,7 @@ export const ModalAddAuction = ({ open, setOpen, valuation }) => {
     } catch (error) {
       openNotification({
         type: 'error',
-        description: 'This jewelry is existed in auction',
+        description: error.response.data.message,
       });
     } finally {
       setLoading(false);

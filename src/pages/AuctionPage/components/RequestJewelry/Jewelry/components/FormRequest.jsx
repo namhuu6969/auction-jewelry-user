@@ -282,6 +282,11 @@ export const FormRequest = () => {
     setChoosedCategory(value);
   };
 
+  const handleChangeBrand = (value) => {
+    form.setFieldsValue({collection: null})
+    setChoosedBrand(value)
+  }
+
   useEffect(() => {
     const fetchApiCategory = async () => {
       try {
@@ -511,13 +516,14 @@ export const FormRequest = () => {
             className='!text-left'
           >
             <Select
-              onChange={(value) => setChoosedBrand(value)}
+              onChange={handleChangeBrand}
               showSearch
               placeholder='Choose brand'
               optionFilterProp='children'
               filterOption={filterOption}
               options={itemsBrand}
               className='!text-left'
+              
             />
           </Form.Item>
           <Form.Item
