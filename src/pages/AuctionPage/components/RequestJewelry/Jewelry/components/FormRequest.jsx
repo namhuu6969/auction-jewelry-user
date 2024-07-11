@@ -171,7 +171,10 @@ export const FormRequest = () => {
   };
 
   const addMaterialInput = () => {
-    setMaterialsInput([...materialsInput, { idMaterial: null, weight: 0, unit: '' }]);
+    setMaterialsInput([
+      ...materialsInput,
+      { idMaterial: null, weight: 0, unit: '' },
+    ]);
     form.validateFields(['weight']);
   };
 
@@ -193,7 +196,13 @@ export const FormRequest = () => {
   const handleMaterialChange = (index, idMaterial) => {
     const selectedMaterial = material.find((mat) => mat.id === idMaterial);
     const updatedMaterials = materialsInput.map((material, idx) =>
-      idx === index ? { ...material, idMaterial, unit: selectedMaterial ? selectedMaterial.unit : '' } : material
+      idx === index
+        ? {
+            ...material,
+            idMaterial,
+            unit: selectedMaterial ? selectedMaterial.unit : '',
+          }
+        : material
     );
     setMaterialsInput(updatedMaterials);
     handleWeightTotalChange(updatedMaterials);
@@ -201,12 +210,28 @@ export const FormRequest = () => {
   };
 
   const handleWeightChange = (index, weight) => {
-    const updatedMaterials = materialsInput.map((material, idx) =>
-      idx === index ? { ...material, weight } : material
-    );
-    setMaterialsInput(updatedMaterials);
-    handleWeightTotalChange(updatedMaterials);
-    form.validateFields(['weight']);
+    const caratToGram = 0.2;
+    const selectedMaterial = materialsInput[index];
+    console.log(selectedMaterial)
+    if (selectedMaterial.unit === 'carat') {
+      const weightInGrams = weight * caratToGram;
+
+      const updatedMaterials = materialsInput.map((material, idx) =>
+        idx === index ? { ...material, weight: weightInGrams } : material
+      );
+
+      setMaterialsInput(updatedMaterials);
+      handleWeightTotalChange(updatedMaterials);
+      form.validateFields(['weight']);
+    } else {
+      const updatedMaterials = materialsInput.map((material, idx) =>
+        idx === index ? { ...material, weight } : material
+      );
+
+      setMaterialsInput(updatedMaterials);
+      handleWeightTotalChange(updatedMaterials);
+      form.validateFields(['weight']);
+    }
   };
 
   const handleWeightTotalChange = (materials) => {
@@ -613,7 +638,7 @@ export const FormRequest = () => {
           name={'weight'}
           label={
             <Title level={5} className='!mb-0 font-sans !font-normal'>
-              Weight (g)
+              Weight (g) <span className='text-orange-400 font-semibold'>(1 carat = 0.2g)</span>
             </Title>
           }
           rules={[

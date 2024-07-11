@@ -28,7 +28,7 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
     setIsShowWard(false);
     setDitrict([]);
     setWard([]);
-    form.resetFields();
+    form.resetFields()
     setOpen(false);
   };
   const handleSubmit = () => {
@@ -57,7 +57,7 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
   };
 
   const handleFinish = async (values) => {
-    let combinedAddress = 'string';
+    let combinedAddress = 'Jewelry Auction Company';
     if (values.valuatingMethod === 'AT_HOME_VALUATION') {
       combinedAddress = `${values.numberAddress}, ${values.ward.label} , ${values.district.label} , Ho Chi Minh City, VN`;
     }
@@ -80,7 +80,7 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
       dispatch(setRender(true));
       setMethod('');
       setIsAtHome(false);
-      window.location.href = response.data.paymentResponse.url
+      window.location.href = response.data.paymentResponse.url;
     } catch (error) {
       openNotification({
         type: 'error',
@@ -103,8 +103,9 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
         setDitrict(optionResponse);
       };
       fetchProvince();
+      // form.setFieldsValue({ valuatingMethod: 'DIRECTLY_VALUATION' });
     }
-  }, [open]);
+  }, [form, open]);
   return (
     <Modal
       width={700}
@@ -127,7 +128,13 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
         labelCol={{
           span: 24,
         }}
+        initialValues={{
+          valuatingMethod: 'DIRECTLY_VALUATION'
+        }}
       >
+        <TitleLabel className={'!font-semibold !text-red-600 my-4'}>
+          Price for valuation is 500.000đ
+        </TitleLabel>
         <Form.Item
           name={'valuatingMethod'}
           rules={[
@@ -138,7 +145,7 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
           ]}
           label={<TitleLabel>Choose method for valuate</TitleLabel>}
         >
-          <Radio.Group value={method} onChange={onChangeMethod}>
+          <Radio.Group defaultValue={method} onChange={onChangeMethod}>
             <Space direction='vertical'>
               <Radio value={'DIRECTLY_VALUATION'}>
                 <TitleLabel className={'!font-semibold'}>

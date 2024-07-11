@@ -3,23 +3,39 @@ import { myValuatingApi } from '../../../../../services/api/WishlistApi/myValuat
 import { useDispatch, useSelector } from 'react-redux';
 import { setMyValuation } from '../../../../../core/store/WishlistStore/MyValuationStore/myValuation';
 import { Dropdown, Image, Menu, Space, Table, Tooltip } from 'antd';
-import { setJewelryId } from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
+import {
+  setJewelryId,
+  setRender,
+} from '../../../../../core/store/WishlistStore/JewelryMeStore/jewelryMe';
 import { ModalAddAuction } from './components/ModalAddAuction';
 import { formatDate, imageURL } from '../../../../../utils/utils';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
 import useTableSearch from '../../../../../hooks/useTableSearch';
 import { renderStatusJewelry } from '../../../../../utils/RenderStatus/renderStatusUtil';
+import useSWR from 'swr';
+import { useNotification } from '../../../../../hooks/useNotification';
 // import { myAuctionApi } from '@api/WishlistApi/myAuctionApi';
 // import { setMyAuctionData } from '@core/store/WishlistStore/MyAuctionStore/myAuction';
 
+const fetch = async () => {
+  const response = await myValuatingApi.getValuatingMe();
+  const sortedData = response.data.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+  const filterData = sortedData.filter((element) => !element.online);
+  return filterData;
+};
+
 export const ValuatingTable = () => {
-  const dataSource = useSelector((state) => state.myValuation.myValuationData);
   const { getColumnSearchDateProps } = useTableSearchDate();
   const { getColumnSearchProps } = useTableSearch();
   const [open, setOpen] = useState(false);
   const render = useSelector((state) => state.jewelryMe.render);
   // const auctionData = useSelector((state) => state.myAuction.myAuctionData);
   // const [checkAuctioning, setCheckAuctioning] = useState(false);
+  const { data, error, isLoading, mutate } = useSWR('my-valuation-data', fetch);
+  const [valuation, setValuation] = useState({});
+  const { openNotification, contextHolder } = useNotification();
   const dispatch = useDispatch();
   const formatPriceVND = (price) =>
     price.toLocaleString('vi', { style: 'currency', currency: 'VND' });
@@ -56,12 +72,17 @@ export const ValuatingTable = () => {
     },
     {
       title: 'Starting Price',
-      dataIndex: ['jewelry', 'staringPrice'],
-      key: 'staringPrice',
+      dataIndex: 'startingPrice',
+      key: 'startingPrice',
       render: (data) => formatPriceVND(data),
-      sorter: (a, b) =>
-        new Date(a?.jewelry?.staringPrice) - new Date(b?.jewelry?.staringPrice),
     },
+    // {
+    //   title: 'Starting Price',
+    //   dataIndex: ['jewelry', 'staringPrice'],
+    //   key: 'staringPrice',
+    //   sorter: (a, b) => a?.staringPrice - b?.staringPrice,
+    //   render: (data) => <p>{formatPriceVND(data)}</p>,
+    // },
     {
       title: 'Valuation Staff',
       dataIndex: ['staff', 'full_name'],
@@ -96,7 +117,7 @@ export const ValuatingTable = () => {
       title: 'Status',
       dataIndex: ['jewelry', 'status'],
       key: 'status',
-      render: (data) => renderStatusJewelry(data)
+      render: (data) => renderStatusJewelry(data),
     },
     {
       title: 'Action',
@@ -108,9 +129,10 @@ export const ValuatingTable = () => {
           overlay={getMenu(
             data.jewelry.id,
             data.status,
-            data.jewelry.staringPrice,
+            data.startingPrice,
             data.jewelry.status,
-            data.online
+            data.online,
+            data
           )}
           trigger={['click']}
         >
@@ -128,6 +150,9 @@ export const ValuatingTable = () => {
     if (status === 'REQUEST') {
       error.push('- Staff is valuating this jewelry');
     }
+    if (status === 'VALUATING') {
+      error.push('- Wait manager accept valuate');
+    }
     if (startingPrice === 0) {
       error.push('- Staff has not set the starting price yet');
     }
@@ -139,13 +164,23 @@ export const ValuatingTable = () => {
     if (statusJewelry === 'AUCTIONING') {
       error.push('- This jewelry is auctioning');
     }
-    if(statusJewelry === 'DELIVERING') {
-      error.push('This jewelry is checkout')
+    if (statusJewelry === 'DELIVERING') {
+      error.push('- This jewelry is checkout');
     }
-    if (status) return error.join('\n');
+    if (statusJewelry === 'VALUATING_DELIVERING') {
+      error.push('- Your jewelry is waiting for confirmed')
+    }
+      if (status) return error.join('\n');
   };
 
-  const getMenu = (id, status, startingPrice, statusJewelry, valuationType) => (
+  const getMenu = (
+    id,
+    status,
+    startingPrice,
+    statusJewelry,
+    valuationType,
+    valuation
+  ) => (
     <Menu>
       <Menu.Item
         key='0'
@@ -153,7 +188,8 @@ export const ValuatingTable = () => {
           status === 'REQUEST' ||
           status === 'VALUATING' ||
           statusJewelry === 'AUCTIONING' ||
-          statusJewelry === 'DELIVERING'||
+          statusJewelry === 'DELIVERING' ||
+          statusJewelry === 'VALUATING_DELIVERING' ||
           startingPrice === 0
         }
       >
@@ -167,44 +203,42 @@ export const ValuatingTable = () => {
           overlayStyle={{ whiteSpace: 'pre-line' }}
         >
           <span>
-            <a onClick={() => handleAddAuctionClick(id)}>Put up auction</a>
+            <a onClick={() => handleAddAuctionClick(id, valuation)}>
+              Put up auction
+            </a>
           </span>
         </Tooltip>
       </Menu.Item>
     </Menu>
   );
-  const handleAddAuctionClick = (id) => {
+  const handleAddAuctionClick = (id, valuation) => {
     setOpen(true);
     dispatch(setJewelryId(id));
+    setValuation(valuation);
   };
   useEffect(() => {
-    const fetchMyValuation = async () => {
-      const response = await myValuatingApi.getValuatingMe();
-      const sortedData = response.data.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-      const filterData = sortedData.filter((element) => !element.online);
-      dispatch(setMyValuation(filterData));
-    };
-    // const fetchData = async () => {
-    //   const response = await myAuctionApi.getMyAuction();
-    //   console.log(response.data);
-    //   if (response.data) {
-    //     dispatch(setMyAuctionData(response.data));
-    //   }
-    // };
-    fetchMyValuation();
-    // fetchData();
-    if (render) {
-      fetchMyValuation();
+    if (data) {
+      dispatch(setMyValuation(data));
     }
-  }, [dispatch, render]);
+    if (render) {
+      mutate();
+      dispatch(setRender(false));
+    }
+    if (error) {
+      openNotification({
+        type: 'error',
+        description: 'Failed to fetch',
+      });
+    }
+  }, [data, dispatch, error, mutate, openNotification, render]);
   return (
     <>
-      <ModalAddAuction open={open} setOpen={setOpen} />
+      {contextHolder}
+      <ModalAddAuction open={open} setOpen={setOpen} valuation={valuation} />
       <Table
-        dataSource={[...dataSource]}
+        dataSource={data}
         columns={columns}
+        loading={isLoading}
         scroll={{
           x: 2000,
         }}

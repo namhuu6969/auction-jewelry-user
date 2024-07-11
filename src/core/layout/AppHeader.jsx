@@ -21,7 +21,6 @@ const navLink = [
   { title: 'Auction', link: '/auction' },
   { title: 'Suggest', link: '/jewelry' },
   { title: 'Blog', link: '/blog' },
-  { title: 'On Sale', link: '/sell' },
   { title: 'Valuation', link: '/valuation' },
 ];
 

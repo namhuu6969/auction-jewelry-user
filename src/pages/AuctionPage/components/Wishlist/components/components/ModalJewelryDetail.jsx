@@ -86,7 +86,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
     if (value < totalMaterialWeight) {
       return Promise.reject(
         new Error(
-          'Tổng khối lượng chất liệu phải lớn hơn hoặc bằng khối lượng sản phẩm!'
+          'Error'
         )
       );
     }
@@ -160,7 +160,7 @@ export const ModalJewelryDetail = ({ open, setOpen }) => {
       );
       openNotification({
         type: 'success',
-        description: 'Cập nhật thành công',
+        description: 'Update Success',
       });
       dispatch(setRender(true));
     } catch (error) {

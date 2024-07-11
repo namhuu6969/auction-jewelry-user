@@ -1,11 +1,21 @@
+import React, { useState, useEffect } from 'react';
 import { Form, Input, InputNumber, Select, Typography } from 'antd';
 import TitleLabel from './TitleLabel';
 const { Title } = Typography;
 
 export const InputCategoryRequest = ({ category, form }) => {
+  const [size, setSize] = useState(null);
+
+  // Effect to reset size when category changes
+  useEffect(() => {
+    setSize(null);
+  }, [category]);
+
   const handleChangeInput = (value) => {
     form.setFieldsValue({ size: value });
+    setSize(value);
   };
+
   const handleChangeInputView = () => {
     const tableData = getTableData(category);
 
@@ -14,15 +24,15 @@ export const InputCategoryRequest = ({ category, form }) => {
       controls: false,
       onChange: handleChangeInput,
     };
+
     switch (category) {
       case 1:
         return (
           <div className='flex gap-5 items-center justify-between !w-full'>
             <InputNumber
-              min={36}
-              max={60}
               placeholder='Enter necklace size...'
               {...inputProps}
+              value={size}
             />
             <TableSizeChart
               columns={tableData.columns}
@@ -34,10 +44,9 @@ export const InputCategoryRequest = ({ category, form }) => {
         return (
           <div className='flex gap-5 items-center'>
             <InputNumber
-              min={6}
-              max={20}
               placeholder='Enter earring size...'
               {...inputProps}
+              value={size}
             />
             <TableSizeChart
               columns={tableData.columns}
@@ -49,10 +58,9 @@ export const InputCategoryRequest = ({ category, form }) => {
         return (
           <div className='flex gap-5 items-center'>
             <InputNumber
-              min={14}
-              max={25}
               placeholder='Enter bracelet size...'
               {...inputProps}
+              value={size}
             />
             <TableSizeChart
               columns={tableData.columns}
@@ -64,10 +72,9 @@ export const InputCategoryRequest = ({ category, form }) => {
         return (
           <div className='flex gap-5 items-center'>
             <InputNumber
-              min={6}
-              max={20}
               placeholder='Enter ring size...'
               {...inputProps}
+              value={size}
             />
             <TableSizeChart
               columns={tableData.columns}
@@ -78,7 +85,13 @@ export const InputCategoryRequest = ({ category, form }) => {
       case 5:
         return (
           <div className='flex gap-5 items-center'>
-            <Select onChange={handleChangeInput} placeholder='Choose pendant size...' options={dataSelectPendants} className='!w-1/4' />
+            <Select
+              onChange={handleChangeInput}
+              placeholder='Choose pendant size...'
+              options={dataSelectPendants}
+              className='!w-1/4'
+              value={size}
+            />
             <TableSizeChart
               columns={tableData.columns}
               dataSource={tableData.dataSource}
@@ -89,6 +102,7 @@ export const InputCategoryRequest = ({ category, form }) => {
         return <Input defaultValue={'Please choose category'} disabled />;
     }
   };
+
   return (
     <Form.Item
       name='size'
@@ -101,6 +115,31 @@ export const InputCategoryRequest = ({ category, form }) => {
         {
           required: true,
           message: 'Must not be empty!',
+        },
+        {
+          validator: (_, value) => {
+            if (!value) return Promise.resolve(); // Let required rule handle empty case
+            switch (category) {
+              case 1:
+                return value >= 36 && value <= 60
+                  ? Promise.resolve()
+                  : Promise.reject('Size must be between 36 and 60');
+              case 2:
+                return value >= 6 && value <= 20
+                  ? Promise.resolve()
+                  : Promise.reject('Size must be between 6 and 20');
+              case 3:
+                return value >= 14 && value <= 25
+                  ? Promise.resolve()
+                  : Promise.reject('Size must be between 14 and 25');
+              case 4:
+                return value >= 6 && value <= 20
+                  ? Promise.resolve()
+                  : Promise.reject('Size must be between 6 and 20');
+              default:
+                return Promise.resolve();
+            }
+          },
         },
       ]}
       className='!text-left col-span-3 w-full'

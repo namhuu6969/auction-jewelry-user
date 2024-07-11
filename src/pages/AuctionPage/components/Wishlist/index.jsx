@@ -18,6 +18,7 @@ import {
 import { MyAuctionTable } from './components/MyAuctionTable';
 import { ValuatingTable } from './components/ValuatingTable';
 import { DeliveryMethodTable } from './components/DeliveryMethodTable';
+import { TransactionTable } from './components/TransactionTable';
 const WishlistPage = () => {
   const authorize = localStorage.getItem('fullName');
   const breadcumLink = [
@@ -66,6 +67,11 @@ const WishlistPage = () => {
       key: 7,
       label: 'My Delivery',
       children: <DeliveryMethodTable />
+    },
+    {
+      key: 8,
+      label: 'Transaction History',
+      children: <TransactionTable />
     }
   ];
   useEffect(() => {

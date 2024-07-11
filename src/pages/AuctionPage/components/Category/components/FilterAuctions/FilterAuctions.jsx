@@ -32,6 +32,7 @@ export const FilterAuctions = ({
   };
 
   const handleSearch = (value) => {
+    handleInputSearch(value);
     setSearchValue(value);
     const searchResults = data
       .filter((item) => item.jewelry.name.toLowerCase().includes(value.toLowerCase()))
