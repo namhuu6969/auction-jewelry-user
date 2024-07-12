@@ -37,15 +37,11 @@ export const ViewTransactions = () => {
       render: (text) => `${text.toLocaleString()} VND`,
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-    },
-    {
       title: 'Sender',
-      dataIndex: 'sender',
       key: 'sender',
-      render: (sender) => sender?.full_name,
+      dataIndex: 'systemSend',
+      render: (systemSend, record) =>
+        systemSend ? 'System' : record.sender?.full_name,
     },
     {
       title: 'Receiver',
@@ -56,5 +52,12 @@ export const ViewTransactions = () => {
     },
   ];
 
-  return <Table columns={columns} dataSource={transactions} loading={loading} rowKey='id' />;
+  return (
+    <Table
+      columns={columns}
+      dataSource={transactions}
+      loading={loading}
+      rowKey='id'
+    />
+  );
 };

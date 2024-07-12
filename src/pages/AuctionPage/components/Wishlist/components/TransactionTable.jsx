@@ -32,7 +32,10 @@ export const TransactionTable = () => {
     {
       title: 'Sender',
       key: 'sender',
-      dataIndex: ['sender', 'full_name'],
+      dataIndex: 'systemSend',
+      render: (systemSend, record) => 
+        systemSend ? 'System' : record.sender?.full_name
+      ,
     },
     {
       title: 'Receiver',
