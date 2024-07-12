@@ -27,7 +27,7 @@ const fetcher = async (id) => {
 export const JewelryDetail = () => {
   const navigator = useNavigate();
   const { id } = useParams();
-  const { data, error, isLoading } = useSWR(id, fetcher);
+  const { data, error, isLoading, mutate } = useSWR(id, fetcher);
   const [auctionData, setAuctionData] = useState(null);
   const [jewelryData, setJewelryData] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -79,6 +79,7 @@ export const JewelryDetail = () => {
       });
       setCurrentStep(0);
       setBidAmount(''); // Reset bid amount after successful bid
+      mutate()
     } else {
       Modal.error({
         title: 'Bid Failed',
