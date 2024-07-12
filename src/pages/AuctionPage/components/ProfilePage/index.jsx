@@ -40,7 +40,7 @@ export const ProfilePage = () => {
 
   const paymentInfo = {
     cardNumber: '**** **** **** 1234',
-    cardHolder: 'John Doe',
+    cardHolder: userInfo.username,
     expiryDate: '12/24',
   };
 

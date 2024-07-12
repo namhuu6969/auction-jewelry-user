@@ -12,7 +12,6 @@ import { BidModal } from './BidModal/BidModal'; // Adjust the import path as nee
 import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
 import { BiddingApi } from '@api/AuctionServices/BiddingApi/BiddingApi';
 import { BidHistory } from './BidHistory/BidHistory';
-import { formatPrice } from '@utils/utils';
 import { wishlistApi } from '../../../../../../services/api/WishlistApi/wishlistApi';
 import { CountdownTimer } from './CountdownTimer/CountdownTimer';
 import { formatPriceVND, handleStatus } from '../../../../../../utils/utils';
@@ -27,7 +26,7 @@ const fetcher = async (id) => {
 export const JewelryDetail = () => {
   const navigator = useNavigate();
   const { id } = useParams();
-  const { data, error, isLoading } = useSWR(id, fetcher);
+  const { data, mutate } = useSWR(id, fetcher);
   const [auctionData, setAuctionData] = useState(null);
   const [jewelryData, setJewelryData] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -57,7 +56,20 @@ export const JewelryDetail = () => {
 
   const showModal = () => {
     if (!userEmail) {
-      navigator('/login');
+      Modal.confirm({
+        title: 'You are not logged in',
+        content: 'Do you want to login now?',
+        okText: 'Yes',
+        cancelText: 'No',
+        onOk: () => {
+          navigator('/login', { state: { from: `/jewelry/detail/${id}` } });
+        },
+        onCancel: () => {
+          // Handle cancel action if needed
+          setIsModalVisible(false);
+          return;
+        },
+      });
     }
     setIsModalVisible(true);
   };
@@ -79,6 +91,7 @@ export const JewelryDetail = () => {
       });
       setCurrentStep(0);
       setBidAmount(''); // Reset bid amount after successful bid
+      mutate();
     } else {
       Modal.error({
         title: 'Bid Failed',

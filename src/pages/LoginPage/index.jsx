@@ -1,5 +1,5 @@
 import { Button, Divider, Flex, Form, Input, Typography, notification } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { authApi } from '../../services/api/auth/authApi';
 import { useDispatch } from 'react-redux';
 import { setToken } from '../../core/store/Auth/auth';
@@ -11,6 +11,8 @@ import { UserServices } from '../../services/api/UserServices/UserServices';
 const { Title } = Typography;
 
 export const Login = () => {
+  const location = useLocation();
+  const from = location.state?.from || '/';
   const [loading, setLoading] = useState(false);
   const [openForgot, setOpenForgot] = useState(false);
   const navigate = useNavigate();
@@ -33,7 +35,7 @@ export const Login = () => {
       const userInfo = await UserServices.getProfile();
       const { money, user } = userInfo.data;
       dispatch(setUserData({ money, user }));
-      navigate('/');
+      navigate(from);
     } catch (error) {
       const msg = error.response.data.message;
       openNotification('top', msg, 'Login failed');
