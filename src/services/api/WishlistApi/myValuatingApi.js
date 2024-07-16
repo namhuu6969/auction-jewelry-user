@@ -21,5 +21,9 @@ export const myValuatingApi = {
   getWardApi: async (district) => {
     const response = await axios.get(`https://esgoo.net/api-tinhthanh/3/${district}.htm`)
     return response.data
+  },
+  revaluatingApi: async (id) => {
+    const response = await api.post(`valuating/revaluting?id=${id}`)
+    return response.data
   }
 }
