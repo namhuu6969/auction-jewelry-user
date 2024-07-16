@@ -8,6 +8,8 @@ import { UserOutlined } from '@ant-design/icons';
 import { clearToken } from '../store/Auth/auth';
 import { clearUserData } from '../store/PersonalStore/personal';
 import { useEffect, useState } from 'react';
+import TitleLabel from '../../components/ui/TitleLabel';
+import { UserServices } from '../../services/api/UserServices/UserServices';
 
 const services = [
   { title: 'Support', link: '/support' },
@@ -26,6 +28,7 @@ const navLink = [
 
 const AppHeader = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [userInfo, setUserInfo] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +37,24 @@ const AppHeader = () => {
     }, 1000);
 
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const response = await UserServices.getProfile();
+      const { money, user } = response.data;
+      setUserInfo({
+        username: user.full_name,
+        profilePic: user.imageUrl,
+        address: user.address,
+        email: user.email,
+        email_verified: user.email_verified,
+        phone: user.phone_number,
+        date_of_birth: user.date_of_birth,
+        wallet: money,
+      });
+    };
+    fetchUser();
   }, []);
 
   const handleNavigation = (link) => {
@@ -123,7 +144,9 @@ const AppHeader = () => {
             </p>
           ))}
           <Flex vertical className='pt-4 pb-8 font-serif text-lg text-black'>
-            <p style={{ lineHeight: '2rem' }}>{currentTime.toLocaleTimeString()}</p>
+            <p style={{ lineHeight: '2rem' }}>
+              {currentTime.toLocaleTimeString()}
+            </p>
             <p style={{ lineHeight: '0.4rem' }}>
               {currentTime.toLocaleDateString('en-US', {
                 weekday: 'long',
@@ -139,8 +162,24 @@ const AppHeader = () => {
                 items,
               }}
               trigger={['click']}
+              className='md:max-x-2 '
             >
-              <Avatar size={48} icon={<UserOutlined />} />
+              <div
+                className='flex gap-2 md:shrink-0 items-center border border-black border-opacity-25 p-2
+               rounded-lg hover:bg-gray-100'
+              >
+                <div>
+                  <Avatar size={48} icon={<UserOutlined />} />
+                </div>
+                <div>
+                  <TitleLabel className='!text-black !font-semibold !text-sm !text-left'>
+                    {userInfo.username}
+                  </TitleLabel>
+                  <TitleLabel className='!text-gray-400 !text-xs'>
+                    {auth}
+                  </TitleLabel>
+                </div>
+              </div>
             </Dropdown>
           ) : (
             <Button

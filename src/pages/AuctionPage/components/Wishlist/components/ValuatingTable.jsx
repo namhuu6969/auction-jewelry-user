@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { myValuatingApi } from '../../../../../services/api/WishlistApi/myValuatingApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMyValuation } from '../../../../../core/store/WishlistStore/MyValuationStore/myValuation';
-import { Dropdown, Image, Menu, Space, Table, Tooltip } from 'antd';
+import { Dropdown, Image, Menu, Modal, Space, Table, Tooltip } from 'antd';
 import {
   setJewelryId,
   setRender,
@@ -11,9 +11,14 @@ import { ModalAddAuction } from './components/ModalAddAuction';
 import { formatDate, imageURL } from '../../../../../utils/utils';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
 import useTableSearch from '../../../../../hooks/useTableSearch';
-import { renderStatusJewelry } from '../../../../../utils/RenderStatus/renderStatusUtil';
+import {
+  renderStatusJewelry,
+  renderStatusValuation,
+} from '../../../../../utils/RenderStatus/renderStatusUtil';
 import useSWR from 'swr';
 import { useNotification } from '../../../../../hooks/useNotification';
+import { Link } from 'react-router-dom';
+import TitleLabel from '../../../../../components/ui/TitleLabel';
 // import { myAuctionApi } from '@api/WishlistApi/myAuctionApi';
 // import { setMyAuctionData } from '@core/store/WishlistStore/MyAuctionStore/myAuction';
 
@@ -30,6 +35,8 @@ export const ValuatingTable = () => {
   const { getColumnSearchDateProps } = useTableSearchDate();
   const { getColumnSearchProps } = useTableSearch();
   const [open, setOpen] = useState(false);
+  const [openNote, setOpenNote] = useState(false);
+  const [note, setNote] = useState('');
   const render = useSelector((state) => state.jewelryMe.render);
   // const auctionData = useSelector((state) => state.myAuction.myAuctionData);
   // const [checkAuctioning, setCheckAuctioning] = useState(false);
@@ -39,6 +46,11 @@ export const ValuatingTable = () => {
   const dispatch = useDispatch();
   const formatPriceVND = (price) =>
     price.toLocaleString('vi', { style: 'currency', currency: 'VND' });
+
+  const handleOpenNote = (note) => {
+    setOpenNote(true);
+    setNote(note);
+  };
 
   const columns = [
     {
@@ -112,6 +124,19 @@ export const ValuatingTable = () => {
       title: 'Valuation Status',
       dataIndex: 'status',
       key: 'status',
+      render: (status, record) => (
+        <>
+          {renderStatusValuation(status)}{' '}
+          {status === 'REJECTED' && (
+            <Link
+              onClick={() => handleOpenNote(record?.notes)}
+              className='underline underline-offset-2 text-blue-500'
+            >
+              View reason
+            </Link>
+          )}
+        </>
+      ),
     },
     {
       title: 'Status',
@@ -171,6 +196,9 @@ export const ValuatingTable = () => {
     if (statusJewelry === 'VALUATING_DELIVERING') {
       error.push('- Your jewelry is waiting for confirmed');
     }
+    if (statusJewelry === 'AUCTION_SUCCESS') {
+      error.push('- This Jewelry is completed auction');
+    }
     if (status) return error.join('\n');
   };
 
@@ -190,7 +218,8 @@ export const ValuatingTable = () => {
           status === 'VALUATING' ||
           statusJewelry === 'AUCTIONING' ||
           statusJewelry === 'DELIVERING' ||
-          startingPrice === 0
+          startingPrice === 0 ||
+          statusJewelry === 'AUCTION_SUCCESS'
         }
       >
         <Tooltip
@@ -209,8 +238,31 @@ export const ValuatingTable = () => {
           </span>
         </Tooltip>
       </Menu.Item>
+      {status === 'REJECTED' && (
+        <Menu.Item onClick={() => handleRevaluating(valuation.id)}>
+          Revaluating
+        </Menu.Item>
+      )}
     </Menu>
   );
+
+  const handleRevaluating = async (id) => {
+    try {
+      const response = await myValuatingApi.revaluatingApi(id);
+      console.log(response);
+      openNotification({
+        type: 'success',
+        description: response.message,
+      });
+      mutate();
+    } catch (error) {
+      openNotification({
+        type: 'error',
+        description: error.response.data.message,
+      });
+    }
+  };
+
   const handleAddAuctionClick = (id, valuation) => {
     setOpen(true);
     dispatch(setJewelryId(id));
@@ -244,6 +296,25 @@ export const ValuatingTable = () => {
         }}
         pagination={{ pageSize: 4 }}
       />
+      <ModalNote open={openNote} setOpen={setOpenNote} note={note} />
     </>
+  );
+};
+
+const ModalNote = ({ open, setOpen, note }) => {
+  const onCancel = () => {
+    setOpen(false);
+  };
+  return (
+    <Modal
+      open={open}
+      onCancel={onCancel}
+      footer={false}
+      title={<TitleLabel level={4}>Note Reject</TitleLabel>}
+    >
+      <TitleLabel className={'!font-semibold !text-red-500'} level={5}>
+        {note ? note : ''}
+      </TitleLabel>
+    </Modal>
   );
 };
