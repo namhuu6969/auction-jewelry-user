@@ -10,4 +10,13 @@ export const transactionServices = {
       throw error;
     }
   },
+  getPaymentHistory: async () => {
+    try {
+      const response = await api.get(`payment/me`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error getting payment history`, error);
+      throw error;
+    }
+  },
 };

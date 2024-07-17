@@ -32,7 +32,7 @@ export const StatusAuctions = ({ handleFilterChange }) => {
         <Checkbox.Group
           className='flex-col space-y-2 text-2xl'
           options={status}
-          defaultValue={['all']}
+          defaultValue={['InProgress']}
           onChange={handleFilterChange}
         />
       </div>

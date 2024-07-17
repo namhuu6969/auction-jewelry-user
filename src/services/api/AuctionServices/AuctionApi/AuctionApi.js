@@ -100,4 +100,13 @@ export const auctionApi = {
       throw error;
     }
   },
+  getPeopleByAuctionId: async (auctionId) => {
+    try {
+      const response = await api.get(`auction/bidders/count/${auctionId}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error getting people for auction with id ${auctionId}:`, error);
+      throw error;
+    }
+  },
 };

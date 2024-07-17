@@ -1,21 +1,22 @@
-import { Avatar, Button, Divider, Flex, Image, Modal, Typography, notification } from 'antd';
+import { Button, Divider, Flex, Image, Modal, Typography, notification } from 'antd';
 import Breadcum from '@components/ui/Breadcum';
 import { useNavigate, useParams } from 'react-router-dom';
 import Carousel from '@components/ui/carousel/Carousel';
 import { StarFilled, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { PiGavelFill } from 'react-icons/pi';
-import TabsContent from './Tabs/Tabs';
 import './index.css';
 import { useState, useEffect } from 'react';
 import { PrimaryButton } from '@components/ui/PrimaryButton';
-import { BidModal } from './BidModal/BidModal'; // Adjust the import path as needed
 import { auctionApi } from '@api/AuctionServices/AuctionApi/AuctionApi';
 import { BiddingApi } from '@api/AuctionServices/BiddingApi/BiddingApi';
-import { BidHistory } from './BidHistory/BidHistory';
 import { wishlistApi } from '../../../../../../services/api/WishlistApi/wishlistApi';
-import { CountdownTimer } from './CountdownTimer/CountdownTimer';
 import { formatPriceVND, handleStatus } from '../../../../../../utils/utils';
 import useSWR from 'swr';
+import { CountdownTimer } from './components/CountdownTimer/CountdownTimer';
+import { BidHistory } from './components/BidHistory/BidHistory';
+import TabsContent from './components/Tabs/Tabs';
+import { BidModal } from './components/BidModal/BidModal';
+import { SellerCard } from './components/SellerCard/SellerCard';
 const { Title } = Typography;
 
 const fetcher = async (id) => {
@@ -26,7 +27,7 @@ const fetcher = async (id) => {
 export const JewelryDetail = () => {
   const navigator = useNavigate();
   const { id } = useParams();
-  const { data, mutate } = useSWR(id, fetcher);
+  const { data, error, isLoading, mutate } = useSWR(id, fetcher, { refreshInterval: 3000 });
   const [auctionData, setAuctionData] = useState(null);
   const [jewelryData, setJewelryData] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -35,13 +36,20 @@ export const JewelryDetail = () => {
   const [step, setStep] = useState(0);
   const [isWinner, setIsWinner] = useState(false); // State to check if user is winner
   const [bidAmount, setBidAmount] = useState('');
+  const [people, setPeople] = useState(0);
 
   const userEmail = localStorage.getItem('fullName');
 
   console.log(data);
+  const fetcherPeople = async (id) => {
+    const response = await auctionApi.getPeopleByAuctionId(id);
+    console.log('people: ');
+    setPeople(response.message.split(' ')[2]);
+  };
 
   useEffect(() => {
     if (data) {
+      fetcherPeople(id);
       setJewelryData(data.jewelry);
       setAuctionData(data);
       setStep(data.step);
@@ -312,7 +320,7 @@ export const JewelryDetail = () => {
               <Flex className='items-center' gap={18}>
                 <UserOutlined className='!text-3xl' />
                 <Title level={4} className='!m-0 font-sans !font-thin text-start'>
-                  People: {totalBids}
+                  People: {people}
                 </Title>
               </Flex>
               <Flex className='items-center' gap={18}>
@@ -340,33 +348,7 @@ export const JewelryDetail = () => {
                   Place Bid
                 </PrimaryButton>
               ))}
-            {staringPrice > 0 && (
-              <div className='w-full p-5'>
-                <Button
-                  icon={<StarFilled className='text-yellow-400' />}
-                  className='font-sans !shadow-lg hover:!border-[1px] hover:!border-solid hover:!border-black hover:!text-black !border-black'
-                >
-                  Buy Now
-                </Button>
-              </div>
-            )}
-            <div className='flex mt-5 flex-col border border-gray-300 py-5 px-10 rounded-lg'>
-              <Title level={3} className='text-left font-serif'>
-                Seller
-              </Title>
-              <Flex gap={30}>
-                <Avatar size={64} icon={<UserOutlined />} />
-                <Flex vertical className='justify-center'>
-                  <Title
-                    onClick={() => navigator(`/profile/${sellerId.id}`)}
-                    level={4}
-                    className='font-sans !font-medium'
-                  >
-                    {sellerId.full_name}
-                  </Title>
-                </Flex>
-              </Flex>
-            </div>
+            <SellerCard sellerId={sellerId} />
           </Flex>
         </Flex>
         <TabsContent jewelry={jewelryData} startTime={startTime} endTime={endTime} />

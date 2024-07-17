@@ -33,4 +33,13 @@ export const UserServices = {
       return err;
     }
   },
+
+  getProfileSellerById: async (id) => {
+    try {
+      const response = await api.get(`account/${id}`);
+      return response.data;
+    } catch (err) {
+      return err;
+    }
+  },
 };

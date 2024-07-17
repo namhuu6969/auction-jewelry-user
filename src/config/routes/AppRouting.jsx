@@ -22,6 +22,7 @@ import { FollowDelivery } from '../../pages/AuctionPage/components/Delivery';
 import { Blog } from '../../pages/AuctionPage/components/Blog';
 import { BlogDetail } from '@pages/AuctionPage/components/Blog/components/BlogDetail/BlogDetail';
 import { BlogList } from '@pages/AuctionPage/components/Blog/components/BlogList/BlogList';
+import { ProfileSellers } from '@pages/ProfileSellers';
 
 const AppRouting = () => {
   return (
@@ -38,6 +39,7 @@ const AppRouting = () => {
         <Route path='payment' element={<Payment />} />
         <Route path='resultPayment' element={<ResultPayment />} />
         <Route path='profile' element={<ProfilePage />} />
+        <Route path='profile/:id' element={<ProfileSellers />} />
         <Route path='about' element={<About />} />
         <Route path='auction' element={<Category />} />
         <Route path='delivery' element={<FollowDelivery />} />

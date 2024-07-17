@@ -8,6 +8,8 @@ import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
 import { UserServices } from '../../../../services/api/UserServices/UserServices';
 import { ViewTransactions } from './components/ViewTransactions/ViewTransactions';
+import { formatPriceVND } from '../../../../utils/utils';
+import { ViewPaymentHistory } from './components/ViewPaymentHistory/ViewPaymentHistory';
 
 const imgSrc = 'example.img';
 const { Content } = Layout;
@@ -86,31 +88,31 @@ export const ProfilePage = () => {
                     <div className='flex flex-col space-y-2'>
                       <div className='flex justify-between'>
                         <strong>Full Name:</strong>
-                        <div className='w-[11.5rem]'>
+                        <div className='w-fit'>
                           <p>{userInfo.username}</p>
                         </div>
                       </div>
                       <div className='flex justify-between'>
                         <strong>Address:</strong>
-                        <div className='w-[11.5rem]'>
+                        <div className='w-fit'>
                           <p>{userInfo.address}</p>
                         </div>
                       </div>
                       <div className='flex justify-between'>
                         <strong>Birthday:</strong>
-                        <div className='w-[11.5rem]'>
+                        <div className='w-fit'>
                           <p>{userInfo.date_of_birth}</p>
                         </div>
                       </div>
                       <div className='flex justify-between'>
                         <strong>Email:</strong>
-                        <div className='w-[11.5rem]'>
+                        <div className='w-fit'>
                           <p>{userInfo.email}</p>
                         </div>
                       </div>
                       <div className='flex justify-between'>
                         <strong>Already Verify Email:</strong>
-                        <div className='w-[11.5rem]'>
+                        <div className='w-fit'>
                           {userInfo.email_verified ? (
                             <GoIssueClosed className='text-lg text-green-600 inline' />
                           ) : (
@@ -149,8 +151,10 @@ export const ProfilePage = () => {
                       </Card>
                       <Divider />
                       <Card
-                        style={{ width: '100%', marginTop: 20 }}
-                        actions={[<EditOutlined key='edit' />]}
+                        style={{
+                          width: '100%',
+                        }}
+                        className='!p-4'
                       >
                         <Meta
                           avatar={<Avatar size={120} src={imgSrc} />}
@@ -159,29 +163,29 @@ export const ProfilePage = () => {
                             <>
                               <div className='flex justify-between'>
                                 <strong>Card Number:</strong>
-                                <div className='w-[11.5rem]'>
+                                <div className='w-fit'>
                                   <p>{paymentInfo.cardNumber}</p>
                                 </div>
                               </div>
                               <div className='flex justify-between'>
                                 <strong>Card Holder:</strong>
-                                <div className='w-[11.5rem]'>
+                                <div className='w-fit'>
                                   <p>{paymentInfo.cardHolder}</p>
                                 </div>
                               </div>
                               <div className='flex justify-between'>
                                 <strong>Expiry Date:</strong>
-                                <div className='w-[11.5rem]'>
+                                <div className='w-fit'>
                                   <p>{paymentInfo.expiryDate}</p>
                                 </div>
                               </div>
                               <div className='flex justify-between'>
                                 <strong>Wallet:</strong>
-                                <div className='w-[11.5rem] flex align-center'>
+                                <div className='w-fit flex align-center'>
                                   {showMoney ? (
                                     <p>
                                       {'   '}
-                                      {userInfo.wallet}
+                                      {formatPriceVND(userInfo.wallet)}
                                       <FaRegEye
                                         onClick={handleShowMoney}
                                         className='text-lg text-red-600 inline ml-2'
@@ -210,6 +214,9 @@ export const ProfilePage = () => {
           </TabPane>
           <TabPane tab='Transactions' key='2'>
             <ViewTransactions />
+          </TabPane>
+          <TabPane tab='Payment History' key='3'>
+            <ViewPaymentHistory />
           </TabPane>
         </Tabs>
       </Content>
