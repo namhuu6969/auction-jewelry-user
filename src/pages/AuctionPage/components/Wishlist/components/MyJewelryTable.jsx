@@ -130,10 +130,7 @@ export const MyJewelryTable = () => {
       <Menu.Item
         key='offline'
         disabled={
-          status === 'AUCTIONING' ||
-          status === 'OFFLINE_VALUATING' ||
-          status === 'VALUATING_DELIVERING' ||
-          status === 'NOT_PAID'
+          status !== 'PENDING' ? true : false
         }
       >
         <Tooltip
@@ -150,12 +147,7 @@ export const MyJewelryTable = () => {
       <Menu.Item
         key='2'
         disabled={
-          status === 'ONLINE_VALUATED' ||
-          status === 'OFFLINE_VALUATING' ||
-          status === 'AUCTIONING' ||
-          status === 'STORED' ||
-          status === 'VALUATING_DELIVERING' ||
-          status === 'NOT_PAID'
+          status !== 'PENDING' && status !== 'NOT_PAID' ? true : false 
         }
       >
         <Tooltip
