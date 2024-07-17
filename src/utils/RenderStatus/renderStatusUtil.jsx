@@ -17,9 +17,11 @@ export const renderStatusJewelry = (status) => {
       case 'DELIVERING':
         return <p className='text-orange-500'>Delivering</p>;
       case 'VALUATING_DELIVERING':
-        return <p className='text-teal-400'>Valuating delivering</p>    
+        return <p className='text-teal-400'>Valuating delivering</p>;
       case 'NOT_PAID':
-        return <p className='text-red-600'>Not paid</p>
+        return <p className='text-red-600'>Not paid</p>;
+      case 'AUCTION_SUCCESS':
+        return <p className='text-lime-500'>Auction success</p>;
       default:
         return status;
     }
@@ -38,6 +40,21 @@ export const renderStatusAuction = (status) => {
       default:
         return status;
     }
+  }
+};
+
+export const renderStatusValuation = (status) => {
+  switch (status) {
+    case 'REJECTED':
+      return <p className='text-red-500'>Rejected</p>;
+    case 'VALUATING':
+      return <p className='text-yellow-500'>Valuating</p>;
+    case 'VALUATED':
+      return <p className='text-green-500'>Valuated</p>;
+    case 'REQUEST':
+      return <p className='text-orange-500'>Request</p>;
+    default:
+      return status;
   }
 };
 
