@@ -1,4 +1,13 @@
-import { Dropdown, Image, Menu, Space, Table } from 'antd';
+import {
+  Button,
+  Descriptions,
+  Dropdown,
+  Image,
+  Menu,
+  Modal,
+  Space,
+  Table,
+} from 'antd';
 import useTableSearch from '@hooks/useTableSearch';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +21,9 @@ import { setDataUpdate } from '../../../../../core/store/WishlistStore/MyAuction
 import { renderStatusAuction } from '../../../../../utils/RenderStatus/renderStatusUtil';
 import useSWR from 'swr';
 import { useNotification } from '../../../../../hooks/useNotification';
+import TitleLabel from '../../../../../components/ui/TitleLabel';
+import { GoIssueClosed } from 'react-icons/go';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 const fetch = async () => {
   const response = await myAuctionApi.getMyAuction();
@@ -26,6 +38,11 @@ export const MyAuctionTable = () => {
   const { data, error, isLoading, mutate } = useSWR('my-auction-data', fetch);
   const { getColumnSearchDateProps } = useTableSearchDate();
   const [openUpdate, setOpenUpdate] = useState(false);
+  const [openCancel, setOpenCancel] = useState(false);
+  const [auction, setAuction] = useState({});
+  const [type, setType] = useState('');
+  const [id, setId] = useState(null);
+  const [updateType, setUpdateType] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const render = useSelector((state) => state.jewelryMe.render);
@@ -41,6 +58,33 @@ export const MyAuctionTable = () => {
     const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
     return daysDiff > 0 ? daysDiff : 'Is ending';
   };
+
+  const filterStatus = [
+    {
+      text: 'Waiting',
+      value: 'Waiting',
+    },
+    {
+      text: 'In Progress',
+      value: 'InProgress',
+    },
+    {
+      text: 'Completed',
+      value: 'Completed',
+    },
+    {
+      text: 'Cancel',
+      value: 'Cancel',
+    },
+    {
+      text: 'WaitingConfirm',
+      value: 'WaitingConfirm',
+    },
+    {
+      text: 'Fail',
+      value: 'Fail',
+    },
+  ];
 
   const columns = [
     {
@@ -129,9 +173,9 @@ export const MyAuctionTable = () => {
       render: (data) =>
         data ? (
           <p>
-            {calculateRemainingDays(data) === 'dThe auction have been ende'
+            {calculateRemainingDays(data) === 'The auction have been ended'
               ? 'The auction have been ended'
-              : calculateRemainingDays(data) + ' days'}{' '}
+              : calculateRemainingDays(data) + ' days'}
           </p>
         ) : (
           'NaN'
@@ -143,6 +187,9 @@ export const MyAuctionTable = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      filters: filterStatus,
+      onFilter: (value, record) => record?.status.startsWith(value),
+      filterSearch: true,
       render: (data) => renderStatusAuction(data),
     },
     {
@@ -167,6 +214,13 @@ export const MyAuctionTable = () => {
 
   const handleUpdateOpen = (data) => {
     setOpenUpdate(true);
+    setUpdateType('Update');
+    dispatch(setDataUpdate(data));
+  };
+
+  const handleReAuction = (data) => {
+    setOpenUpdate(true);
+    setUpdateType('ReAuction');
     dispatch(setDataUpdate(data));
   };
 
@@ -177,16 +231,46 @@ export const MyAuctionTable = () => {
           View detail session
         </a>
       </Menu.Item>
-      <Menu.Item
-        key={'update'}
-        disabled={
-          status === 'InProgress' || status === 'Completed' ? true : false
-        }
-      >
+      <Menu.Item key={'update'} disabled={status !== 'Waiting' ? true : false}>
         <a onClick={() => handleUpdateOpen(data)}>Update date range session</a>
       </Menu.Item>
+      {(status === 'WaitingConfirm' || status === 'Waiting') && (
+        <Menu.Item key={'cancel'}>
+          <a className='!text-red-500' onClick={() => handleCancelOpen(id)}>
+            Cancel Auction
+          </a>
+        </Menu.Item>
+      )}
+      {status === 'WaitingConfirm' && (
+        <Menu.Item key={'confirm'}>
+          <a
+            className='!text-green-500'
+            onClick={() => handleConfirmOpen(id, data)}
+          >
+            Confirm Auction
+          </a>
+        </Menu.Item>
+      )}
+      {(status === 'Cancel' || status === 'Fail') && (
+        <Menu.Item key={'reauction'}>
+          <a onClick={() => handleReAuction(data)}>Re-auction</a>
+        </Menu.Item>
+      )}
     </Menu>
   );
+
+  const handleCancelOpen = (id) => {
+    setId(id);
+    setOpenCancel(true);
+    setType('Cancel');
+  };
+
+  const handleConfirmOpen = (id, data) => {
+    setId(id);
+    setType('Confirm');
+    setAuction(data);
+    setOpenCancel(true);
+  };
 
   useEffect(() => {
     if (data) {
@@ -210,6 +294,7 @@ export const MyAuctionTable = () => {
         open={openUpdate}
         setOpen={setOpenUpdate}
         revalidate={mutate}
+        type={updateType}
       />
       <Table
         loading={isLoading}
@@ -220,6 +305,150 @@ export const MyAuctionTable = () => {
         }}
         pagination={{ pageSize: pageSize }}
       />
+      <ModalCancel
+        open={openCancel}
+        setOpen={setOpenCancel}
+        id={id}
+        mutate={mutate}
+        type={type}
+        auction={auction}
+      />
+    </>
+  );
+};
+
+const ModalCancel = ({ id, open, setOpen, mutate, type, auction }) => {
+  const { openNotification, contextHolder } = useNotification();
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleCancelAuction = async () => {
+    try {
+      const response = await myAuctionApi.cancelAuction(id);
+      openNotification({
+        type: 'success',
+        description: response.message,
+      });
+      handleClose();
+      mutate();
+    } catch (error) {
+      openNotification({
+        type: 'error',
+        description: error.response.data.message,
+      });
+    }
+  };
+  const handleConfirmAuction = async () => {
+    try {
+      const response = await myAuctionApi.confirmAuction(id);
+      openNotification({
+        type: 'success',
+        description: response.message,
+      });
+      handleClose();
+      mutate();
+    } catch (error) {
+      openNotification({
+        type: 'error',
+        description: error.response.data.message,
+      });
+    }
+  };
+  const items = [
+    {
+      key: 'name',
+      label: 'Name',
+      children: auction?.winner?.full_name,
+      span: 2,
+    },
+    {
+      key: 'email',
+      label: 'Email',
+      children: auction?.winner?.email,
+      span: 2,
+    },
+    {
+      key: 'phone',
+      label: 'Phone number',
+      children: auction?.winner?.phone_number,
+      span: 2,
+    },
+    {
+      key: 'verified',
+      label: 'Verified',
+      children: auction?.winner?.email_verified ? (
+        <GoIssueClosed className='text-2xl text-green-500' />
+      ) : (
+        <AiOutlineCloseCircle className='text-2xl text-red-500' />
+      ),
+      span: 2,
+    },
+  ];
+  return (
+    <>
+      {contextHolder}
+      {type === 'Cancel' && (
+        <Modal
+          open={open}
+          title='Do you want cancel this auction'
+          onCancel={handleClose}
+          footer={[
+            <Button
+              onClick={handleCancelAuction}
+              key={'cancel'}
+              className='bg-red-500 border-none !text-white hover:!bg-red-500'
+            >
+              Cancel this auction
+            </Button>,
+          ]}
+        ></Modal>
+      )}
+      {type === 'Confirm' && (
+        <Modal
+          width={type === 'Confirm' ? 1000 : 500}
+          open={open}
+          title='Check your auction current price'
+          onCancel={handleClose}
+          footer={[
+            <Button
+              onClick={handleCancelAuction}
+              key={'cancel'}
+              className='bg-red-500 border-none !text-white hover:!bg-red-500'
+            >
+              Denied this price
+            </Button>,
+            <Button
+              onClick={handleConfirmAuction}
+              key={'confirm'}
+              className='bg-green-500 border-none !text-white hover:!bg-green-500'
+            >
+              Confirm this price
+            </Button>,
+          ]}
+        >
+          <div className='flex flex-col gap-2'>
+            <TitleLabel>
+              Name: <span className='font-bold'> {auction?.jewelry?.name}</span>
+            </TitleLabel>
+            <TitleLabel>
+              Starting Price:
+              <span className='font-bold'>
+                {' '}
+                {formatPriceVND(auction?.jewelry?.staringPrice)}
+              </span>
+            </TitleLabel>
+            <TitleLabel>
+              Current Price:
+              <span className='font-bold'>
+                {' '}
+                {formatPriceVND(auction?.currentPrice)}
+              </span>
+            </TitleLabel>
+            <Descriptions title='Winner:' bordered items={items} />
+          </div>
+        </Modal>
+      )}
     </>
   );
 };

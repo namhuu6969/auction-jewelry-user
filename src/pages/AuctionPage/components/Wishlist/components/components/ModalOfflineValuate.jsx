@@ -69,9 +69,9 @@ export const ModalOfflineValuate = ({ open, setOpen }) => {
       jewelryId: jewelryId,
       desiredPrice: 0,
       paymentMethod: 'VNPAY',
-      notes: 'string',
+      notes: values.notes ? values.notes : '',
       valuatingMethod: values.valuatingMethod,
-      address: combinedAddress || 'string',
+      address: combinedAddress || '',
       online: false,
     };
     try {
