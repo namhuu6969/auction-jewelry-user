@@ -38,7 +38,7 @@ export const ProfileSellers = () => {
     <Layout className='p-4'>
       <Content style={{ padding: '0 50px' }}>
         <Tabs defaultActiveKey='1'>
-          <TabPane tab='Account Information' key='1'>
+          <TabPane tab='Seller Account Information' key='1'>
             <Row className='flex justify-between'>
               <Col span={8}>
                 <Avatar
@@ -52,7 +52,7 @@ export const ProfileSellers = () => {
                   className='p-4 text-left'
                   title={
                     <div className='flex justify-between'>
-                      <p>Account Information</p>
+                      <p>Seller Account Information</p>
                       <EditOutlined />
                     </div>
                   }
