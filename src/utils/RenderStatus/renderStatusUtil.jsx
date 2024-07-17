@@ -37,6 +37,12 @@ export const renderStatusAuction = (status) => {
         return <p className='text-green-500'>Completed</p>;
       case 'Cancel':
         return <p className='text-red-500'>Cancel</p>;
+      case 'Waiting':
+        return <p className='text-teal-500'>Waiting</p>
+      case 'WaitingConfirm':
+        return <p className='text-teal-500'>Waiting confirm</p>
+      case 'Fail':
+        return <p className='text-red-500'>Fail</p>;
       default:
         return status;
     }

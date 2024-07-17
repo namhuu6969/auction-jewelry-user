@@ -10,8 +10,9 @@ import dayjs from 'dayjs';
 
 const { RangePicker } = DatePicker;
 
-export const ModalUpdateDate = ({ open, setOpen, revalidate }) => {
+export const ModalUpdateDate = ({ open, setOpen, revalidate, type }) => {
   const dataUpdate = useSelector((state) => state.myAuction.dataUpdate);
+  console.log(dataUpdate);
   const auctionData = useSelector((state) => state.myAuction.myAuctionData);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -97,13 +98,44 @@ export const ModalUpdateDate = ({ open, setOpen, revalidate }) => {
         description: 'Failed to update date range',
       });
     } finally {
-      revalidate()
+      revalidate();
+      setLoading(false);
+    }
+  };
+
+  const handleReAuction = async (values) => {
+    const formattedDate = {
+      startTime: values.dateRange[0].format('YYYY-MM-DD HH:mm'),
+      endTime: values.dateRange[1].format('YYYY-MM-DD HH:mm'),
+    };
+    try {
+      setLoading(true);
+      const response = await myAuctionApi.reAuction(
+        dataUpdate.id,
+        formattedDate
+      );
+      const updateMyAuction = auctionData.map((auction) =>
+        auction.id === response.data.id ? response.data : auction
+      );
+      dispatch(setMyAuctionData(updateMyAuction));
+      openNotification({
+        type: 'success',
+        description: 'Re-Acution Success',
+      });
+      handleClose();
+    } catch (error) {
+      openNotification({
+        type: 'error',
+        description: 'Failed re-auction',
+      });
+    } finally {
+      revalidate();
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (dataUpdate) {
+    if (dataUpdate && type === 'Update') {
       const start = dataUpdate.startTime ? dayjs(dataUpdate.startTime) : null;
       const end = dataUpdate.endTime ? dayjs(dataUpdate.endTime) : null;
       setDateRange([start, end]);
@@ -125,13 +157,13 @@ export const ModalUpdateDate = ({ open, setOpen, revalidate }) => {
           onClick={() => form.submit()}
           key='save'
         >
-          Update
+          {type === 'Update' ? 'Update Auction' : 'Re-Auction'}
         </PrimaryButton>,
       ]}
       centered
     >
       {contextHolder}
-      <Form form={form} labelCol={{ span: 24 }} onFinish={handleSubmit}>
+      <Form form={form} labelCol={{ span: 24 }} onFinish={type === 'Update' ? handleSubmit : handleReAuction}>
         <Form.Item
           label='Choose date range for auction'
           name='dateRange'

@@ -162,7 +162,7 @@ const AppHeader = () => {
                 items,
               }}
               trigger={['click']}
-              className='md:max-x-2 '
+              className='md:max-x-2 cursor-pointer'
             >
               <div
                 className='flex gap-2 md:shrink-0 items-center border border-black border-opacity-25 p-2

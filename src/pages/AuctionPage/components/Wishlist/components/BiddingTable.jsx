@@ -6,6 +6,7 @@ import { formatDate, formatPriceVND } from '../../../../../utils/utils';
 import useTableSearchDate from '../../../../../hooks/useTableSearchDate';
 import useSWR from 'swr';
 import { useNotification } from '../../../../../hooks/useNotification';
+import { Link } from 'react-router-dom';
 
 const fetch = async () => {
   const response = await myBiddingApi.getBiddingMe();
@@ -16,6 +17,7 @@ export const BiddingTable = () => {
   const { getColumnSearchProps } = useTableSearch();
   const { getColumnSearchDateProps } = useTableSearchDate();
   const { data, error, isLoading } = useSWR('my-bidding-data', fetch);
+  console.log(data);
   const { openNotification, contextHolder } = useNotification();
   const columns = [
     {
@@ -51,6 +53,18 @@ export const BiddingTable = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (data) => (
+        <Link
+          className='!text-blue-500 !underline underline-offset-2'
+          to={`/jewelry/detail/${data.id}`}
+        >
+          Following Auction
+        </Link>
+      ),
     },
   ];
   useEffect(() => {
