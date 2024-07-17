@@ -2,9 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { Modal, Button, Input, Steps, Typography, Flex, Card } from 'antd';
 import { IoRemove, IoAdd } from 'react-icons/io5';
 import { useEffect, useState } from 'react';
-import { UserServices } from '../../../../../../../services/api/UserServices/UserServices';
-import { useSelector } from 'react-redux';
-import { formatPriceVND } from '../../../../../../../utils/utils';
+import { UserServices } from '@api/UserServices/UserServices';
+import { formatPriceVND } from '@utils/utils';
 
 const { Step } = Steps;
 const { Title } = Typography;

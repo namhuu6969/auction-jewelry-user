@@ -13,6 +13,11 @@ const columns = [
     render: (text) => <a>{text}</a>,
   },
   {
+    title: 'Email',
+    dataIndex: `email`,
+    key: 'email',
+  },
+  {
     title: 'Time',
     dataIndex: `bidTime`,
     key: 'bidTime',
@@ -21,6 +26,11 @@ const columns = [
     title: 'Bid Amount (VND)',
     dataIndex: 'bidAmount',
     key: 'bidAmount',
+  },
+  {
+    title: 'Types Bid',
+    dataIndex: 'status',
+    key: 'status',
   },
 ];
 

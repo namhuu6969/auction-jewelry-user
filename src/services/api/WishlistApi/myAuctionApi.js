@@ -32,5 +32,13 @@ export const myAuctionApi = {
   getMyWinningAuction: async () => {
     const response = await api.get('auction/win')
     return response.data
+  },
+  confirmAuction: async (id) => {
+    const response = await api.put(`auction/confirm/${id}`)
+    return response.data
+  },
+  reAuction: async (id, data) => {
+    const response = await api.put(`auction/reAuction/${id}`, data)
+    return response.data
   }
 };

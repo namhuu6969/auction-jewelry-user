@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Layout, List, Card } from 'antd';
+import { Layout, Skeleton, Card } from 'antd';
 import { FilterAuctions } from './components/FilterAuctions/FilterAuctions';
 import { StatusAuctions } from './components/StatusAuctions/StatusAuctions';
 import { IncomingAuctions } from './components/IncomingAuctions/IncomingAuctions';
@@ -24,7 +24,7 @@ const options = [
 ];
 
 export const Category = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [filteredData, setFilteredData] = useState([]);
   const [auctionData, setAuctionData] = useState([]);
   const [category, setCategory] = useState([]);
@@ -37,21 +37,27 @@ export const Category = () => {
   useEffect(() => {
     const fetchApiCategory = async () => {
       try {
+        setLoading(true);
         const response = await requestJewelryApi.getCategory();
         setCategory(response.data.map((item) => item.name));
         console.log(category);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
 
     const fetchBrand = async () => {
       try {
+        setLoading(true);
         const response = await requestJewelryApi.getBrand();
         const brandsFilter = response.data.filter((item) => item.name !== null);
         setBrands(brandsFilter.map((item) => item.name));
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -60,11 +66,12 @@ export const Category = () => {
         setLoading(true);
         const response = await auctionApi.getAllAuctions();
         setAuctionData(response.data);
-        setFilteredData(response.data);
+        setFilteredData(response.data.filter((item) => ['InProgress'].includes(item.status)));
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchData();
@@ -112,17 +119,23 @@ export const Category = () => {
       </Header>
       <Layout>
         <Sider className='!flex-col !justify-between' width={'25%'} style={{ background: '#fff' }}>
-          <FilterAuctions
-            category={category}
-            brands={brands}
-            onChange={onChanges}
-            data={filteredData}
-            prevData={auctionData}
-            setFilteredData={setFilteredData}
-            handleInputSearch={handleInputSearch}
-          />
-          <StatusAuctions data={auctionData} handleFilterChange={handleFilterChange} />
-          <IncomingAuctions data={auctionData} />
+          {loading ? (
+            <Skeleton active paragraph={{ rows: 6 }} />
+          ) : (
+            <>
+              <FilterAuctions
+                category={category}
+                brands={brands}
+                onChange={onChanges}
+                data={filteredData}
+                prevData={auctionData}
+                setFilteredData={setFilteredData}
+                handleInputSearch={handleInputSearch}
+              />
+              <StatusAuctions data={auctionData} handleFilterChange={handleFilterChange} />
+              <IncomingAuctions data={auctionData} />
+            </>
+          )}
         </Sider>
         <Layout>
           <Content
@@ -133,7 +146,7 @@ export const Category = () => {
               minHeight: 280,
             }}
           >
-            <AuctionList data={filteredData} Card={Card} />
+            <AuctionList data={filteredData} loading={loading} />
           </Content>
         </Layout>
       </Layout>
